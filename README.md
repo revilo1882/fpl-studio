@@ -99,8 +99,6 @@ If any are added later (e.g. for proxying APIs or auth), they will be documented
 
 - Currently showing last season's fixtures (pre-season updates pending)
 - Next GW logic relies on `events.find((e) => e.is_current)` which is falsy until the season starts
-- Select component default value renders slightly after page load
-- Sticky column has z-index and overlap quirks in some dark/light modes (mostly resolved)
 
 ## Repository Status
 
