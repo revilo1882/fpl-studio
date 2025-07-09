@@ -7,7 +7,7 @@ export type SingleFixture = {
 
 export type FixtureCell = SingleFixture[]
 
-type IGenerateFixtureMatrix = {
+export type IGenerateFixtureMatrix = {
 	teamNames: string[]
 	fixtureMatrix: FixtureCell[][]
 	averages: number[]

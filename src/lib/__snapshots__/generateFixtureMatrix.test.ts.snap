@@ -1,0 +1,44 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateFixtureMatrix > matches the expected output snapshot 1`] = `
+{
+  "averages": [
+    2,
+    3,
+  ],
+  "fixtureMatrix": [
+    [
+      [
+        {
+          "difficulty": 3,
+          "label": "MCI (H)",
+        },
+      ],
+      [
+        {
+          "difficulty": 1,
+          "label": "MCI (A)",
+        },
+      ],
+    ],
+    [
+      [
+        {
+          "difficulty": 2,
+          "label": "ARS (A)",
+        },
+      ],
+      [
+        {
+          "difficulty": 4,
+          "label": "ARS (H)",
+        },
+      ],
+    ],
+  ],
+  "teamNames": [
+    "Arsenal",
+    "Man City",
+  ],
+}
+`;
