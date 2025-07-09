@@ -2,6 +2,9 @@
 
 FPL Studio is a modern, front-end-focused Fantasy Premier League (FPL) companion app. It provides an interactive, data-driven interface for FPL managers to analyze fixtures, track difficulty, and (eventually) manage their teams or leagues. It started as an experimental fixture difficulty planner and aims to expand into visualizations, team-based tools, and possibly real-time match integrations.
 
+**Live site:**  
+[https://fpl-studio.vercel.app/](https://fpl-studio.vercel.app/)
+
 ## Features
 
 - Dynamic, responsive fixture difficulty grid (with color-coded backgrounds)
