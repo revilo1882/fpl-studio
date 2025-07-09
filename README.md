@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FPL Studio
+
+An interactive fixture difficulty planner for Fantasy Premier League managers.
+
+## Features
+
+- Dynamic fixture grid using live FPL data
+- Supports double and triple gameweeks (DGW/TGW)
+- Fixture difficulty coloring with average per team
+- Filter by number of gameweeks (dynamic range)
+- Sticky team name column with horizontal scroll
+- Responsive table layout and dark mode support
+- Built with clean, accessible UI using `shadcn/ui`
+
+## Planned Improvements
+
+- Tooltip or click-based fixture detail (show date, score, difficulty)
+- Sorting teams by average fixture difficulty
+- Refined difficulty model (e.g. based on form, xG, ELO)
+- Visualizations using charts (trendlines, difficulty runs)
+- Possibly user team viewer and planner
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies and start the local dev server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [Next.js (App Router)](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Radix UI](https://www.radix-ui.com/)
+- TypeScript
 
-## Learn More
+## Theme
 
-To learn more about Next.js, take a look at the following resources:
+Dark mode is powered by [`next-themes`](https://github.com/pacocoursey/next-themes), configured with Tailwind’s `darkMode: 'class'`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Theme is applied via `class` on `<html>`
+- Default theme follows system preference
+- Users can toggle between light and dark
+- Transitions are disabled on theme change for smoother UX
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment
 
-## Deploy on Vercel
+No environment variables are required.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If any are added later (e.g. for proxying APIs or auth), they will be documented in an `.env.example`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Folder Structure (simplified)
+
+```
+/app
+  page.tsx                 ← server-side data fetch
+/components
+  FixtureGrid.tsx          ← presentational table
+  FixtureGridPage.tsx      ← client wrapper with filters
+  DarkModeToggle.tsx
+/lib
+  fplApi.ts                ← FPL data fetching utils
+  generateFixtureMatrix.ts ← builds fixture display data
+/types
+  fpl.ts                   ← FPL API types
+```
+
+## License
+
+[MIT](LICENSE)
