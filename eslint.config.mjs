@@ -5,18 +5,20 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 import importPlugin from 'eslint-plugin-import'
 import unusedImports from 'eslint-plugin-unused-imports'
+import nextPlugin from '@next/eslint-plugin-next'
 
 export default [
 	js.configs.recommended,
 	...tseslint.configs.recommended,
 	{
-		files: ['**/*.{ts,tsx}'], // Only apply TypeScript rules to TS files
+		files: ['**/*.{ts,tsx,js,jsx}'],
 		plugins: {
 			react,
 			'react-hooks': reactHooks,
 			'jsx-a11y': jsxA11y,
 			import: importPlugin,
 			'unused-imports': unusedImports,
+			'@next/next': nextPlugin,
 		},
 		languageOptions: {
 			parser: tseslint.parser,
@@ -41,6 +43,10 @@ export default [
 			},
 		},
 		rules: {
+			// Next.js Rules
+			...nextPlugin.configs.recommended.rules,
+			...nextPlugin.configs['core-web-vitals'].rules,
+
 			// React Hooks - Your main requirement
 			'react-hooks/rules-of-hooks': 'error',
 			'react-hooks/exhaustive-deps': 'error',
