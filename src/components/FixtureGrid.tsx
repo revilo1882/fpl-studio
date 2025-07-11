@@ -1,5 +1,7 @@
 'use client'
 
+import { ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react'
+
 import {
 	Table,
 	TableBody,
@@ -15,22 +17,31 @@ type FixtureCell = {
 	difficulty: number
 }
 
+type RowData = {
+	team: string
+	fixtures: FixtureCell[][]
+	average: number
+}
+
 type FixtureGridProps = {
-	teams: string[]
-	fixtureMatrix: FixtureCell[][][]
-	averages: number[]
+	data: RowData[]
 	events: Gameweek[]
 	firstGameweek: number
 	numberOfGameweeks: number
+	onSort: (key: 'team' | 'average') => void
+	sortConfig: {
+		key: 'team' | 'average'
+		direction: 'ascending' | 'descending'
+	}
 }
 
 export const FixtureGrid = ({
-	teams,
-	fixtureMatrix,
-	averages,
+	data,
 	events,
 	firstGameweek,
 	numberOfGameweeks,
+	onSort,
+	sortConfig,
 }: FixtureGridProps) => {
 	const fdrColors = [
 		'bg-[rgba(34,197,94,0.6)]',
@@ -48,14 +59,33 @@ export const FixtureGrid = ({
 		return 'text-red-600'
 	}
 
+	const SortIndicator = ({ columnKey }: { columnKey: 'team' | 'average' }) => {
+		if (sortConfig.key === columnKey) {
+			return sortConfig.direction === 'ascending' ? (
+				<ArrowUp className='ml-1 inline h-4 w-4' />
+			) : (
+				<ArrowDown className='ml-1 inline h-4 w-4' />
+			)
+		}
+		// Render a default, subtle icon for all non-active sortable columns
+		return <ChevronsUpDown className='ml-1 inline h-4 w-4 text-muted-foreground/30' />
+	}
+
 	return (
 		<div className='overflow-x-auto rounded-md border'>
 			<Table className='border-separate border-spacing-x-1 text-sm'>
 				<TableHeader>
-					<TableRow>
-						<TableHead className='sticky left-0 z-20 min-w-[120px] bg-background text-left'>
-							Team
+					<TableRow className='hover:bg-transparent'>
+						<TableHead className='sticky left-0 z-20 min-w-[120px] bg-background p-0 text-left'>
+							<button
+								className='flex h-full w-full items-center p-2 text-left transition-colors hover:bg-muted/50'
+								onClick={() => onSort('team')}
+							>
+								Team
+								<SortIndicator columnKey='team' />
+							</button>
 						</TableHead>
+
 						{events
 							.slice(firstGameweek - 1, firstGameweek - 1 + numberOfGameweeks)
 							.map((gw) => (
@@ -63,45 +93,53 @@ export const FixtureGrid = ({
 									GW {gw.id}
 								</TableHead>
 							))}
-						<TableHead className='text-center'>Avg</TableHead>
+
+						<TableHead className='p-0 text-center'>
+							<button
+								className='flex h-full w-full items-center justify-center p-2 transition-colors hover:bg-muted/50'
+								onClick={() => onSort('average')}
+							>
+								Avg
+								<SortIndicator columnKey='average' />
+							</button>
+						</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{teams.map((team, rowIndex) => {
-						const avg = averages[rowIndex]
-						return (
-							<TableRow key={team}>
-								<TableCell className='sticky left-0 z-10 min-w-[120px] bg-background text-left font-semibold'>
-									{team}
-								</TableCell>
+					{data.map((row) => (
+						<TableRow key={row.team} className='group'>
+							<TableCell className='sticky left-0 z-10 min-w-[120px] bg-background text-left font-semibold transition-colors group-hover:bg-muted/50'>
+								{row.team}
+							</TableCell>
 
-								{fixtureMatrix[rowIndex].map((fixtures, colIndex) => (
-									<TableCell
-										key={`${rowIndex}_${colIndex}`}
-										className='min-w-[80px] space-y-[2px] divide-y p-0 text-center'
-									>
-										{fixtures.map(({ difficulty, label }, cellIndex) => (
-											<div
-												key={cellIndex}
-												className={`whitespace-nowrap rounded-sm px-2 py-1 ${
-													fdrColors[difficulty - 1] || ''
-												}`}
-											>
-												{label}
-											</div>
-										))}
-									</TableCell>
-								))}
-								<TableCell className='text-center'>
-									<span
-										className={`rounded bg-slate-300 px-2 py-1 font-mono text-xs ${getAvgColor(avg)} bg-opacity-20`}
-									>
-										{avg}
-									</span>
+							{row.fixtures.map((fixtures, colIndex) => (
+								<TableCell
+									key={`${row.team}_${colIndex}`}
+									className='min-w-[80px] space-y-[2px] divide-y p-0 text-center'
+								>
+									{fixtures.map(({ difficulty, label }, cellIndex) => (
+										<div
+											key={cellIndex}
+											className={`whitespace-nowrap rounded-sm px-2 py-1 ${
+												fdrColors[difficulty - 1] || ''
+											}`}
+										>
+											{label}
+										</div>
+									))}
 								</TableCell>
-							</TableRow>
-						)
-					})}
+							))}
+							<TableCell className='text-center'>
+								<span
+									className={`rounded bg-slate-300 px-2 py-1 font-mono text-xs ${getAvgColor(
+										row.average,
+									)} bg-opacity-20`}
+								>
+									{row.average}
+								</span>
+							</TableCell>
+						</TableRow>
+					))}
 				</TableBody>
 			</Table>
 		</div>

@@ -25,6 +25,13 @@ export type Team = {
 	name: string
 	short_name: string
 	strength: number
+	strength_overall_home: number
+	strength_overall_away: number
+	strength_attack_home: number
+	strength_attack_away: number
+	strength_defence_home: number
+	strength_defence_away: number
+	pulse_id: number
 }
 
 export type ElementType = {
@@ -40,7 +47,7 @@ export type Gameweek = {
 	deadline_time: string
 	average_entry_score: number
 	highest_scoring_entry: number | null
-	most_captained: number
+	most_captained: number | null
 	is_next: boolean
 	is_current: boolean
 	is_finished: boolean
