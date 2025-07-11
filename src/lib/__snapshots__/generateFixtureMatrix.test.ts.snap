@@ -3,20 +3,25 @@
 exports[`generateFixtureMatrix > matches the expected output snapshot 1`] = `
 {
   "averages": [
-    2,
+    4.33,
+    2.5,
     3,
   ],
   "fixtureMatrix": [
     [
       [
         {
-          "difficulty": 3,
+          "difficulty": 4,
           "label": "MCI (H)",
+        },
+        {
+          "difficulty": 4,
+          "label": "CHE (A)",
         },
       ],
       [
         {
-          "difficulty": 1,
+          "difficulty": 5,
           "label": "MCI (A)",
         },
       ],
@@ -30,8 +35,22 @@ exports[`generateFixtureMatrix > matches the expected output snapshot 1`] = `
       ],
       [
         {
-          "difficulty": 4,
+          "difficulty": 3,
           "label": "ARS (H)",
+        },
+      ],
+    ],
+    [
+      [
+        {
+          "difficulty": 3,
+          "label": "ARS (H)",
+        },
+      ],
+      [
+        {
+          "difficulty": 0,
+          "label": "-",
         },
       ],
     ],
@@ -39,6 +58,7 @@ exports[`generateFixtureMatrix > matches the expected output snapshot 1`] = `
   "teamNames": [
     "Arsenal",
     "Man City",
+    "Chelsea",
   ],
 }
 `;
