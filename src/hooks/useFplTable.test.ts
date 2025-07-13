@@ -1,33 +1,9 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import { renderHook } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 
 import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
 
 import { useFplTable } from './useFplTable'
-
-// Create a safe act function that works with React 19
-const createAct = () => {
-	try {
-		// Try to get act from @testing-library/react first
-		const rtl = require('@testing-library/react')
-		return rtl.act
-	} catch {
-		try {
-			// Try to get act from react
-			const React = require('react')
-			return React.act
-		} catch {
-			// Create a simple synchronous wrapper as fallback
-			return (callback: () => void) => {
-				callback()
-				return Promise.resolve()
-			}
-		}
-	}
-}
-
-const act = createAct()
 
 describe('useFplTable', () => {
 	it('should return data sorted by team name by default', () => {
@@ -39,22 +15,20 @@ describe('useFplTable', () => {
 	})
 
 	it('should toggle sort direction when the same key is clicked again', () => {
-		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result, rerender } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		act(() => {
-			result.current.handleSort('team')
-		})
+		result.current.handleSort('team')
+		rerender()
 
 		expect(result.current.sortConfig.direction).toBe('descending')
 		expect(result.current.sortedData[0].team).toBe('Man City')
 	})
 
 	it('should sort by average when handleSort is called with "average"', () => {
-		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result, rerender } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		act(() => {
-			result.current.handleSort('average')
-		})
+		result.current.handleSort('average')
+		rerender()
 
 		expect(result.current.sortConfig.key).toBe('average')
 		expect(result.current.sortedData[0].average).toBeLessThanOrEqual(
@@ -63,11 +37,10 @@ describe('useFplTable', () => {
 	})
 
 	it('should update the number of gameweeks correctly', () => {
-		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result, rerender } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		act(() => {
-			result.current.setNumberOfGameweeks(3)
-		})
+		result.current.setNumberOfGameweeks(3)
+		rerender()
 
 		expect(result.current.numberOfGameweeks).toBe(3)
 	})
