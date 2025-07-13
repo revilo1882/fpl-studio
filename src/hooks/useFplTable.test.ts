@@ -1,5 +1,4 @@
 import { renderHook } from '@testing-library/react'
-import { act } from 'react-dom/test-utils'
 import { describe, it, expect } from 'vitest'
 
 import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
@@ -18,9 +17,7 @@ describe('useFplTable', () => {
 	it('should toggle sort direction when the same key is clicked again', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		act(() => {
-			result.current.handleSort('team')
-		})
+		result.current.handleSort('team')
 
 		expect(result.current.sortConfig.direction).toBe('descending')
 		expect(result.current.sortedData[0].team).toBe('Man City')
@@ -29,9 +26,7 @@ describe('useFplTable', () => {
 	it('should sort by average when handleSort is called with "average"', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		act(() => {
-			result.current.handleSort('average')
-		})
+		result.current.handleSort('average')
 
 		expect(result.current.sortConfig.key).toBe('average')
 		expect(result.current.sortedData[0].average).toBeLessThanOrEqual(
@@ -42,9 +37,7 @@ describe('useFplTable', () => {
 	it('should update the number of gameweeks correctly', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		act(() => {
-			result.current.setNumberOfGameweeks(3)
-		})
+		result.current.setNumberOfGameweeks(3)
 
 		expect(result.current.numberOfGameweeks).toBe(3)
 	})
