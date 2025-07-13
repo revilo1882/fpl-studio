@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { renderHook } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 
@@ -5,8 +6,28 @@ import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
 
 import { useFplTable } from './useFplTable'
 
-// Use the globally available act function
-const act = (global as any).act
+// Create a safe act function that works with React 19
+const createAct = () => {
+	try {
+		// Try to get act from @testing-library/react first
+		const rtl = require('@testing-library/react')
+		return rtl.act
+	} catch {
+		try {
+			// Try to get act from react
+			const React = require('react')
+			return React.act
+		} catch {
+			// Create a simple synchronous wrapper as fallback
+			return (callback: () => void) => {
+				callback()
+				return Promise.resolve()
+			}
+		}
+	}
+}
+
+const act = createAct()
 
 describe('useFplTable', () => {
 	it('should return data sorted by team name by default', () => {
