@@ -5,6 +5,9 @@ import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
 
 import { useFplTable } from './useFplTable'
 
+// Use the globally available act function
+const act = (global as any).act
+
 describe('useFplTable', () => {
 	it('should return data sorted by team name by default', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
@@ -17,7 +20,9 @@ describe('useFplTable', () => {
 	it('should toggle sort direction when the same key is clicked again', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		result.current.handleSort('team')
+		act(() => {
+			result.current.handleSort('team')
+		})
 
 		expect(result.current.sortConfig.direction).toBe('descending')
 		expect(result.current.sortedData[0].team).toBe('Man City')
@@ -26,7 +31,9 @@ describe('useFplTable', () => {
 	it('should sort by average when handleSort is called with "average"', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		result.current.handleSort('average')
+		act(() => {
+			result.current.handleSort('average')
+		})
 
 		expect(result.current.sortConfig.key).toBe('average')
 		expect(result.current.sortedData[0].average).toBeLessThanOrEqual(
@@ -37,7 +44,9 @@ describe('useFplTable', () => {
 	it('should update the number of gameweeks correctly', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		result.current.setNumberOfGameweeks(3)
+		act(() => {
+			result.current.setNumberOfGameweeks(3)
+		})
 
 		expect(result.current.numberOfGameweeks).toBe(3)
 	})
