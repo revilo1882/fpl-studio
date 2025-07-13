@@ -1,6 +1,5 @@
-import { act } from 'react'
-
 import { renderHook } from '@testing-library/react'
+import { act } from 'react-dom/test-utils'
 import { describe, it, expect } from 'vitest'
 
 import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
