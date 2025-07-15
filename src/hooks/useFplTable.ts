@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 
-import { generateFixtureMatrix } from '@/lib/generateFixtureMatrix'
+import { generateFixtureMatrix, type DifficultyType } from '@/lib/generateFixtureMatrix'
 import type { BootstrapData, Fixtures } from '@/types/fpl'
 
 type SortConfig = {
@@ -11,11 +11,18 @@ type SortConfig = {
 export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) => {
 	const { teams, events } = bootstrapData
 
+	const [difficultyType, setDifficultyType] = useState<DifficultyType>('fpl')
+
 	const currentGameweek = events.find((event) => event.is_current)?.id
 	const nextGameweek = events.find((event) => event.is_next)?.id
 	const firstGameweek = currentGameweek || nextGameweek || 1
 	const remainingGameweeks = events.length - (firstGameweek - 1)
-	const gameweekOptions = Array.from({ length: remainingGameweeks }, (_, index) => index + 1)
+	const preferredOptions = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 19]
+	const gameweekOptions = preferredOptions.filter((option) => option <= remainingGameweeks)
+
+	if (gameweekOptions.length === 0 && remainingGameweeks > 0) {
+		gameweekOptions.push(remainingGameweeks)
+	}
 
 	const [numberOfGameweeks, setNumberOfGameweeks] = useState(
 		6 > remainingGameweeks ? remainingGameweeks : 6,
@@ -28,8 +35,9 @@ export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) =>
 				fixtures,
 				firstGameweek,
 				numberOfGameweeks,
+				difficultyType,
 			}),
-		[teams, fixtures, firstGameweek, numberOfGameweeks],
+		[teams, fixtures, firstGameweek, numberOfGameweeks, difficultyType],
 	)
 
 	const combinedData = useMemo(
@@ -80,5 +88,7 @@ export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) =>
 		sortedData,
 		sortConfig,
 		handleSort,
+		difficultyType,
+		setDifficultyType,
 	}
 }
