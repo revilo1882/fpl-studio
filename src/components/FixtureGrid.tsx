@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react'
+import { ArrowUp, ArrowDown } from 'lucide-react'
 
 import {
 	Table,
@@ -11,6 +11,7 @@ import {
 	TableRow,
 } from '@/components/ui/table'
 import { type Gameweek } from '@/types/fpl'
+import { type DifficultyType } from '@/lib/generateFixtureMatrix'
 
 type FixtureCell = {
 	label: string
@@ -33,6 +34,7 @@ type FixtureGridProps = {
 		key: 'team' | 'average'
 		direction: 'ascending' | 'descending'
 	}
+	difficultyType: DifficultyType
 }
 
 export const FixtureGrid = ({
@@ -42,33 +44,48 @@ export const FixtureGrid = ({
 	numberOfGameweeks,
 	onSort,
 	sortConfig,
+	difficultyType,
 }: FixtureGridProps) => {
-	const fdrColors = [
-		'bg-[rgba(34,197,94,0.6)]',
-		'bg-[rgba(163,230,53,0.6)]',
-		'bg-[rgba(253,224,71,0.6)]',
-		'bg-[rgba(253,186,116,0.6)]',
-		'bg-[rgba(248,113,113,0.6)]',
-	]
+	const getDifficultyUI = (score: number) => {
+		const roundedScore = Math.round(score)
 
-	const getAvgColor = (avg: number) => {
-		if (avg < 2.5) return 'text-green-600'
-		if (avg < 3.0) return 'text-lime-600'
-		if (avg < 3.5) return 'text-yellow-600'
-		if (avg < 4.0) return 'text-orange-600'
-		return 'text-red-600'
+		if (difficultyType === 'fpl') {
+			switch (roundedScore) {
+				case 1:
+					return { bg: 'bg-green-500/60', text: 'text-green-500' }
+				case 2:
+					return { bg: 'bg-lime-500/60', text: 'text-lime-500' }
+				case 3:
+					return { bg: 'bg-yellow-400/60', text: 'text-yellow-400' }
+				case 4:
+					return { bg: 'bg-orange-500/60', text: 'text-orange-500' }
+				case 5:
+					return { bg: 'bg-red-500/60', text: 'text-red-500' }
+				default:
+					return { bg: 'bg-slate-400/60', text: 'text-slate-500' }
+			}
+		}
+
+		if (score === 0) return { bg: 'bg-slate-400/60', text: 'text-slate-500' }
+		if (score < 1.5) return { bg: 'bg-green-500/60', text: 'text-green-500' } // Easiest
+		if (score < 2.0) return { bg: 'bg-lime-500/60', text: 'text-lime-500' }
+		if (score < 2.5) return { bg: 'bg-yellow-400/60', text: 'text-yellow-400' }
+		if (score < 3.0) return { bg: 'bg-amber-400/60', text: 'text-amber-400' }
+		if (score < 3.5) return { bg: 'bg-orange-500/60', text: 'text-orange-500' }
+		if (score < 4.0) return { bg: 'bg-rose-500/60', text: 'text-rose-500' }
+		if (score >= 4.0) return { bg: 'bg-red-500/60', text: 'text-red-500' } // Hardest
+		return { bg: 'bg-slate-400/60', text: 'text-slate-500' }
 	}
 
 	const SortIndicator = ({ columnKey }: { columnKey: 'team' | 'average' }) => {
-		if (sortConfig.key === columnKey) {
-			return sortConfig.direction === 'ascending' ? (
-				<ArrowUp className='ml-1 inline h-4 w-4' />
-			) : (
-				<ArrowDown className='ml-1 inline h-4 w-4' />
-			)
+		if (sortConfig.key !== columnKey) {
+			return null
 		}
-		// Render a default, subtle icon for all non-active sortable columns
-		return <ChevronsUpDown className='ml-1 inline h-4 w-4 text-muted-foreground/30' />
+		return sortConfig.direction === 'ascending' ? (
+			<ArrowUp className='ml-1 inline h-4 w-4' />
+		) : (
+			<ArrowDown className='ml-1 inline h-4 w-4' />
+		)
 	}
 
 	return (
@@ -76,9 +93,9 @@ export const FixtureGrid = ({
 			<Table className='border-separate border-spacing-x-1 text-sm'>
 				<TableHeader>
 					<TableRow className='hover:bg-transparent'>
-						<TableHead className='sticky left-0 z-20 min-w-[120px] bg-background p-0 text-left'>
+						<TableHead className='sticky left-0 z-20 w-[120px] bg-background p-0 text-left'>
 							<button
-								className='flex h-full w-full items-center p-2 text-left transition-colors hover:bg-muted/50'
+								className='flex h-full w-full items-center p-2 text-left transition-colors hover:bg-muted'
 								onClick={() => onSort('team')}
 							>
 								Team
@@ -89,14 +106,14 @@ export const FixtureGrid = ({
 						{events
 							.slice(firstGameweek - 1, firstGameweek - 1 + numberOfGameweeks)
 							.map((gw) => (
-								<TableHead key={gw.id} className='text-center'>
+								<TableHead key={gw.id} className='w-[110px] text-center'>
 									GW {gw.id}
 								</TableHead>
 							))}
 
-						<TableHead className='p-0 text-center'>
+						<TableHead className='w-[80px] p-0 text-center'>
 							<button
-								className='flex h-full w-full items-center justify-center p-2 transition-colors hover:bg-muted/50'
+								className='flex h-full w-full items-center justify-center p-2 transition-colors hover:bg-muted'
 								onClick={() => onSort('average')}
 							>
 								Avg
@@ -108,34 +125,43 @@ export const FixtureGrid = ({
 				<TableBody>
 					{data.map((row) => (
 						<TableRow key={row.team} className='group'>
-							<TableCell className='sticky left-0 z-10 min-w-[120px] bg-background text-left font-semibold transition-colors group-hover:bg-muted/50'>
+							<TableCell className='sticky left-0 z-10 bg-background text-left font-semibold transition-colors group-hover:bg-muted'>
 								{row.team}
 							</TableCell>
 
 							{row.fixtures.map((fixtures, colIndex) => (
 								<TableCell
 									key={`${row.team}_${colIndex}`}
-									className='min-w-[80px] space-y-[2px] divide-y p-0 text-center'
+									className='space-y-[2px] divide-y p-0 text-center'
 								>
 									{fixtures.map(({ difficulty, label }, cellIndex) => (
 										<div
 											key={cellIndex}
 											className={`whitespace-nowrap rounded-sm px-2 py-1 ${
-												fdrColors[difficulty - 1] || ''
+												getDifficultyUI(difficulty).bg
 											}`}
 										>
-											{label}
+											<span className='font-normal text-black dark:text-white'>
+												{label}
+											</span>
+											<span className='ml-2 text-xs text-black/70 dark:text-white/70'>
+												(
+												{difficultyType === 'fpl'
+													? difficulty
+													: difficulty.toFixed(2)}
+												)
+											</span>
 										</div>
 									))}
 								</TableCell>
 							))}
 							<TableCell className='text-center'>
 								<span
-									className={`rounded bg-slate-300 px-2 py-1 font-mono text-xs ${getAvgColor(
-										row.average,
-									)} bg-opacity-20`}
+									className={`rounded px-2 py-1 font-mono text-xs font-semibold ${
+										getDifficultyUI(row.average).text
+									}`}
 								>
-									{row.average}
+									{row.average.toFixed(2)}
 								</span>
 							</TableCell>
 						</TableRow>
