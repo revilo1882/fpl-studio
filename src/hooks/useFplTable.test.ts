@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 
 import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
@@ -15,32 +15,36 @@ describe('useFplTable', () => {
 	})
 
 	it('should toggle sort direction when the same key is clicked again', () => {
-		const { result, rerender } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		result.current.handleSort('team')
-		rerender()
+		act(() => {
+			result.current.handleSort('team')
+		})
 
 		expect(result.current.sortConfig.direction).toBe('descending')
 		expect(result.current.sortedData[0].team).toBe('Man City')
 	})
 
-	it('should sort by average when handleSort is called with "average"', () => {
-		const { result, rerender } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+	it('should sort by score when handleSort is called with "score"', () => {
+		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		result.current.handleSort('average')
-		rerender()
+		act(() => {
+			result.current.handleSort('score')
+		})
 
-		expect(result.current.sortConfig.key).toBe('average')
-		expect(result.current.sortedData[0].average).toBeLessThanOrEqual(
-			result.current.sortedData[1].average,
+		expect(result.current.sortConfig.key).toBe('score')
+		// Default sort for score is descending, so check first element is greater
+		expect(result.current.sortedData[0].score).toBeGreaterThanOrEqual(
+			result.current.sortedData[1].score,
 		)
 	})
 
 	it('should update the number of gameweeks correctly', () => {
-		const { result, rerender } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		result.current.setNumberOfGameweeks(3)
-		rerender()
+		act(() => {
+			result.current.setNumberOfGameweeks(3)
+		})
 
 		expect(result.current.numberOfGameweeks).toBe(3)
 	})

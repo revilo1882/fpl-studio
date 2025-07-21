@@ -8,7 +8,7 @@ export type FixtureCell = SingleFixture[]
 export type IGenerateFixtureMatrix = {
 	teamNames: string[]
 	fixtureMatrix: FixtureCell[][]
-	averages: number[]
+	scores: number[]
 }
 export type DifficultyType = 'fpl' | 'overall' | 'attack' | 'defence'
 
@@ -20,11 +20,19 @@ type GenerateFixtureMatrixProps = {
 	difficultyType: DifficultyType
 }
 
-// Normalization function to scale FPL strength values (e.g., 1000-1400) to our 1-5 FDR
 function normalize(value: number, min: number, max: number): number {
-	if (max === min) return 3 // Avoid division by zero, return neutral value
+	if (max === min) return 3
 	const scaled = 1 + (4 * (value - min)) / (max - min)
 	return parseFloat(scaled.toFixed(2))
+}
+
+// Calculates a score multiplier based on fixture difficulty.
+// An easy fixture (1) gets a high multiplier, a hard fixture (5) gets a low one.
+function getAttractivenessMultiplier(difficulty: number): number {
+	if (difficulty <= 1) return 1.5
+	if (difficulty >= 5) return 0.5
+	// Linear scaling between 1 and 5
+	return 1.5 - (difficulty - 1) * 0.25
 }
 
 export const generateFixtureMatrix = ({
@@ -36,9 +44,8 @@ export const generateFixtureMatrix = ({
 }: GenerateFixtureMatrixProps): IGenerateFixtureMatrix => {
 	const teamMap = new Map(teams.map((team) => [team.id, team]))
 	const teamNames = teams.map((team) => team.name)
-	const averages: number[] = []
+	const scores: number[] = []
 
-	// Pre-calculate min/max values from all teams for accurate scaling
 	const minOverall = Math.min(
 		...teams.flatMap((t) => [t.strength_overall_home, t.strength_overall_away]),
 	)
@@ -60,8 +67,7 @@ export const generateFixtureMatrix = ({
 
 	const fixtureMatrix: FixtureCell[][] = teams.map((team) => {
 		const row: FixtureCell[] = []
-		let totalDifficulty = 0
-		let fixtureCount = 0
+		let totalAttractivenessScore = 0
 
 		for (
 			let gameweek = firstGameweek;
@@ -129,8 +135,9 @@ export const generateFixtureMatrix = ({
 					}
 				}
 
-				totalDifficulty += difficulty
-				fixtureCount++
+				if (difficulty > 0) {
+					totalAttractivenessScore += getAttractivenessMultiplier(difficulty)
+				}
 
 				return { label, difficulty }
 			})
@@ -138,11 +145,10 @@ export const generateFixtureMatrix = ({
 			row.push(fixturesForWeek)
 		}
 
-		const averageDifficulty = fixtureCount > 0 ? totalDifficulty / fixtureCount : 0
-		averages.push(parseFloat(averageDifficulty.toFixed(2)))
+		scores.push(parseFloat(totalAttractivenessScore.toFixed(2)))
 
 		return row
 	})
 
-	return { teamNames, fixtureMatrix, averages }
+	return { teamNames, fixtureMatrix, scores }
 }

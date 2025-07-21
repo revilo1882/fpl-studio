@@ -26,7 +26,7 @@ export const DifficultySelector = ({
 				value={difficultyType}
 				onValueChange={(v) => setDifficultyType(v as DifficultyType)}
 			>
-				<SelectTrigger id='difficulty-select' className=''>
+				<SelectTrigger id='difficulty-select' className='w-[160px]'>
 					<SelectValue placeholder='Select...' />
 				</SelectTrigger>
 				<SelectContent>

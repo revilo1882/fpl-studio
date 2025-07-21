@@ -21,7 +21,7 @@ type FixtureCell = {
 type RowData = {
 	team: string
 	fixtures: FixtureCell[][]
-	average: number
+	score: number
 }
 
 type FixtureGridProps = {
@@ -29,9 +29,9 @@ type FixtureGridProps = {
 	events: Gameweek[]
 	firstGameweek: number
 	numberOfGameweeks: number
-	onSort: (key: 'team' | 'average') => void
+	onSort: (key: 'team' | 'score') => void
 	sortConfig: {
-		key: 'team' | 'average'
+		key: 'team' | 'score'
 		direction: 'ascending' | 'descending'
 	}
 	difficultyType: DifficultyType
@@ -54,7 +54,7 @@ export const FixtureGrid = ({
 				case 1:
 					return { bg: 'bg-green-500/60', text: 'text-green-500' }
 				case 2:
-					return { bg: 'bg-lime-500/60', text: 'text-lime-500' }
+					return { bg: 'bg-green-300/60', text: 'text-green-300' }
 				case 3:
 					return { bg: 'bg-yellow-400/60', text: 'text-yellow-400' }
 				case 4:
@@ -67,17 +67,17 @@ export const FixtureGrid = ({
 		}
 
 		if (score === 0) return { bg: 'bg-slate-400/60', text: 'text-slate-500' }
-		if (score < 1.5) return { bg: 'bg-green-500/60', text: 'text-green-500' } // Easiest
-		if (score < 2.0) return { bg: 'bg-lime-500/60', text: 'text-lime-500' }
-		if (score < 2.5) return { bg: 'bg-yellow-400/60', text: 'text-yellow-400' }
-		if (score < 3.0) return { bg: 'bg-amber-400/60', text: 'text-amber-400' }
-		if (score < 3.5) return { bg: 'bg-orange-500/60', text: 'text-orange-500' }
-		if (score < 4.0) return { bg: 'bg-rose-500/60', text: 'text-rose-500' }
-		if (score >= 4.0) return { bg: 'bg-red-500/60', text: 'text-red-500' } // Hardest
-		return { bg: 'bg-slate-400/60', text: 'text-slate-500' }
+		if (score < 1.5) return { bg: 'bg-green-500/60', text: 'text-green-500' }
+		if (score < 2.0) return { bg: 'bg-green-400/60', text: 'text-green-400' }
+		if (score < 2.5) return { bg: 'bg-yellow-300/60', text: 'text-yellow-300' }
+		if (score < 3.0) return { bg: 'bg-yellow-400/60', text: 'text-yellow-400' }
+		if (score < 3.5) return { bg: 'bg-orange-400/60', text: 'text-orange-400' }
+		if (score < 4.0) return { bg: 'bg-orange-500/60', text: 'text-orange-500' }
+		if (score < 4.5) return { bg: 'bg-red-500/60', text: 'text-red-500' }
+		return { bg: 'bg-red-600/60', text: 'text-red-600' }
 	}
 
-	const SortIndicator = ({ columnKey }: { columnKey: 'team' | 'average' }) => {
+	const SortIndicator = ({ columnKey }: { columnKey: 'team' | 'score' }) => {
 		if (sortConfig.key !== columnKey) {
 			return null
 		}
@@ -114,10 +114,10 @@ export const FixtureGrid = ({
 						<TableHead className='w-[80px] p-0 text-center'>
 							<button
 								className='flex h-full w-full items-center justify-center p-2 transition-colors hover:bg-muted'
-								onClick={() => onSort('average')}
+								onClick={() => onSort('score')}
 							>
-								Avg
-								<SortIndicator columnKey='average' />
+								Score
+								<SortIndicator columnKey='score' />
 							</button>
 						</TableHead>
 					</TableRow>
@@ -125,44 +125,44 @@ export const FixtureGrid = ({
 				<TableBody>
 					{data.map((row) => (
 						<TableRow key={row.team} className='group'>
-							<TableCell className='sticky left-0 z-10 bg-background text-left font-semibold transition-colors group-hover:bg-muted'>
-								{row.team}
+							<TableCell className='sticky left-0 z-10 bg-background p-0 text-left font-semibold transition-colors group-hover:bg-muted'>
+								<div className='flex h-full min-h-[56px] items-center px-2'>
+									{row.team}
+								</div>
 							</TableCell>
 
 							{row.fixtures.map((fixtures, colIndex) => (
 								<TableCell
 									key={`${row.team}_${colIndex}`}
-									className='space-y-[2px] divide-y p-0 text-center'
+									className='p-0 text-center'
 								>
-									{fixtures.map(({ difficulty, label }, cellIndex) => (
-										<div
-											key={cellIndex}
-											className={`whitespace-nowrap rounded-sm px-2 py-1 ${
-												getDifficultyUI(difficulty).bg
-											}`}
-										>
-											<span className='font-normal text-black dark:text-white'>
-												{label}
-											</span>
-											<span className='ml-2 text-xs text-black/70 dark:text-white/70'>
-												(
-												{difficultyType === 'fpl'
-													? difficulty
-													: difficulty.toFixed(2)}
-												)
-											</span>
-										</div>
-									))}
+									<div className='flex h-full min-h-[56px] flex-col items-stretch justify-center gap-1 p-1'>
+										{fixtures.map(({ difficulty, label }, cellIndex) => (
+											<div
+												key={cellIndex}
+												className={`flex flex-1 items-center justify-center whitespace-nowrap rounded-sm px-2 py-1 ${
+													getDifficultyUI(difficulty).bg
+												}`}
+											>
+												<span className='font-normal text-black dark:text-white'>
+													{label}
+												</span>
+												<span className='ml-1 inline-block w-[5ch] text-left text-xs text-black/70 dark:text-white/70'>
+													(
+													{difficultyType === 'fpl'
+														? difficulty
+														: difficulty.toFixed(2)}
+													)
+												</span>
+											</div>
+										))}
+									</div>
 								</TableCell>
 							))}
-							<TableCell className='text-center'>
-								<span
-									className={`rounded px-2 py-1 font-mono text-xs font-semibold ${
-										getDifficultyUI(row.average).text
-									}`}
-								>
-									{row.average.toFixed(2)}
-								</span>
+							<TableCell className='p-0 text-center font-semibold'>
+								<div className='flex h-full min-h-[56px] items-center justify-center'>
+									{row.score.toFixed(2)}
+								</div>
 							</TableCell>
 						</TableRow>
 					))}

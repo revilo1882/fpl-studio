@@ -7,17 +7,18 @@ import { mockTeams, mockFixtures } from '../lib/test-mocks'
 import { generateFixtureMatrix, type IGenerateFixtureMatrix } from './generateFixtureMatrix'
 
 describe('generateFixtureMatrix', () => {
-	it('returns an object with fixtureMatrix, teamNames, and averages', () => {
+	it('returns an object with fixtureMatrix, teamNames, and scores', () => {
 		const result: IGenerateFixtureMatrix = generateFixtureMatrix({
 			fixtures: mockFixtures,
 			teams: mockTeams,
 			firstGameweek: 1,
 			numberOfGameweeks: 2,
+			difficultyType: 'fpl',
 		})
 		expect(result).toBeDefined()
 		expect(result).toHaveProperty('fixtureMatrix')
 		expect(result).toHaveProperty('teamNames')
-		expect(result).toHaveProperty('averages')
+		expect(result).toHaveProperty('scores')
 	})
 
 	it('returns the correct number of teams in fixtureMatrix and teamNames', () => {
@@ -26,6 +27,7 @@ describe('generateFixtureMatrix', () => {
 			teams: mockTeams,
 			firstGameweek: 1,
 			numberOfGameweeks: 2,
+			difficultyType: 'fpl',
 		})
 		expect(result.fixtureMatrix.length).toBe(mockTeams.length)
 		expect(result.teamNames.length).toBe(mockTeams.length)
@@ -38,22 +40,24 @@ describe('generateFixtureMatrix', () => {
 			teams: mockTeams,
 			firstGameweek: 1,
 			numberOfGameweeks: gameweeks,
+			difficultyType: 'fpl',
 		})
 		for (const row of result.fixtureMatrix) {
 			expect(row.length).toBe(gameweeks)
 		}
 	})
 
-	it('averages array length matches number of teams', () => {
+	it('scores array length matches number of teams', () => {
 		const result = generateFixtureMatrix({
 			fixtures: mockFixtures,
 			teams: mockTeams,
 			firstGameweek: 1,
 			numberOfGameweeks: 2,
+			difficultyType: 'fpl',
 		})
-		expect(result.averages.length).toBe(mockTeams.length)
-		for (const avg of result.averages) {
-			expect(typeof avg).toBe('number')
+		expect(result.scores.length).toBe(mockTeams.length)
+		for (const score of result.scores) {
+			expect(typeof score).toBe('number')
 		}
 	})
 
@@ -63,6 +67,7 @@ describe('generateFixtureMatrix', () => {
 			teams: mockTeams,
 			firstGameweek: 1,
 			numberOfGameweeks: 2,
+			difficultyType: 'fpl',
 		})
 		expect(result.fixtureMatrix.length).toBe(mockTeams.length)
 		for (const row of result.fixtureMatrix) {
@@ -78,10 +83,11 @@ describe('generateFixtureMatrix', () => {
 			teams: [],
 			firstGameweek: 1,
 			numberOfGameweeks: 2,
+			difficultyType: 'fpl',
 		})
 		expect(result.fixtureMatrix.length).toBe(0)
 		expect(result.teamNames.length).toBe(0)
-		expect(result.averages.length).toBe(0)
+		expect(result.scores.length).toBe(0)
 	})
 
 	it('handles double gameweeks (DGW) and stores multiple fixtures as an array', () => {
@@ -106,8 +112,8 @@ describe('generateFixtureMatrix', () => {
 			teams: mockTeams,
 			firstGameweek: 1,
 			numberOfGameweeks: 2,
+			difficultyType: 'fpl',
 		})
-		// Test that at least one gameweek cell contains more than one fixture
 		const hasDgw = result.fixtureMatrix.some((row) => row.some((cell) => cell.length > 1))
 		expect(hasDgw).toBe(true)
 	})
@@ -118,8 +124,8 @@ describe('generateFixtureMatrix', () => {
 			teams: mockTeams,
 			firstGameweek: 1,
 			numberOfGameweeks: 2,
+			difficultyType: 'fpl',
 		})
-		// You will need to run `vitest --update` to update the snapshot
 		expect(result).toMatchSnapshot()
 	})
 })
