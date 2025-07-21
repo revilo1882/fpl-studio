@@ -1,113 +1,95 @@
 # FPL Studio
 
-FPL Studio is a modern, front-end-focused Fantasy Premier League (FPL) companion app. It provides an interactive, data-driven interface for FPL managers to analyze fixtures, track difficulty, and (eventually) manage their teams or leagues. It started as an experimental fixture difficulty planner and aims to expand into visualizations, team-based tools, and possibly real-time match integrations.
+FPL Studio is a modern, front-end-focused Fantasy Premier League (FPL) companion app. It provides a fast, interactive, and intelligent fixture planner designed to offer a superior alternative to existing tools.
 
-**Live site:**  
-[https://fpl-studio.vercel.app/](https://fpl-studio.vercel.app/)
+The key differentiator is a more nuanced and customizable Fixture Difficulty Rating (FDR) system, with plans to evolve into a player-centric "Expected Points" (xP) model.
 
-## Features
+**Live site:** [https://fpl-studio.vercel.app/](https://fpl-studio.vercel.app/)
 
-- Dynamic, responsive fixture difficulty grid (with color-coded backgrounds)
-- Supports double and triple gameweeks (DGW/TGW)
-- Fixture difficulty coloring with average per team
-- Filter by number of gameweeks (dynamic range)
-- Sticky left column and horizontal scroll
-- Dark/light mode toggle (SSR compatible)
-- Gameweek filter via Select component
-- Optimized for hydration and SSR rendering
-- Built with clean, accessible UI using `shadcn/ui`
+## Implemented Features
 
-## Planned Improvements / Roadmap
+- **Interactive Fixture Grid:** A fully responsive grid displaying FPL fixtures for all teams, correctly handling Single, Double, and even Triple Gameweeks (DGW/TGW) with clean, aligned rows.
+- **Custom FDR "Studio" Views:** In addition to the default FPL difficulty, users can switch between three custom views:
+    - **Studio Overall:** Based on the opponent's overall FPL strength rating.
+    - **Studio Attack:** Based on the opponent's defensive FPL strength rating.
+    - **Studio Defence:** Based on the opponent's attacking FPL strength rating.
+- **Intelligent "Attractiveness Score":** A calculated score for a team's fixture run that correctly values the high potential of Double Gameweeks, providing a smarter assessment than a simple average.
+- **Dynamic UI Controls:**
+    - Multi-select team filter to show only specific teams.
+    - Dropdown to switch between the four FDR models.
+    - Dropdown to select the number of future gameweeks to display.
+- **Polished UI/UX:** Built with `shadcn/ui`, featuring a dark/light mode toggle and a robust layout with no content shifting on filtering or selection.
 
-- Tooltip or click-based fixture detail (show date, score, difficulty)
-- Sorting teams by average fixture difficulty
-- Refined difficulty model (e.g. based on form, xG, ELO, possibly AI-enhanced)
-- Visualizations using charts (trendlines, difficulty runs, bar/line charts)
-- Add fixture filters (team, difficulty range, home/away toggle)
-- User team viewer and planner (with possible auth for tracking/minileagues)
-- Split planner vs results UI (if match data is shown)
-- Add favicon, Open Graph, PWA manifest
-- Build towards a public-facing site with better mobile-first design and modern UX/UI
+## Roadmap & Vision
+
+The primary goal is to build the most intelligent and intuitive FPL fixture planner available. The immediate roadmap is focused on enhancing data visualization and predictive modeling.
+
+1.  **Refine Scoring / Introduce Player xP Model:** Evolve the current "Attractiveness Score" into a player-specific "Expected Points" (xP) model. This will involve integrating external data sources (e.g., for xG/xA stats) to create a more accurate predictive tool.
+2.  **Fixture Tooltips:** Add hover-based tooltips on each fixture to show detailed information (date, time, exact difficulty rating).
+3.  **Graph View:** Implement a data visualization view to chart and compare fixture difficulty or xP for selected teams/players over a range of gameweeks.
+4.  **Home/Away Toggle:** Add a filter to show only home or away fixtures.
+5.  **Fixture-Run Highlighting:** Visually highlight the best and worst fixture runs directly in the grid based on the selected scoring model.
 
 ## Tech Stack
 
 - **Framework:** Next.js (App Router)
-- **Styling:** Tailwind CSS (custom color variables, dark mode)
-- **Component Library:** shadcn/ui
-- **State/Theming:** next-themes with custom `<ThemeToggle />`
-- **TypeScript:** Strict mode
-- **Linting:** ESLint + Prettier (Airbnb-inspired)
-- **FPL Data:** [FPL API](https://fantasy.premierleague.com/api/bootstrap-static/) and fixtures
-- **UI Components:** [Radix UI](https://www.radix-ui.com/)
-
-## Installation / Getting Started
-
-1. **Clone the repository**
-
-    ```bash
-    git clone https://github.com/revilo1882/fpl-studio.git
-    cd fpl-studio
-    ```
-
-2. **Install dependencies**
-
-    ```bash
-    npm install
-    ```
-
-3. **Run the development server**
-
-    ```bash
-    npm run dev
-    ```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Environment
-
-No environment variables are required.
-
-If any are added later (e.g. for proxying APIs or auth), they will be documented in an `.env.example`.
+- **Language:** TypeScript (Strict)
+- **Styling:** Tailwind CSS with CSS Variables
+- **Component Library:** shadcn/ui (built on Radix UI)
+- **Testing:** Vitest with React Testing Library
+- **Data Parsing:** PapaParse (for handling CSV data)
+- **State/Theming:** next-themes
+- **Linting:** ESLint + Prettier
 
 ## Project Structure
 
 ```txt
 /app
-  page.tsx                 ← server-side data fetch
+  page.tsx                 ← Server-side data fetching and composition.
 /components
-  FixtureGrid.tsx          ← presentational table
-  FixtureGridPage.tsx      ← client wrapper with filters
-  ThemeToggle.tsx
+  FixtureGrid.tsx          ← The main presentational table component.
+  FixtureGridPage.tsx      ← Client-side wrapper for all interactivity.
+  DifficultySelector.tsx   ← Dropdown for switching FDR views.
+  GameweekSelector.tsx     ← Dropdown for selecting GW range.
+  TeamFilter.tsx           ← Multi-select dropdown for filtering teams.
+/hooks
+  useFplTable.ts           ← Core client-side hook for state management, filtering, and sorting.
 /lib
-  fplApi.ts                ← FPL data fetching utils
-  generateFixtureMatrix.ts ← builds fixture display data
+  generateFixtureMatrix.ts ← Core data transformation logic.
+  fplApi.ts                ← Utils for fetching data from FPL API or other sources.
 /types
-  fpl.ts                   ← FPL API types
-/styles
-  globals.css              ← Tailwind base + custom theme vars
+  fpl.ts                   ← TypeScript definitions for FPL API data.
 ```
 
-## Design Decisions
+## Key Decisions
 
-- Using `theme === undefined` logic in `<ThemeToggle />` to avoid hydration mismatch
-- All data fetching is on the server via Next.js App Router
-- `<FixtureGrid />` is fully client-side for interactivity
-- `darkMode: 'class'` in tailwind.config.js
-- No .env required (FPL API is public)
+- **Data Strategy:** The app uses the live, official FPL API for real-time data. A flexible data fetching layer has been built to allow for using historical data from community sources (like the `vaastav/Fantasy-Premier-League` repo) for testing and future features.
+- **Scoring Model:** The current "Studio" FDR models normalize the FPL API's detailed strength ratings (1000-1400) to a more granular 1-5 scale. The "Attractiveness Score" uses a multiplier-based sum to properly value DGWs.
+- **UI Stability:** All identified layout shifts have been resolved to ensure a smooth, professional user experience, particularly when interacting with dropdowns and filters.
 
-## Known Issues
+## Getting Started
 
-- Currently showing last season's fixtures (pre-season updates pending)
-- Next GW logic relies on `events.find((e) => e.is_current)` which is falsy until the season starts
+1.  **Clone the repository**
 
-## Repository Status
+    ```bash
+    git clone [https://github.com/revilo1882/fpl-studio.git](https://github.com/revilo1882/fpl-studio.git)
+    cd fpl-studio
+    ```
 
-- Project is now stable and working
-- .gitignore and structure cleaned
-- Ready for first commit and GitHub repository
+2.  **Install dependencies**
+
+    ```bash
+    npm install
+    ```
+
+3.  **Run the development server**
+
+    ```bash
+    npm run dev
+    ```
+
+4.  Open http://localhost:3000 in your browser.
 
 ## License
 
 MIT
-
-This is currently a personal project. Issues and PRs are welcome but not expected at this time.
