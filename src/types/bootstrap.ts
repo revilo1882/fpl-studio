@@ -32,6 +32,8 @@ export type Team = {
 	strength_defence_home: number
 	strength_defence_away: number
 	pulse_id: number
+	code: number
+	form: string
 }
 
 export type ElementType = {

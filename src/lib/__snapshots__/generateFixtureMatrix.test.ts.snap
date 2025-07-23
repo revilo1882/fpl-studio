@@ -7,17 +7,23 @@ exports[`generateFixtureMatrix > matches the expected output snapshot 1`] = `
       [
         {
           "difficulty": 4,
+          "kickoffTime": "2024-08-17T14:00:00Z",
           "label": "MCI (H)",
+          "opponentName": "Man City",
         },
         {
           "difficulty": 4,
+          "kickoffTime": "2024-08-18T14:00:00Z",
           "label": "CHE (A)",
+          "opponentName": "Chelsea",
         },
       ],
       [
         {
           "difficulty": 5,
+          "kickoffTime": "2024-08-24T14:00:00Z",
           "label": "MCI (A)",
+          "opponentName": "Man City",
         },
       ],
     ],
@@ -25,13 +31,17 @@ exports[`generateFixtureMatrix > matches the expected output snapshot 1`] = `
       [
         {
           "difficulty": 2,
+          "kickoffTime": "2024-08-17T14:00:00Z",
           "label": "ARS (A)",
+          "opponentName": "Arsenal",
         },
       ],
       [
         {
           "difficulty": 3,
+          "kickoffTime": "2024-08-24T14:00:00Z",
           "label": "ARS (H)",
+          "opponentName": "Arsenal",
         },
       ],
     ],
@@ -39,13 +49,17 @@ exports[`generateFixtureMatrix > matches the expected output snapshot 1`] = `
       [
         {
           "difficulty": 3,
+          "kickoffTime": "2024-08-18T14:00:00Z",
           "label": "ARS (H)",
+          "opponentName": "Arsenal",
         },
       ],
       [
         {
           "difficulty": 0,
+          "kickoffTime": null,
           "label": "-",
+          "opponentName": "Blank",
         },
       ],
     ],

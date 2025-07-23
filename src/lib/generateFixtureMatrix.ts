@@ -3,8 +3,12 @@ import type { Fixtures, Team } from '@/types/fpl'
 export type SingleFixture = {
 	label: string
 	difficulty: number
+	opponentName: string
+	kickoffTime: string | null
 }
+
 export type FixtureCell = SingleFixture[]
+
 export type IGenerateFixtureMatrix = {
 	teamNames: string[]
 	fixtureMatrix: FixtureCell[][]
@@ -26,12 +30,9 @@ function normalize(value: number, min: number, max: number): number {
 	return parseFloat(scaled.toFixed(2))
 }
 
-// Calculates a score multiplier based on fixture difficulty.
-// An easy fixture (1) gets a high multiplier, a hard fixture (5) gets a low one.
 function getAttractivenessMultiplier(difficulty: number): number {
 	if (difficulty <= 1) return 1.5
 	if (difficulty >= 5) return 0.5
-	// Linear scaling between 1 and 5
 	return 1.5 - (difficulty - 1) * 0.25
 }
 
@@ -87,7 +88,7 @@ export const generateFixtureMatrix = ({
 				)
 
 			if (teamFixtures.length === 0) {
-				row.push([{ label: '-', difficulty: 0 }])
+				row.push([{ label: '-', difficulty: 0, opponentName: 'Blank', kickoffTime: null }])
 				continue
 			}
 
@@ -139,7 +140,12 @@ export const generateFixtureMatrix = ({
 					totalAttractivenessScore += getAttractivenessMultiplier(difficulty)
 				}
 
-				return { label, difficulty }
+				return {
+					label,
+					difficulty,
+					opponentName: opponent?.name ?? 'Unknown',
+					kickoffTime: fixture.kickoff_time,
+				}
 			})
 
 			row.push(fixturesForWeek)

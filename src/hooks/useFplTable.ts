@@ -3,14 +3,13 @@ import { useState, useMemo } from 'react'
 import { generateFixtureMatrix, type DifficultyType } from '@/lib/generateFixtureMatrix'
 import type { BootstrapData, Fixtures } from '@/types/fpl'
 
-type SortConfig = {
+export type SortConfig = {
 	key: 'team' | 'score'
 	direction: 'ascending' | 'descending'
 }
 
 export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) => {
 	const { teams, events } = bootstrapData
-
 	const [difficultyType, setDifficultyType] = useState<DifficultyType>('fpl')
 	const [selectedTeams, setSelectedTeams] = useState<string[]>([])
 

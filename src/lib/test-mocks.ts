@@ -13,6 +13,8 @@ export const mockTeams: BootstrapData['teams'] = [
 		strength_defence_home: 1300,
 		strength_defence_away: 1350,
 		pulse_id: 1,
+		code: 3,
+		form: '3.2',
 	},
 	{
 		id: 2,
@@ -26,6 +28,8 @@ export const mockTeams: BootstrapData['teams'] = [
 		strength_defence_home: 1350,
 		strength_defence_away: 1400,
 		pulse_id: 11,
+		code: 11,
+		form: '4.1',
 	},
 	{
 		id: 3,
@@ -39,6 +43,8 @@ export const mockTeams: BootstrapData['teams'] = [
 		strength_defence_home: 1250,
 		strength_defence_away: 1300,
 		pulse_id: 4,
+		code: 8,
+		form: '2.8',
 	},
 ]
 

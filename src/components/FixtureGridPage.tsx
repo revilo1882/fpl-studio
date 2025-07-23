@@ -3,7 +3,7 @@
 import { FixtureGrid } from '@/components/FixtureGrid'
 import { GameweekSelector } from '@/components/GameweekSelector'
 import { DifficultySelector } from '@/components/DifficultySelector'
-import { TeamFilter } from '@/components/TeamFilter' // Import the new component
+import { TeamFilter } from '@/components/TeamFilter'
 import { useFplTable } from '@/hooks/useFplTable'
 import type { BootstrapData, Fixtures } from '@/types/fpl'
 
@@ -30,36 +30,49 @@ export const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProp
 	} = useFplTable(bootstrapData, fixtures)
 
 	return (
-		<main className='container mx-auto p-4'>
-			<div className='mb-4 mt-8 flex flex-wrap items-end justify-between gap-4'>
-				<h1 className='text-2xl font-bold'>Fixture Difficulty</h1>
-				<div className='flex flex-wrap items-end gap-4'>
-					<TeamFilter
-						teams={teams}
-						selectedTeams={selectedTeams}
-						onSelectionChange={setSelectedTeams}
-					/>
-					<DifficultySelector
-						difficultyType={difficultyType}
-						setDifficultyType={setDifficultyType}
-					/>
-					<GameweekSelector
-						numberOfGameweeks={numberOfGameweeks}
-						setNumberOfGameweeks={setNumberOfGameweeks}
-						gameweekOptions={gameweekOptions}
-					/>
+		<main className='container mx-auto px-4 py-6'>
+			<div className='mb-8'>
+				<div className='mb-6'>
+					<h1 className='mb-2 text-3xl font-bold tracking-tight text-foreground'>
+						Fixture Difficulty
+					</h1>
+					<p className='text-lg text-muted-foreground'>
+						Analyze upcoming fixtures with Studio FDR ratings
+					</p>
+				</div>
+
+				<div className='flex flex-wrap items-end gap-6'>
+					<div className='flex flex-wrap items-end gap-4'>
+						<TeamFilter
+							teams={teams}
+							selectedTeams={selectedTeams}
+							onSelectionChange={setSelectedTeams}
+						/>
+						<DifficultySelector
+							difficultyType={difficultyType}
+							setDifficultyType={setDifficultyType}
+						/>
+						<GameweekSelector
+							numberOfGameweeks={numberOfGameweeks}
+							setNumberOfGameweeks={setNumberOfGameweeks}
+							gameweekOptions={gameweekOptions}
+						/>
+					</div>
 				</div>
 			</div>
 
-			<FixtureGrid
-				data={sortedData}
-				events={events}
-				firstGameweek={firstGameweek}
-				numberOfGameweeks={numberOfGameweeks}
-				onSort={handleSort}
-				sortConfig={sortConfig}
-				difficultyType={difficultyType}
-			/>
+			<div className='rounded-lg border bg-card shadow-sm'>
+				<FixtureGrid
+					data={sortedData}
+					events={events}
+					teams={teams}
+					firstGameweek={firstGameweek}
+					numberOfGameweeks={numberOfGameweeks}
+					onSort={handleSort}
+					sortConfig={sortConfig}
+					difficultyType={difficultyType}
+				/>
+			</div>
 		</main>
 	)
 }

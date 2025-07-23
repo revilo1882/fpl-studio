@@ -72,7 +72,15 @@ describe('generateFixtureMatrix', () => {
 		expect(result.fixtureMatrix.length).toBe(mockTeams.length)
 		for (const row of result.fixtureMatrix) {
 			for (const cell of row) {
-				expect(cell).toEqual([{ label: '-', difficulty: 0 }])
+				// Each cell should be an array with a single "no fixture" entry
+				expect(Array.isArray(cell)).toBe(true)
+				expect(cell.length).toBe(1)
+				expect(cell[0]).toEqual({
+					label: '-',
+					difficulty: 0,
+					opponentName: 'Blank',
+					kickoffTime: null,
+				})
 			}
 		}
 	})
