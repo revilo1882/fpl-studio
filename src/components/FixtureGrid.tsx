@@ -8,7 +8,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
-import type { Gameweek, Team } from '@/types/fpl'
+import type { Fixtures, Gameweek, Team } from '@/types/fpl'
 import type { DifficultyType, SingleFixture } from '@/lib/generateFixtureMatrix'
 
 import { FixtureChip } from './FixtureChip'
@@ -34,6 +34,7 @@ type FixtureGridProps = {
 		direction: 'ascending' | 'descending'
 	}
 	difficultyType: DifficultyType
+	allFixtures: Fixtures
 }
 
 export const FixtureGrid = ({
@@ -45,6 +46,7 @@ export const FixtureGrid = ({
 	onSort,
 	sortConfig,
 	difficultyType,
+	allFixtures,
 }: FixtureGridProps) => {
 	return (
 		<div className='overflow-x-auto'>
@@ -113,6 +115,7 @@ export const FixtureGrid = ({
 												fixture={fixture}
 												teams={teams}
 												difficultyType={difficultyType}
+												fixtures={allFixtures}
 											/>
 										))}
 									</div>

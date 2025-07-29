@@ -18,6 +18,8 @@ export type Player = {
 	selected_by_percent: string
 	total_points: number
 	form: string
+	points_per_game: string
+	minutes: number
 }
 
 export type Team = {
@@ -38,9 +40,12 @@ export type Team = {
 
 export type ElementType = {
 	id: number
-	singular_name: string
 	squad_select: number
 	squad_min_play: number
+	plural_name: string
+	plural_name_short: string
+	singular_name: string
+	singular_name_short: string
 }
 
 export type Gameweek = {

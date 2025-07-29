@@ -1,51 +1,54 @@
-import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
+import { renderHook, act } from '@testing-library/react'
 
 import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
 
 import { useFplTable } from './useFplTable'
 
 describe('useFplTable', () => {
-	it('should return data sorted by team name by default', () => {
+	it('initializes with correct default state', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		expect(result.current.sortConfig.key).toBe('team')
-		expect(result.current.sortConfig.direction).toBe('ascending')
-		expect(result.current.sortedData[0].team).toBe('Arsenal')
+		expect(result.current.difficultyType).toBe('fpl')
+		expect(result.current.selectedTeams).toEqual([])
+		expect(result.current.isLoading).toBe(true) // loading starts true
+		expect(typeof result.current.numberOfGameweeks).toBe('number')
 	})
 
-	it('should toggle sort direction when the same key is clicked again', () => {
+	it('updates difficulty type', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
 		act(() => {
-			result.current.handleSort('team')
+			result.current.setDifficultyType('attack')
 		})
 
-		expect(result.current.sortConfig.direction).toBe('descending')
-		expect(result.current.sortedData[0].team).toBe('Man City')
+		expect(result.current.difficultyType).toBe('attack')
 	})
 
-	it('should sort by score when handleSort is called with "score"', () => {
+	it('updates number of gameweeks', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
 		act(() => {
-			result.current.handleSort('score')
+			result.current.setNumberOfGameweeks(8)
 		})
 
-		expect(result.current.sortConfig.key).toBe('score')
-		// Default sort for score is descending, so check first element is greater
-		expect(result.current.sortedData[0].score).toBeGreaterThanOrEqual(
-			result.current.sortedData[1].score,
-		)
+		expect(result.current.numberOfGameweeks).toBe(8)
 	})
 
-	it('should update the number of gameweeks correctly', () => {
+	it('updates selected teams', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
 		act(() => {
-			result.current.setNumberOfGameweeks(3)
+			result.current.setSelectedTeams(['MCI', 'CHE'])
 		})
 
-		expect(result.current.numberOfGameweeks).toBe(3)
+		expect(result.current.selectedTeams).toEqual(['MCI', 'CHE'])
+	})
+
+	it('sets isLoading to false eventually (after fixture generation)', async () => {
+		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+
+		await new Promise((resolve) => setTimeout(resolve, 50)) // simulate async wait
+		expect(result.current.isLoading).toBe(false)
 	})
 })

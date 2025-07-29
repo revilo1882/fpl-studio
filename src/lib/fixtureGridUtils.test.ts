@@ -1,11 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import {
-	getDifficultyUI,
-	getDifficultyName,
-	getOpponentTeam,
-	getFormIndicator,
-} from './fixtureGridUtils'
+import { getDifficultyUI, getDifficultyName, getOpponentTeam } from './fixtureGridUtils'
 import { mockTeams } from './test-mocks'
 
 describe('fixtureGridUtils', () => {
@@ -37,68 +32,31 @@ describe('fixtureGridUtils', () => {
 				bg: 'bg-slate-400/60',
 				text: 'text-slate-500',
 			})
+			expect(getDifficultyUI(99, 'fpl')).toEqual({
+				bg: 'bg-slate-400/60',
+				text: 'text-slate-500',
+			})
 		})
 	})
 
 	describe('getDifficultyName', () => {
-		it('returns correct names for each difficulty type', () => {
+		it('returns human-readable names for valid difficulty types', () => {
 			expect(getDifficultyName('fpl')).toBe('FPL Difficulty')
+			expect(getDifficultyName('overall')).toBe('Studio Overall')
 			expect(getDifficultyName('attack')).toBe('Studio Attack')
 			expect(getDifficultyName('defence')).toBe('Studio Defence')
-			expect(getDifficultyName('overall')).toBe('Studio Overall')
 		})
 	})
 
 	describe('getOpponentTeam', () => {
-		it('finds team by name', () => {
-			const team = getOpponentTeam('Arsenal', mockTeams)
-			expect(team).toBeDefined()
-			expect(team?.name).toBe('Arsenal')
+		it('returns correct team object based on full name', () => {
+			const team = getOpponentTeam('Man City', mockTeams)
+			expect(team?.name).toBe('Man City')
 		})
 
-		it('returns undefined for non-existent team', () => {
-			const team = getOpponentTeam('Non-existent Team', mockTeams)
-			expect(team).toBeUndefined()
-		})
-	})
-
-	describe('getFormIndicator', () => {
-		it('returns correct indicators for different form values', () => {
-			expect(getFormIndicator('4.2')).toEqual({
-				color: 'text-green-600',
-				label: 'Excellent',
-			})
-			expect(getFormIndicator('3.5')).toEqual({
-				color: 'text-green-500',
-				label: 'Good',
-			})
-			expect(getFormIndicator('2.5')).toEqual({
-				color: 'text-yellow-500',
-				label: 'Average',
-			})
-			expect(getFormIndicator('1.5')).toEqual({
-				color: 'text-orange-500',
-				label: 'Poor',
-			})
-			expect(getFormIndicator('0.5')).toEqual({
-				color: 'text-red-500',
-				label: 'Very Poor',
-			})
-		})
-
-		it('handles invalid form data', () => {
-			expect(getFormIndicator('N/A')).toEqual({
-				color: 'text-muted-foreground',
-				label: 'No data',
-			})
-			expect(getFormIndicator('0')).toEqual({
-				color: 'text-muted-foreground',
-				label: 'No data',
-			})
-			expect(getFormIndicator('invalid')).toEqual({
-				color: 'text-muted-foreground',
-				label: 'No data',
-			})
+		it('returns "Unknown" for invalid name', () => {
+			const team = getOpponentTeam('ZZZ', mockTeams)
+			expect(team?.name ?? 'Unknown').toBe('Unknown')
 		})
 	})
 })

@@ -71,6 +71,7 @@ export const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProp
 					onSort={handleSort}
 					sortConfig={sortConfig}
 					difficultyType={difficultyType}
+					allFixtures={fixtures}
 				/>
 			</div>
 		</main>

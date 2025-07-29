@@ -1,4 +1,4 @@
-import { type Team } from '@/types/fpl'
+import { type Fixtures, type Team } from '@/types/fpl'
 
 import { type DifficultyType } from './generateFixtureMatrix'
 
@@ -52,19 +52,39 @@ export function getOpponentTeam(opponentName: string, teams: Team[]) {
 	return teams.find((team) => team.name === opponentName)
 }
 
-export function getFormIndicator(form: string) {
-	if (!form || form === 'N/A' || form === '0' || form === '0.0') {
-		return { color: 'text-muted-foreground', label: 'No data' }
+export function getFormSummary(teamId: number, fixtures: Fixtures): string {
+	const recentFixtures = fixtures
+		.filter(
+			(fixture) =>
+				(fixture.team_h === teamId || fixture.team_a === teamId) &&
+				fixture.finished === true &&
+				fixture.team_h_score !== null &&
+				fixture.team_a_score !== null,
+		)
+		.sort((a, b) => (b.event || 0) - (a.event || 0))
+		.slice(0, 5)
+
+	if (recentFixtures.length === 0) return 'No recent games'
+
+	const results: string[] = []
+	let totalGoalsFor = 0
+	let totalGoalsAgainst = 0
+
+	for (const fixture of recentFixtures) {
+		const isHome = fixture.team_h === teamId
+
+		const goalsFor = isHome ? fixture.team_h_score! : fixture.team_a_score!
+		const goalsAgainst = isHome ? fixture.team_a_score! : fixture.team_h_score!
+
+		totalGoalsFor += goalsFor
+		totalGoalsAgainst += goalsAgainst
+
+		let result = 'L'
+		if (goalsFor > goalsAgainst) result = 'W'
+		else if (goalsFor === goalsAgainst) result = 'D'
+
+		results.push(result)
 	}
 
-	const formValue = Number.parseFloat(form)
-	if (isNaN(formValue)) {
-		return { color: 'text-muted-foreground', label: 'No data' }
-	}
-
-	if (formValue >= 4.0) return { color: 'text-green-600', label: 'Excellent' }
-	if (formValue >= 3.0) return { color: 'text-green-500', label: 'Good' }
-	if (formValue >= 2.0) return { color: 'text-yellow-500', label: 'Average' }
-	if (formValue >= 1.0) return { color: 'text-orange-500', label: 'Poor' }
-	return { color: 'text-red-500', label: 'Very Poor' }
+	return `${results.reverse().join('')} (${totalGoalsFor} GF, ${totalGoalsAgainst} GA)`
 }

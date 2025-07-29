@@ -1,6 +1,12 @@
-import { useState, useMemo } from 'react'
+'use client'
 
-import { generateFixtureMatrix, type DifficultyType } from '@/lib/generateFixtureMatrix'
+import { useState, useMemo, useEffect } from 'react'
+
+import {
+	type FixtureCell,
+	generateFixtureMatrix,
+	type DifficultyType,
+} from '@/lib/generateFixtureMatrix'
 import type { BootstrapData, Fixtures } from '@/types/fpl'
 
 export type SortConfig = {
@@ -12,6 +18,12 @@ export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) =>
 	const { teams, events } = bootstrapData
 	const [difficultyType, setDifficultyType] = useState<DifficultyType>('fpl')
 	const [selectedTeams, setSelectedTeams] = useState<string[]>([])
+	const [isLoading, setIsLoading] = useState(false)
+	const [fixtureData, setFixtureData] = useState<{
+		teamNames: string[]
+		fixtureMatrix: FixtureCell[][]
+		scores: number[]
+	} | null>(null)
 
 	const currentGameweek = events.find((event) => event.is_current)?.id
 	const nextGameweek = events.find((event) => event.is_next)?.id
@@ -28,27 +40,51 @@ export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) =>
 		6 > remainingGameweeks ? remainingGameweeks : 6,
 	)
 
-	const { teamNames, fixtureMatrix, scores } = useMemo(
-		() =>
-			generateFixtureMatrix({
-				teams,
-				fixtures,
-				firstGameweek,
-				numberOfGameweeks,
-				difficultyType,
-			}),
-		[teams, fixtures, firstGameweek, numberOfGameweeks, difficultyType],
-	)
+	// Generate fixture matrix when dependencies change
+	useEffect(() => {
+		const generateData = async () => {
+			setIsLoading(true)
+			try {
+				const result = await generateFixtureMatrix({
+					teams,
+					fixtures,
+					bootstrapData,
+					firstGameweek,
+					numberOfGameweeks,
+					difficultyType,
+				})
+				setFixtureData(result)
+			} catch (error) {
+				console.error('Error generating fixture matrix:', error)
+				// Fallback to FPL ratings if dynamic fails
+				if (difficultyType !== 'fpl') {
+					const fallbackResult = await generateFixtureMatrix({
+						teams,
+						fixtures,
+						bootstrapData,
+						firstGameweek,
+						numberOfGameweeks,
+						difficultyType: 'fpl',
+					})
+					setFixtureData(fallbackResult)
+				}
+			} finally {
+				setIsLoading(false)
+			}
+		}
 
-	const combinedData = useMemo(
-		() =>
-			teamNames.map((team, index) => ({
-				team,
-				fixtures: fixtureMatrix[index],
-				score: scores[index],
-			})),
-		[teamNames, fixtureMatrix, scores],
-	)
+		generateData()
+	}, [teams, fixtures, bootstrapData, firstGameweek, numberOfGameweeks, difficultyType])
+
+	const combinedData = useMemo(() => {
+		if (!fixtureData) return []
+
+		return fixtureData.teamNames.map((team, index) => ({
+			team,
+			fixtures: fixtureData.fixtureMatrix[index],
+			score: fixtureData.scores[index],
+		}))
+	}, [fixtureData])
 
 	const [sortConfig, setSortConfig] = useState<SortConfig>({
 		key: 'team',
@@ -104,5 +140,6 @@ export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) =>
 		setDifficultyType,
 		selectedTeams,
 		setSelectedTeams,
+		isLoading,
 	}
 }

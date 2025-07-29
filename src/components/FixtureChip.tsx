@@ -1,15 +1,17 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import Image from 'next/image'
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import type { Team } from '@/types/fpl'
+import type { Fixtures, Team } from '@/types/fpl'
 import type { DifficultyType, SingleFixture } from '@/lib/generateFixtureMatrix'
 import {
 	getDifficultyUI,
 	getDifficultyName,
 	getOpponentTeam,
-	getFormIndicator,
+	getFormSummary,
 } from '@/lib/fixtureGridUtils'
 import { getTeamBadgeUrl } from '@/lib/utils'
 
@@ -17,11 +19,22 @@ type FixtureChipProps = {
 	fixture: SingleFixture
 	teams: Team[]
 	difficultyType: DifficultyType
+	fixtures: Fixtures
 }
 
-export const FixtureChip = ({ fixture, teams, difficultyType }: FixtureChipProps) => {
+export const FixtureChip = ({ fixture, teams, difficultyType, fixtures }: FixtureChipProps) => {
 	const opponentTeam = getOpponentTeam(fixture.opponentName, teams)
-	const formData = opponentTeam ? getFormIndicator(opponentTeam.form || '0') : null
+
+	const [formSummary, setFormSummary] = useState<string>('Loading...')
+
+	useEffect(() => {
+		if (opponentTeam) {
+			const summary = getFormSummary(opponentTeam.id, fixtures)
+			setFormSummary(summary)
+		} else {
+			setFormSummary('N/A')
+		}
+	}, [opponentTeam, fixtures, teams])
 
 	return (
 		<Popover>
@@ -93,16 +106,7 @@ export const FixtureChip = ({ fixture, teams, difficultyType }: FixtureChipProps
 							<div className='flex items-center justify-between'>
 								<span className='font-medium text-muted-foreground'>Form:</span>
 								<div className='text-right'>
-									<span className={`font-bold tabular-nums ${formData?.color}`}>
-										{!opponentTeam.form ||
-										opponentTeam.form === '0' ||
-										opponentTeam.form === '0.0'
-											? 'N/A'
-											: opponentTeam.form}
-									</span>
-									<span className={`ml-1 text-xs ${formData?.color}`}>
-										({formData?.label})
-									</span>
+									<span>{formSummary}</span>
 								</div>
 							</div>
 						)}

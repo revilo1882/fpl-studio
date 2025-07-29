@@ -1,4 +1,7 @@
-import type { Fixtures, Team } from '@/types/fpl'
+import type { Fixtures, Team, BootstrapData } from '@/types/fpl'
+
+import { calculateAttractivenessScore } from './attractivenessScore'
+import { calculateDynamicFDR } from './fdr'
 
 export type SingleFixture = {
 	label: string
@@ -19,56 +22,106 @@ export type DifficultyType = 'fpl' | 'overall' | 'attack' | 'defence'
 type GenerateFixtureMatrixProps = {
 	teams: Team[]
 	fixtures: Fixtures
+	bootstrapData: BootstrapData
 	firstGameweek: number
 	numberOfGameweeks: number
 	difficultyType: DifficultyType
 }
 
-function normalize(value: number, min: number, max: number): number {
-	if (max === min) return 3
-	const scaled = 1 + (4 * (value - min)) / (max - min)
-	return parseFloat(scaled.toFixed(2))
-}
-
-function getAttractivenessMultiplier(difficulty: number): number {
-	if (difficulty <= 1) return 1.5
-	if (difficulty >= 5) return 0.5
-	return 1.5 - (difficulty - 1) * 0.25
-}
-
-export const generateFixtureMatrix = ({
+export const generateFixtureMatrix = async ({
 	teams,
 	fixtures,
 	firstGameweek,
 	numberOfGameweeks,
 	difficultyType,
-}: GenerateFixtureMatrixProps): IGenerateFixtureMatrix => {
+}: GenerateFixtureMatrixProps): Promise<IGenerateFixtureMatrix> => {
 	const teamMap = new Map(teams.map((team) => [team.id, team]))
 	const teamNames = teams.map((team) => team.name)
-	const scores: number[] = []
 
-	const minOverall = Math.min(
-		...teams.flatMap((t) => [t.strength_overall_home, t.strength_overall_away]),
-	)
-	const maxOverall = Math.max(
-		...teams.flatMap((t) => [t.strength_overall_home, t.strength_overall_away]),
-	)
-	const minAttack = Math.min(
-		...teams.flatMap((t) => [t.strength_attack_home, t.strength_attack_away]),
-	)
-	const maxAttack = Math.max(
-		...teams.flatMap((t) => [t.strength_attack_home, t.strength_attack_away]),
-	)
-	const minDefence = Math.min(
-		...teams.flatMap((t) => [t.strength_defence_home, t.strength_defence_away]),
-	)
-	const maxDefence = Math.max(
-		...teams.flatMap((t) => [t.strength_defence_home, t.strength_defence_away]),
-	)
+	// For Studio views, pre-calculate FDR ratings
+	const studioFDRCache: Map<string, number> = new Map()
+
+	if (difficultyType !== 'fpl') {
+		const fixturesForCalculation: Array<{
+			homeTeam: Team
+			awayTeam: Team
+			gameweek: number
+			fixtureId: number
+		}> = []
+
+		// Collect all fixtures that need calculation
+		for (
+			let gameweek = firstGameweek;
+			gameweek < firstGameweek + numberOfGameweeks;
+			gameweek++
+		) {
+			const gameweekFixtures = fixtures.filter((fixture) => fixture.event === gameweek)
+
+			for (const fixture of gameweekFixtures) {
+				const homeTeam = teamMap.get(fixture.team_h)
+				const awayTeam = teamMap.get(fixture.team_a)
+
+				if (homeTeam && awayTeam) {
+					fixturesForCalculation.push({
+						homeTeam,
+						awayTeam,
+						gameweek,
+						fixtureId: fixture.id,
+					})
+				}
+			}
+		}
+
+		// Calculate simplified FDR for all fixtures
+		try {
+			const fdrResults = await Promise.all(
+				fixturesForCalculation.map(async ({ homeTeam, awayTeam, gameweek, fixtureId }) => {
+					const [homeFDR, awayFDR] = await Promise.all([
+						calculateDynamicFDR(homeTeam, awayTeam, fixtures, teams, true),
+						calculateDynamicFDR(homeTeam, awayTeam, fixtures, teams, false),
+					])
+
+					// Extract the difficulty score based on type
+					let homeDifficulty: number
+					let awayDifficulty: number
+
+					switch (difficultyType) {
+						case 'attack':
+							homeDifficulty = homeFDR.attacking
+							awayDifficulty = awayFDR.attacking
+							break
+						case 'defence':
+							homeDifficulty = homeFDR.defensive
+							awayDifficulty = awayFDR.defensive
+							break
+						case 'overall':
+						default:
+							homeDifficulty = homeFDR.overall
+							awayDifficulty = awayFDR.overall
+							break
+					}
+
+					return {
+						homeKey: `${homeTeam.id}-${fixtureId}-${gameweek}`,
+						awayKey: `${awayTeam.id}-${fixtureId}-${gameweek}`,
+						homeDifficulty,
+						awayDifficulty,
+					}
+				}),
+			)
+
+			// Cache the results
+			for (const { homeKey, awayKey, homeDifficulty, awayDifficulty } of fdrResults) {
+				studioFDRCache.set(homeKey, homeDifficulty)
+				studioFDRCache.set(awayKey, awayDifficulty)
+			}
+		} catch (error) {
+			console.error('Error calculating simplified FDR, falling back to FPL ratings:', error)
+		}
+	}
 
 	const fixtureMatrix: FixtureCell[][] = teams.map((team) => {
 		const row: FixtureCell[] = []
-		let totalAttractivenessScore = 0
 
 		for (
 			let gameweek = firstGameweek;
@@ -104,45 +157,30 @@ export const generateFixtureMatrix = ({
 				if (!opponent) {
 					difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
 				} else {
-					switch (difficultyType) {
-						case 'fpl': {
+					if (difficultyType === 'fpl') {
+						difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
+					} else {
+						// Try to get our calculated FDR
+						const teamSpecificKey = `${team.id}-${fixture.id}-${gameweek}`
+						const calculatedDifficulty = studioFDRCache.get(teamSpecificKey)
+
+						if (calculatedDifficulty !== undefined) {
+							difficulty = calculatedDifficulty
+						} else {
+							// Fallback to FPL rating
 							difficulty = isHome
 								? fixture.team_h_difficulty
 								: fixture.team_a_difficulty
-							break
-						}
-						case 'attack': {
-							const opponentStrength = isHome
-								? opponent.strength_defence_home
-								: opponent.strength_defence_away
-							difficulty = normalize(opponentStrength, minDefence, maxDefence)
-							break
-						}
-						case 'defence': {
-							const opponentStrength = isHome
-								? opponent.strength_attack_home
-								: opponent.strength_attack_away
-							difficulty = normalize(opponentStrength, minAttack, maxAttack)
-							break
-						}
-						case 'overall':
-						default: {
-							const opponentStrength = isHome
-								? opponent.strength_overall_home
-								: opponent.strength_overall_away
-							difficulty = normalize(opponentStrength, minOverall, maxOverall)
-							break
+							console.warn(
+								`No calculated difficulty for ${teamSpecificKey}, using FPL rating`,
+							)
 						}
 					}
 				}
 
-				if (difficulty > 0) {
-					totalAttractivenessScore += getAttractivenessMultiplier(difficulty)
-				}
-
 				return {
 					label,
-					difficulty,
+					difficulty: Number(difficulty.toFixed(2)),
 					opponentName: opponent?.name ?? 'Unknown',
 					kickoffTime: fixture.kickoff_time,
 				}
@@ -151,9 +189,14 @@ export const generateFixtureMatrix = ({
 			row.push(fixturesForWeek)
 		}
 
-		scores.push(parseFloat(totalAttractivenessScore.toFixed(2)))
-
 		return row
+	})
+
+	// Calculate improved attractiveness scores
+	const scores: number[] = teams.map((_, teamIndex) => {
+		const teamFixtures = fixtureMatrix[teamIndex]
+		const attractivenessResult = calculateAttractivenessScore(teamFixtures)
+		return attractivenessResult.totalScore
 	})
 
 	return { teamNames, fixtureMatrix, scores }
