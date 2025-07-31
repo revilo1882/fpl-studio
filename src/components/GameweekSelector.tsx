@@ -1,39 +1,39 @@
 'use client'
 
+import { Label } from '@/components/ui/label'
 import {
 	Select,
-	SelectTrigger,
-	SelectValue,
 	SelectContent,
 	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
 
-type GameweekSelectorProps = {
+interface GameweekSelectorProps {
 	numberOfGameweeks: number
-	setNumberOfGameweeks: (value: number) => void
+	setNumberOfGameweeks: (num: number) => void
 	gameweekOptions: number[]
 }
 
-export const GameweekSelector = ({
+export function GameweekSelector({
 	numberOfGameweeks,
 	setNumberOfGameweeks,
 	gameweekOptions,
-}: GameweekSelectorProps) => {
+}: GameweekSelectorProps) {
 	return (
-		<div className='grid gap-2'>
+		<div className='flex flex-col gap-2'>
 			<Label htmlFor='gameweek-select'>Gameweeks</Label>
 			<Select
-				defaultValue={String(numberOfGameweeks)}
-				onValueChange={(v) => setNumberOfGameweeks(Number(v))}
+				value={String(numberOfGameweeks)}
+				onValueChange={(value) => setNumberOfGameweeks(Number(value))}
 			>
-				<SelectTrigger id='gameweek-select' className=''>
-					<SelectValue placeholder='Select...' />
+				<SelectTrigger id='gameweek-select' className='w-[100px]'>
+					<SelectValue placeholder='Select GWs' />
 				</SelectTrigger>
-				<SelectContent className='min-w-fit'>
-					{gameweekOptions.map((gw) => (
-						<SelectItem key={gw} value={String(gw)}>
-							{gw}
+				<SelectContent>
+					{gameweekOptions.map((option) => (
+						<SelectItem key={option} value={String(option)}>
+							{option}
 						</SelectItem>
 					))}
 				</SelectContent>

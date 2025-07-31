@@ -9,7 +9,7 @@ describe('useFplTable', () => {
 	it('initializes with correct default state', () => {
 		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
 
-		expect(result.current.difficultyType).toBe('fpl')
+		expect(result.current.difficultyType).toBe('overall')
 		expect(result.current.selectedTeams).toEqual([])
 		expect(result.current.isLoading).toBe(true) // loading starts true
 		expect(typeof result.current.numberOfGameweeks).toBe('number')

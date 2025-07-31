@@ -16,7 +16,7 @@ export type SortConfig = {
 
 export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) => {
 	const { teams, events } = bootstrapData
-	const [difficultyType, setDifficultyType] = useState<DifficultyType>('fpl')
+	const [difficultyType, setDifficultyType] = useState<DifficultyType>('overall')
 	const [selectedTeams, setSelectedTeams] = useState<string[]>([])
 	const [isLoading, setIsLoading] = useState(false)
 	const [fixtureData, setFixtureData] = useState<{

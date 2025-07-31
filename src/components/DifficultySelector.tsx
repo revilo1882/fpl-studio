@@ -1,39 +1,36 @@
 'use client'
 
+import { Label } from '@/components/ui/label'
 import {
 	Select,
-	SelectTrigger,
-	SelectValue,
 	SelectContent,
 	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
 import type { DifficultyType } from '@/lib/generateFixtureMatrix'
 
-type DifficultySelectorProps = {
+interface DifficultySelectorProps {
 	difficultyType: DifficultyType
-	setDifficultyType: (value: DifficultyType) => void
+	setDifficultyType: (type: DifficultyType) => void
 }
 
-export const DifficultySelector = ({
-	difficultyType,
-	setDifficultyType,
-}: DifficultySelectorProps) => {
+export function DifficultySelector({ difficultyType, setDifficultyType }: DifficultySelectorProps) {
 	return (
-		<div className='grid gap-2'>
+		<div className='flex flex-col gap-2'>
 			<Label htmlFor='difficulty-select'>Difficulty View</Label>
 			<Select
 				value={difficultyType}
-				onValueChange={(v) => setDifficultyType(v as DifficultyType)}
+				onValueChange={(value: DifficultyType) => setDifficultyType(value)}
 			>
-				<SelectTrigger id='difficulty-select' className='w-[160px]'>
-					<SelectValue placeholder='Select...' />
+				<SelectTrigger id='difficulty-select' className='w-[180px]'>
+					<SelectValue placeholder='Select difficulty' />
 				</SelectTrigger>
 				<SelectContent>
-					<SelectItem value='fpl'>FPL Default</SelectItem>
 					<SelectItem value='overall'>Studio Overall</SelectItem>
 					<SelectItem value='attack'>Studio Attack</SelectItem>
 					<SelectItem value='defence'>Studio Defence</SelectItem>
+					<SelectItem value='fpl'>FPL Default</SelectItem>
 				</SelectContent>
 			</Select>
 		</div>

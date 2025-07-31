@@ -1,30 +1,28 @@
-'use client'
-
 import { ArrowUp, ArrowDown } from 'lucide-react'
 
-type SortIndicatorProps = {
+import { cn } from '@/lib/utils'
+import { type SortConfig } from '@/hooks/useFplTable'
+
+interface SortIndicatorProps {
 	columnKey: 'team' | 'score'
-	sortConfig: {
-		key: 'team' | 'score'
-		direction: 'ascending' | 'descending'
-	}
+	sortConfig: SortConfig
 }
 
-export const SortIndicator = ({ columnKey, sortConfig }: SortIndicatorProps) => {
-	if (sortConfig.key !== columnKey) {
-		return (
-			<div className='ml-2 opacity-0 transition-opacity duration-200 group-hover:opacity-30'>
-				<ArrowUp className='h-4 w-4' />
-			</div>
-		)
-	}
+export function SortIndicator({ columnKey, sortConfig }: SortIndicatorProps) {
+	const isActive = sortConfig.key === columnKey
+	const isAscending = sortConfig.direction === 'ascending'
 
 	return (
-		<div className='ml-2 opacity-100 transition-opacity duration-200'>
-			{sortConfig.direction === 'ascending' ? (
-				<ArrowUp className='h-4 w-4 text-primary' />
+		<div
+			className={cn(
+				'ml-2 transition-opacity duration-200',
+				isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-30',
+			)}
+		>
+			{isActive && isAscending ? (
+				<ArrowUp className='h-4 w-4' />
 			) : (
-				<ArrowDown className='h-4 w-4 text-primary' />
+				<ArrowDown className='h-4 w-4' />
 			)}
 		</div>
 	)
