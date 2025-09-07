@@ -40,8 +40,6 @@ export function FDRConfidenceDisplay({
 
 	const volatility = getVolatility(intervalRange)
 	const confidenceMessage = getConfidenceMessage(confidenceScore, volatility)
-
-	// Calculate progress bar value for the current FDR rating
 	const progressValue = ((fdrRating - 1) / 4) * 100
 	const intervalStart = ((bestCase - 1) / 4) * 100
 	const intervalEnd = ((worstCase - 1) / 4) * 100
@@ -107,19 +105,14 @@ export function FDRConfidenceDisplay({
 				</div>
 
 				<div className='relative h-6 w-full rounded-full bg-gray-200 dark:bg-gray-700'>
-					{/* Background color segments */}
 					<div className='absolute left-0 top-0 h-full w-[25%] rounded-l-full bg-green-500/60' />
 					<div className='absolute left-[25%] top-0 h-full w-[25%] bg-green-300/60' />
 					<div className='absolute left-[50%] top-0 h-full w-[25%] bg-yellow-400/60' />
 					<div className='absolute left-[75%] top-0 h-full w-[25%] rounded-r-full bg-red-500/60' />
-
-					{/* Confidence Interval Overlay */}
 					<div
 						className='absolute top-0 h-full rounded-full bg-black/20 dark:bg-white/20'
 						style={{ left: `${intervalStart}%`, width: `${intervalWidth}%` }}
 					/>
-
-					{/* Current FDR Rating Indicator */}
 					<div
 						className='absolute top-0 h-full w-1 rounded-full bg-black dark:bg-white'
 						style={{ left: `${progressValue}%`, transform: 'translateX(-50%)' }}

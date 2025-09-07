@@ -6,49 +6,57 @@ import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
 import { useFplTable } from './useFplTable'
 
 describe('useFplTable', () => {
-	it('initializes with correct default state', () => {
-		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+	const defaultParams = {
+		bootstrapData: mockBootstrapData,
+		fixtures: mockFixtures,
+		initialFirstGameweek: 1,
+		initialNumberOfGameweeks: 5,
+		initialDifficultyType: 'Overall' as const,
+	}
 
-		expect(result.current.difficultyType).toBe('overall')
-		expect(result.current.selectedTeams).toEqual([])
-		expect(result.current.isLoading).toBe(true) // loading starts true
-		expect(typeof result.current.numberOfGameweeks).toBe('number')
+	it('initializes with correct default state', () => {
+		const { result } = renderHook(() => useFplTable(defaultParams))
+
+		expect(result.current.state.difficultyType).toBe('Overall')
+		expect(result.current.state.selectedTeams).toEqual([])
+		expect(result.current.data.isLoading).toBe(true)
+		expect(typeof result.current.state.numberOfGameweeks).toBe('number')
 	})
 
 	it('updates difficulty type', () => {
-		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result } = renderHook(() => useFplTable(defaultParams))
 
 		act(() => {
-			result.current.setDifficultyType('attack')
+			result.current.actions.setDifficultyType('Attack')
 		})
 
-		expect(result.current.difficultyType).toBe('attack')
+		expect(result.current.state.difficultyType).toBe('Attack')
 	})
 
 	it('updates number of gameweeks', () => {
-		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result } = renderHook(() => useFplTable(defaultParams))
 
 		act(() => {
-			result.current.setNumberOfGameweeks(8)
+			result.current.actions.setNumberOfGameweeks(3)
 		})
 
-		expect(result.current.numberOfGameweeks).toBe(8)
+		expect(result.current.state.numberOfGameweeks).toBe(3)
 	})
 
 	it('updates selected teams', () => {
-		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result } = renderHook(() => useFplTable(defaultParams))
 
 		act(() => {
-			result.current.setSelectedTeams(['MCI', 'CHE'])
+			result.current.actions.setSelectedTeams(['MCI', 'CHE'])
 		})
 
-		expect(result.current.selectedTeams).toEqual(['MCI', 'CHE'])
+		expect(result.current.state.selectedTeams).toEqual(['MCI', 'CHE'])
 	})
 
 	it('sets isLoading to false eventually (after fixture generation)', async () => {
-		const { result } = renderHook(() => useFplTable(mockBootstrapData, mockFixtures))
+		const { result } = renderHook(() => useFplTable(defaultParams))
 
-		await new Promise((resolve) => setTimeout(resolve, 50)) // simulate async wait
-		expect(result.current.isLoading).toBe(false)
+		await new Promise((resolve) => setTimeout(resolve, 50))
+		expect(result.current.data.isLoading).toBe(false)
 	})
 })

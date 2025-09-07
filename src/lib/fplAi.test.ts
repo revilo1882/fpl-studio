@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { fetchFPLData } from './fplApi'
 
-// Mock fetch globally
 global.fetch = vi.fn()
 
 describe('fplApi', () => {

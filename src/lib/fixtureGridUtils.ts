@@ -5,7 +5,7 @@ import { type DifficultyType } from './generateFixtureMatrix'
 export function getDifficultyUI(score: number, difficultyType: DifficultyType) {
 	const roundedScore = Math.round(score)
 
-	if (difficultyType === 'fpl') {
+	if (difficultyType === 'FPL') {
 		switch (roundedScore) {
 			case 1:
 				return { bg: 'bg-green-500/60', text: 'text-green-500' }
@@ -32,22 +32,6 @@ export function getDifficultyUI(score: number, difficultyType: DifficultyType) {
 	if (score < 4.5) return { bg: 'bg-red-500/60', text: 'text-red-500' }
 	return { bg: 'bg-red-600/60', text: 'text-red-600' }
 }
-
-export function getDifficultyName(type: DifficultyType) {
-	switch (type) {
-		case 'fpl':
-			return 'FPL Difficulty'
-		case 'attack':
-			return 'Studio Attack'
-		case 'defence':
-			return 'Studio Defence'
-		case 'overall':
-			return 'Studio Overall'
-		default:
-			return 'Difficulty'
-	}
-}
-
 export function getOpponentTeam(opponentName: string, teams: Team[]) {
 	return teams.find((team) => team.name === opponentName)
 }

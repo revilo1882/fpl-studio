@@ -5,7 +5,7 @@ import { DifficultySelector } from './DifficultySelector'
 
 describe('DifficultySelector', () => {
 	const mockProps = {
-		difficultyType: 'fpl' as const,
+		difficultyType: 'FPL' as const,
 		setDifficultyType: vi.fn(),
 	}
 
@@ -22,8 +22,7 @@ describe('DifficultySelector', () => {
 		render(<DifficultySelector {...mockProps} />)
 
 		expect(screen.getByRole('combobox')).toBeInTheDocument()
-		// Check that the current value is displayed
-		expect(screen.getByText('FPL Default')).toBeInTheDocument()
+		expect(screen.getByText('FPL')).toBeInTheDocument()
 	})
 
 	it('has correct accessibility attributes', () => {
@@ -35,16 +34,15 @@ describe('DifficultySelector', () => {
 	})
 
 	it('renders with different difficulty types', () => {
-		const overallProps = { ...mockProps, difficultyType: 'overall' as const }
+		const overallProps = { ...mockProps, difficultyType: 'Overall' as const }
 		render(<DifficultySelector {...overallProps} />)
 
 		expect(screen.getByText('Difficulty View')).toBeInTheDocument()
-		// The component should render without errors
 		expect(screen.getByRole('combobox')).toBeInTheDocument()
 	})
 
 	it('receives correct props without errors', () => {
 		expect(() => render(<DifficultySelector {...mockProps} />)).not.toThrow()
-		expect(mockProps.difficultyType).toBe('fpl')
+		expect(mockProps.difficultyType).toBe('FPL')
 	})
 })

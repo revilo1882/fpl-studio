@@ -5,10 +5,11 @@ import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FixtureChip } from '@/components/FixtureChip'
-import { getTeamBadgeUrl, cn } from '@/lib/utils'
 import { getDifficultyUI } from '@/lib/fixtureGridUtils'
 import type { SingleFixture } from '@/lib/generateFixtureMatrix'
 import type { Fixtures, Team } from '@/types/fpl'
+import { getTeamBadgeUrl } from '@/lib/fpl/badges'
+import { cn } from '@/lib/utils'
 
 interface TeamFixturesTabsProps {
 	team: Team
@@ -91,7 +92,7 @@ export function TeamFixturesTabs({
 											<FixtureChip
 												fixture={fixture}
 												teams={allTeams}
-												difficultyType='overall'
+												difficultyType='Overall'
 												fixtures={allFixtures}
 											/>
 										</div>
@@ -190,7 +191,7 @@ export function TeamFixturesTabs({
 															isHome
 																? fixture.team_h_difficulty
 																: fixture.team_a_difficulty,
-															'fpl',
+															'FPL',
 														).text,
 													)}
 												>

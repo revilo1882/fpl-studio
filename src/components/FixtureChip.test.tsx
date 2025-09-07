@@ -4,16 +4,14 @@ import { describe, it, expect, vi } from 'vitest'
 import { mockFixtures, mockTeams } from '@/lib//test-mocks'
 import * as fixtureUtils from '@/lib/fixtureGridUtils'
 import { type SingleFixture } from '@/lib/generateFixtureMatrix'
-import { type Team } from '@/types/bootstrap'
+import { type Team } from '@/types/fpl'
 
 import { FixtureChip } from './FixtureChip'
 
-// Mock next/image for vitest
 vi.mock('next/image', () => ({
 	__esModule: true,
 	default: (props: any) => {
 		const { src, alt = '', unoptimized, ...rest } = props
-		/* eslint-disable-next-line @next/next/no-img-element */
 		return <img src={src} alt={alt} {...rest} unoptimized={String(unoptimized)} />
 	},
 }))
@@ -32,6 +30,9 @@ const mockFixture: SingleFixture = {
 	label: 'GW3 (H)',
 	kickoffTime: '2025-08-12T14:00:00Z',
 	difficulty: 3,
+	opponentCode: 12,
+	isHome: true,
+	gameweekId: 3,
 }
 
 describe('FixtureChip', () => {
@@ -40,13 +41,13 @@ describe('FixtureChip', () => {
 			<FixtureChip
 				fixture={mockFixture}
 				teams={mockTeams}
-				difficultyType='fpl'
+				difficultyType='FPL'
 				fixtures={mockFixtures}
 			/>,
 		)
 
 		expect(screen.getByText('GW3 (H)')).toBeInTheDocument()
-		expect(screen.getByText('(3)')).toBeInTheDocument()
+		expect(screen.getByText(/\(3\)/)).toBeInTheDocument()
 	})
 
 	it('renders decimal difficulty for non-FPL types', () => {
@@ -54,12 +55,12 @@ describe('FixtureChip', () => {
 			<FixtureChip
 				fixture={{ ...mockFixture, difficulty: 2.718 }}
 				teams={mockTeams}
-				difficultyType='attack'
+				difficultyType='Attack'
 				fixtures={mockFixtures}
 			/>,
 		)
 
-		expect(screen.getByText('(2.72)')).toBeInTheDocument()
+		expect(screen.getByText(/\(2\.72\)/)).toBeInTheDocument()
 	})
 
 	it('shows kickoff time in popover', async () => {
@@ -67,7 +68,7 @@ describe('FixtureChip', () => {
 			<FixtureChip
 				fixture={mockFixture}
 				teams={mockTeams}
-				difficultyType='fpl'
+				difficultyType='FPL'
 				fixtures={mockFixtures}
 			/>,
 		)
@@ -87,7 +88,7 @@ describe('FixtureChip', () => {
 			<FixtureChip
 				fixture={{ ...mockFixture, opponentName: 'ZZZ United' }}
 				teams={mockTeams}
-				difficultyType='defence'
+				difficultyType='Defence'
 				fixtures={mockFixtures}
 			/>,
 		)

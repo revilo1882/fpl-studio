@@ -20,15 +20,25 @@ type TeamFilterProps = {
 	teams: Team[]
 	selectedTeams: string[]
 	onSelectionChange: (selected: string[]) => void
+	maxTeams?: number // Optional limit
 }
 
-export const TeamFilter = ({ teams, selectedTeams, onSelectionChange }: TeamFilterProps) => {
+export const TeamFilter = ({
+	teams,
+	selectedTeams,
+	onSelectionChange,
+	maxTeams,
+}: TeamFilterProps) => {
 	const handleSelect = (teamName: string) => {
 		const isSelected = selectedTeams.includes(teamName)
-		const newSelection = isSelected
-			? selectedTeams.filter((name) => name !== teamName)
-			: [...selectedTeams, teamName]
-		onSelectionChange(newSelection)
+
+		if (isSelected) {
+			const newSelection = selectedTeams.filter((name) => name !== teamName)
+			onSelectionChange(newSelection)
+		} else if (!maxTeams || selectedTeams.length < maxTeams) {
+			const newSelection = [...selectedTeams, teamName]
+			onSelectionChange(newSelection)
+		}
 	}
 
 	const getButtonText = () => {
@@ -41,9 +51,18 @@ export const TeamFilter = ({ teams, selectedTeams, onSelectionChange }: TeamFilt
 		return `${selectedTeams.length} teams selected`
 	}
 
+	const isAtLimit = maxTeams && selectedTeams.length >= maxTeams
+
 	return (
 		<div className='grid gap-2'>
-			<Label>Filter Teams</Label>
+			<Label htmlFor='team-filter' className='mb-1 block'>
+				<span className='inline-flex items-baseline gap-2'>
+					<span>Filter Teams</span>
+					<span className='inline-block w-[60px] text-xs text-muted-foreground'>
+						{typeof maxTeams === 'number' ? `(Max ${maxTeams})` : '\u00A0'}
+					</span>
+				</span>
+			</Label>
 			<DropdownMenu modal={false}>
 				<DropdownMenuTrigger asChild>
 					<Button variant='outline' className='w-[200px] justify-between'>
@@ -63,18 +82,27 @@ export const TeamFilter = ({ teams, selectedTeams, onSelectionChange }: TeamFilt
 							<DropdownMenuSeparator />
 						</>
 					)}
-					{teams.map((team) => (
-						<DropdownMenuCheckboxItem
-							key={team.id}
-							checked={selectedTeams.includes(team.name)}
-							onSelect={(e) => {
-								e.preventDefault()
-								handleSelect(team.name)
-							}}
-						>
-							{team.name}
-						</DropdownMenuCheckboxItem>
-					))}
+					{teams.map((team) => {
+						const isSelected = selectedTeams.includes(team.name)
+						const isDisabled = !!(!isSelected && isAtLimit)
+
+						return (
+							<DropdownMenuCheckboxItem
+								key={team.id}
+								checked={isSelected}
+								disabled={isDisabled}
+								onSelect={(e) => {
+									e.preventDefault()
+									if (!isDisabled) {
+										handleSelect(team.name)
+									}
+								}}
+								className={isDisabled ? 'cursor-not-allowed opacity-50' : ''}
+							>
+								{team.name}
+							</DropdownMenuCheckboxItem>
+						)
+					})}
 				</DropdownMenuContent>
 			</DropdownMenu>
 		</div>

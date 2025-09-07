@@ -74,7 +74,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
 		bootstrapData,
 		firstGameweek: 1,
 		numberOfGameweeks: 38,
-		difficultyType: 'overall',
+		difficultyType: 'Overall',
 	})
 
 	const teamIndex = bootstrapData.teams.findIndex((t) => t.id === team.id)

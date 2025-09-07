@@ -39,7 +39,6 @@ export function TeamPerformanceCard({
 				</CardTitle>
 			</CardHeader>
 			<CardContent className='flex-1 space-y-6 overflow-y-auto pt-6'>
-				{/* Points and PPG */}
 				<div className='grid grid-cols-2 gap-4'>
 					<div className='text-center'>
 						<div className='text-3xl font-bold text-foreground'>
@@ -52,8 +51,6 @@ export function TeamPerformanceCard({
 						<div className='text-sm text-muted-foreground'>PPG</div>
 					</div>
 				</div>
-
-				{/* Win/Draw/Loss */}
 				<div className='grid grid-cols-3 gap-3 rounded-lg bg-muted/30 p-4'>
 					<div className='text-center'>
 						<div className='text-xl font-bold text-green-600 dark:text-green-400'>
@@ -74,8 +71,6 @@ export function TeamPerformanceCard({
 						<div className='text-sm text-muted-foreground'>Losses</div>
 					</div>
 				</div>
-
-				{/* Goals */}
 				<div className='grid grid-cols-3 gap-4 text-center'>
 					<div>
 						<div className='text-xl font-bold text-foreground'>
@@ -105,8 +100,6 @@ export function TeamPerformanceCard({
 						<div className='text-sm text-muted-foreground'>Goals Against</div>
 					</div>
 				</div>
-
-				{/* Recent Form */}
 				<div className='rounded-lg bg-muted/30 p-4'>
 					<div className='flex items-center justify-between'>
 						<span className='text-sm font-medium text-muted-foreground'>

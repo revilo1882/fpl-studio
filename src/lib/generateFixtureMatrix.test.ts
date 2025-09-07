@@ -21,7 +21,7 @@ describe('generateFixtureMatrix', () => {
 
 			expect(result.teamNames).toEqual(mockTeams.map((t) => t.name))
 			expect(result.fixtureMatrix.length).toBe(mockTeams.length)
-			expect(result.scores.length).toBe(mockTeams.length)
+			expect(result.totalAttractivenessScores.length).toBe(mockTeams.length)
 
 			for (const row of result.fixtureMatrix) {
 				expect(row.length).toBe(2)
@@ -49,7 +49,7 @@ describe('generateFixtureMatrix', () => {
 
 		expect(result.teamNames.length).toBe(mockTeams.length)
 		expect(result.fixtureMatrix.length).toBe(mockTeams.length)
-		expect(result.scores.length).toBe(mockTeams.length)
+		expect(result.totalAttractivenessScores.length).toBe(mockTeams.length)
 
 		for (const row of result.fixtureMatrix) {
 			expect(row.length).toBe(3)

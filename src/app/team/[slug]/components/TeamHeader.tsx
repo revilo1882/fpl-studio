@@ -1,7 +1,7 @@
 import Image from 'next/image'
 
-import { getTeamBadgeUrl } from '@/lib/utils'
 import type { Team } from '@/types/fpl'
+import { getTeamBadgeUrl } from '@/lib/fpl/badges'
 
 interface TeamHeaderProps {
 	team: Team

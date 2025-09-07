@@ -7,24 +7,24 @@ export type SingleFixture = {
 	label: string
 	difficulty: number
 	opponentName: string
-	opponentCode: number // Add opponentCode for badge lookup
-	isHome: boolean // Add isHome to know if the fixture is home or away for the current team
+	opponentCode: number
+	isHome: boolean
 	kickoffTime: string | null
-	gameweekId: number // Add gameweekId
-	// Add confidence properties
+	gameweekId: number
 	confidenceInterval?: [number, number]
 	confidenceScore?: number
+	attractivenessScore?: number
 }
-
 export type FixtureCell = SingleFixture[]
 
 export type IGenerateFixtureMatrix = {
 	teamNames: string[]
 	fixtureMatrix: FixtureCell[][]
-	scores: number[]
+	totalAttractivenessScores: number[]
+	gameweekAttractivenessMatrix: number[][]
 }
 
-export type DifficultyType = 'fpl' | 'overall' | 'attack' | 'defence'
+export type DifficultyType = 'FPL' | 'Overall' | 'Attack' | 'Defence'
 
 type GenerateFixtureMatrixProps = {
 	teams: Team[]
@@ -45,13 +45,12 @@ export const generateFixtureMatrix = async ({
 	const teamMap = new Map(teams.map((team) => [team.id, team]))
 	const teamNames = teams.map((team) => team.name)
 
-	// For Studio views, pre-calculate FDR ratings
 	const studioFDRCache: Map<
 		string,
 		{ difficulty: number; confidenceInterval?: [number, number]; confidenceScore?: number }
 	> = new Map()
 
-	if (difficultyType !== 'fpl') {
+	if (difficultyType !== 'FPL') {
 		const fixturesForCalculation: Array<{
 			homeTeam: Team
 			awayTeam: Team
@@ -59,7 +58,6 @@ export const generateFixtureMatrix = async ({
 			fixtureId: number
 		}> = []
 
-		// Collect all fixtures that need calculation within the requested gameweek range
 		for (
 			let gameweek = firstGameweek;
 			gameweek < firstGameweek + numberOfGameweeks;
@@ -82,7 +80,6 @@ export const generateFixtureMatrix = async ({
 			}
 		}
 
-		// Calculate simplified FDR for all collected fixtures
 		try {
 			const fdrResults = await Promise.all(
 				fixturesForCalculation.map(async ({ homeTeam, awayTeam, gameweek, fixtureId }) => {
@@ -95,15 +92,15 @@ export const generateFixtureMatrix = async ({
 					let awayDifficulty: number
 
 					switch (difficultyType) {
-						case 'attack':
+						case 'Attack':
 							homeDifficulty = homeFDR.attacking
 							awayDifficulty = awayFDR.attacking
 							break
-						case 'defence':
+						case 'Defence':
 							homeDifficulty = homeFDR.defensive
 							awayDifficulty = awayFDR.defensive
 							break
-						case 'overall':
+						case 'Overall':
 						default:
 							homeDifficulty = homeFDR.overall
 							awayDifficulty = awayFDR.overall
@@ -123,7 +120,6 @@ export const generateFixtureMatrix = async ({
 				}),
 			)
 
-			// Cache the results
 			for (const {
 				homeKey,
 				awayKey,
@@ -177,9 +173,9 @@ export const generateFixtureMatrix = async ({
 						difficulty: 0,
 						opponentName: 'Blank',
 						opponentCode: 0,
-						isHome: true, // Default, doesn't matter for blank
+						isHome: true,
 						kickoffTime: null,
-						gameweekId: gameweek, // Ensure gameweekId is set for blank
+						gameweekId: gameweek,
 					},
 				])
 				continue
@@ -199,7 +195,7 @@ export const generateFixtureMatrix = async ({
 				if (!opponent) {
 					difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
 				} else {
-					if (difficultyType === 'fpl') {
+					if (difficultyType === 'FPL') {
 						difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
 					} else {
 						const teamSpecificKey = `${team.id}-${fixture.id}-${gameweek}`
@@ -224,10 +220,10 @@ export const generateFixtureMatrix = async ({
 					label,
 					difficulty: Number(difficulty.toFixed(2)),
 					opponentName: opponent?.name ?? 'Unknown',
-					opponentCode: opponent?.code ?? 0, // Pass opponent code
-					isHome, // Pass if it's a home fixture for the current team
+					opponentCode: opponent?.code ?? 0,
+					isHome,
 					kickoffTime: fixture.kickoff_time,
-					gameweekId: gameweek, // Pass gameweek ID
+					gameweekId: gameweek,
 					confidenceInterval: calculatedConfidenceInterval,
 					confidenceScore: calculatedConfidenceScore,
 				}
@@ -239,12 +235,56 @@ export const generateFixtureMatrix = async ({
 		return row
 	})
 
-	// Calculate improved attractiveness scores
-	const scores: number[] = teams.map((_, teamIndex) => {
+	const gameweekAttractivenessMatrix: number[][] = fixtureMatrix.map((teamRow) => {
+		return teamRow.map((gameweekFixtures) => {
+			if (
+				gameweekFixtures.length === 0 ||
+				gameweekFixtures.every((f) => f.difficulty === 0)
+			) {
+				return 0
+			}
+
+			const validFixtures = gameweekFixtures.filter((f) => f.difficulty > 0)
+			const avgDifficulty =
+				validFixtures.reduce((sum, f) => sum + f.difficulty, 0) / validFixtures.length
+
+			const rawScore = 6 - avgDifficulty
+
+			const dgwBonus = calculateMultiFixtureBonus(validFixtures.length, avgDifficulty)
+
+			return Number((rawScore + dgwBonus).toFixed(2))
+		})
+	})
+
+	const totalAttractivenessScores: number[] = teams.map((_, teamIndex) => {
 		const teamFixtures = fixtureMatrix[teamIndex]
 		const attractivenessResult = calculateAttractivenessScore(teamFixtures)
 		return attractivenessResult.totalScore
 	})
 
-	return { teamNames, fixtureMatrix, scores }
+	return {
+		teamNames,
+		fixtureMatrix,
+		totalAttractivenessScores,
+		gameweekAttractivenessMatrix,
+	}
+}
+
+function calculateMultiFixtureBonus(numFixtures: number, avgDifficulty: number): number {
+	if (numFixtures <= 1) return 0
+
+	let bonus = 0
+
+	if (numFixtures === 2) {
+		if (avgDifficulty <= 2.5) bonus = 3.0
+		else if (avgDifficulty <= 3.5) bonus = 2.0
+		else if (avgDifficulty <= 4.0) bonus = 1.0
+		else bonus = 0.5
+	} else if (numFixtures >= 3) {
+		if (avgDifficulty <= 3.0) bonus = 5.0
+		else if (avgDifficulty <= 4.0) bonus = 3.5
+		else bonus = 2.0
+	}
+
+	return bonus
 }

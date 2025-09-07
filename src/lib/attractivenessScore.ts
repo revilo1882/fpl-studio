@@ -3,9 +3,9 @@ import { type FixtureCell } from './generateFixtureMatrix'
 export interface GameweekScore {
 	numberOfFixtures: number
 	avgDifficulty: number
-	rawScore: number // Base score before bonuses
-	dgwBonus: number // Bonus for multiple fixtures
-	totalScore: number // Final score for this gameweek
+	rawScore: number
+	dgwBonus: number
+	totalScore: number
 }
 
 export interface AttractivenessResult {
@@ -26,7 +26,6 @@ export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): Attr
 	const gameweekBreakdown: GameweekScore[] = []
 	let totalScore = 0
 
-	// Count different gameweek types for summary
 	let blanks = 0,
 		singles = 0,
 		doubles = 0,
@@ -39,7 +38,6 @@ export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): Attr
 	fixtureMatrix.forEach((gameweekFixtures, gwIndex) => {
 		const numFixtures = gameweekFixtures.length
 
-		// Handle blank gameweeks
 		if (numFixtures === 0 || gameweekFixtures.every((f) => f.difficulty === 0)) {
 			gameweekBreakdown.push({
 				numberOfFixtures: 0,
@@ -50,7 +48,6 @@ export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): Attr
 			})
 			blanks++
 
-			// Blank is always worst
 			if (0 < worstScore) {
 				worstScore = 0
 				worstGW = gwIndex + 1
@@ -58,15 +55,12 @@ export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): Attr
 			return
 		}
 
-		// Calculate average difficulty of real fixtures
 		const validFixtures = gameweekFixtures.filter((f) => f.difficulty > 0)
 		const avgDifficulty =
 			validFixtures.reduce((sum, f) => sum + f.difficulty, 0) / validFixtures.length
 
-		// Base score from difficulty (inverted - lower difficulty = higher score)
 		const rawScore = calculateDifficultyScore(avgDifficulty)
 
-		// DGW/TGW bonus - the key improvement!
 		const dgwBonus = calculateMultiFixtureBonus(validFixtures.length, avgDifficulty)
 
 		const totalGameweekScore = rawScore + dgwBonus
@@ -81,7 +75,6 @@ export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): Attr
 
 		totalScore += totalGameweekScore
 
-		// Track best/worst gameweeks
 		if (totalGameweekScore > bestScore) {
 			bestScore = totalGameweekScore
 			bestGW = gwIndex + 1
@@ -91,7 +84,6 @@ export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): Attr
 			worstGW = gwIndex + 1
 		}
 
-		// Count gameweek types
 		if (validFixtures.length === 1) singles++
 		else if (validFixtures.length === 2) doubles++
 		else if (validFixtures.length >= 3) triples++
@@ -119,7 +111,6 @@ export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): Attr
  * Scale: 1.0 (hardest) to 5.0 (easiest)
  */
 function calculateDifficultyScore(avgDifficulty: number): number {
-	// Invert difficulty: 1 becomes 5, 5 becomes 1
 	return 6 - avgDifficulty
 }
 
@@ -130,25 +121,17 @@ function calculateDifficultyScore(avgDifficulty: number): number {
 function calculateMultiFixtureBonus(numFixtures: number, avgDifficulty: number): number {
 	if (numFixtures <= 1) return 0
 
-	// Base DGW bonus
 	let bonus = 0
 
 	if (numFixtures === 2) {
-		// Double gameweek bonus - depends on difficulty
-		if (avgDifficulty <= 2.5)
-			bonus = 3.0 // Amazing DGW
-		else if (avgDifficulty <= 3.5)
-			bonus = 2.0 // Good DGW
-		else if (avgDifficulty <= 4.0)
-			bonus = 1.0 // OK DGW
-		else bonus = 0.5 // Poor DGW but still bonus
+		if (avgDifficulty <= 2.5) bonus = 3.0
+		else if (avgDifficulty <= 3.5) bonus = 2.0
+		else if (avgDifficulty <= 4.0) bonus = 1.0
+		else bonus = 0.5
 	} else if (numFixtures >= 3) {
-		// Triple gameweek - massive bonus
-		if (avgDifficulty <= 3.0)
-			bonus = 5.0 // Incredible TGW
-		else if (avgDifficulty <= 4.0)
-			bonus = 3.5 // Great TGW
-		else bonus = 2.0 // Even hard TGW is valuable
+		if (avgDifficulty <= 3.0) bonus = 5.0
+		else if (avgDifficulty <= 4.0) bonus = 3.5
+		else bonus = 2.0
 	}
 
 	return bonus

@@ -1,145 +1,235 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import type { BootstrapData, Fixtures } from '@/types/fpl'
 import {
-	type FixtureCell,
 	generateFixtureMatrix,
 	type DifficultyType,
+	type FixtureCell,
 } from '@/lib/generateFixtureMatrix'
-import type { BootstrapData, Fixtures } from '@/types/fpl'
+
+export type SortKey = 'team' | 'score'
+export type SortDirection = 'ascending' | 'descending'
 
 export type SortConfig = {
-	key: 'team' | 'score'
-	direction: 'ascending' | 'descending'
+	key: SortKey
+	direction: SortDirection
 }
 
-export const useFplTable = (bootstrapData: BootstrapData, fixtures: Fixtures) => {
-	const { teams, events } = bootstrapData
-	const [difficultyType, setDifficultyType] = useState<DifficultyType>('overall')
-	const [selectedTeams, setSelectedTeams] = useState<string[]>([])
-	const [isLoading, setIsLoading] = useState(false)
-	const [fixtureData, setFixtureData] = useState<{
-		teamNames: string[]
-		fixtureMatrix: FixtureCell[][]
-		scores: number[]
-	} | null>(null)
+export type UseFplTableParams = {
+	bootstrapData: BootstrapData
+	fixtures: Fixtures
+	initialFirstGameweek: number
+	initialNumberOfGameweeks: number
+	initialDifficultyType: DifficultyType
+}
 
-	const currentGameweek = events.find((event) => event.is_current)?.id
-	const nextGameweek = events.find((event) => event.is_next)?.id
-	const firstGameweek = currentGameweek || nextGameweek || 1
-	const remainingGameweeks = events.length - (firstGameweek - 1)
+type FixtureData = Awaited<ReturnType<typeof generateFixtureMatrix>>
 
-	const preferredOptions = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 19]
-	const gameweekOptions = preferredOptions.filter((option) => option <= remainingGameweeks)
-	if (gameweekOptions.length === 0 && remainingGameweeks > 0) {
-		gameweekOptions.push(remainingGameweeks)
+export type GridRow = {
+	team: string
+	fixtures: FixtureCell[]
+	score: number
+	gameweekScores: number[]
+}
+
+export type UseFplTableResult = {
+	state: {
+		firstGameweek: number
+		numberOfGameweeks: number
+		difficultyType: DifficultyType
+		selectedTeams: string[]
+		sortConfig: SortConfig
 	}
+	actions: {
+		setFirstGameweek: (value: number) => void
+		setNumberOfGameweeks: (value: number) => void
+		setDifficultyType: (value: DifficultyType) => void
+		setSelectedTeams: (teams: string[]) => void
+		handleSort: (key: SortKey) => void
+	}
+	data: {
+		gameweekOptions: number[]
+		sortedData: GridRow[]
+		fixtureData: FixtureData | null
+		isLoading: boolean
+		sortedTeams: string[]
+		teamAverageByName: Record<string, number>
+	}
+}
 
-	const [numberOfGameweeks, setNumberOfGameweeks] = useState(
-		6 > remainingGameweeks ? remainingGameweeks : 6,
-	)
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
 
-	// Generate fixture matrix when dependencies change
-	useEffect(() => {
-		const generateData = async () => {
-			setIsLoading(true)
-			try {
-				const result = await generateFixtureMatrix({
-					teams,
-					fixtures,
-					bootstrapData,
-					firstGameweek,
-					numberOfGameweeks,
-					difficultyType,
-				})
-				setFixtureData(result)
-			} catch (error) {
-				console.error('Error generating fixture matrix:', error)
-				// Fallback to FPL ratings if dynamic fails
-				if (difficultyType !== 'fpl') {
-					const fallbackResult = await generateFixtureMatrix({
-						teams,
-						fixtures,
-						bootstrapData,
-						firstGameweek,
-						numberOfGameweeks,
-						difficultyType: 'fpl',
-					})
-					setFixtureData(fallbackResult)
-				}
-			} finally {
-				setIsLoading(false)
-			}
-		}
+export const useFplTable = ({
+	bootstrapData,
+	fixtures,
+	initialFirstGameweek,
+	initialNumberOfGameweeks,
+	initialDifficultyType,
+}: UseFplTableParams): UseFplTableResult => {
+	const events = bootstrapData.events ?? []
 
-		generateData()
-	}, [teams, fixtures, bootstrapData, firstGameweek, numberOfGameweeks, difficultyType])
+	const maxGameweekId = events.length > 0 ? Math.max(...events.map((event) => event.id)) : 0
+	const initialFirst = clamp(initialFirstGameweek, 1, Math.max(1, maxGameweekId))
+	const maxWindowFromFirst = Math.max(0, maxGameweekId - initialFirst + 1)
+	const initialWindow = clamp(initialNumberOfGameweeks, 1, Math.max(1, maxWindowFromFirst))
 
-	const combinedData = useMemo(() => {
-		if (!fixtureData) return []
-
-		return fixtureData.teamNames.map((team, index) => ({
-			team,
-			fixtures: fixtureData.fixtureMatrix[index],
-			score: fixtureData.scores[index],
-		}))
-	}, [fixtureData])
-
+	const [firstGameweek, setFirstGameweek] = useState<number>(initialFirst)
+	const [numberOfGameweeks, setNumberOfGameweeks] = useState<number>(initialWindow)
+	const [difficultyType, setDifficultyType] = useState<DifficultyType>(initialDifficultyType)
+	const [selectedTeams, setSelectedTeams] = useState<string[]>([])
 	const [sortConfig, setSortConfig] = useState<SortConfig>({
 		key: 'team',
 		direction: 'ascending',
 	})
 
-	const filteredData = useMemo(() => {
-		if (selectedTeams.length === 0) {
-			return combinedData
-		}
-		return combinedData.filter((row) => selectedTeams.includes(row.team))
-	}, [combinedData, selectedTeams])
+	const [fixtureData, setFixtureData] = useState<FixtureData | null>(null)
+	const [isLoading, setIsLoading] = useState<boolean>(false)
 
-	const sortedData = useMemo(() => {
-		const sortableItems = [...filteredData]
-		sortableItems.sort((a, b) => {
-			const isAsc = sortConfig.direction === 'ascending'
-			switch (sortConfig.key) {
-				case 'team':
-					return isAsc ? a.team.localeCompare(b.team) : b.team.localeCompare(a.team)
-				case 'score':
-					return isAsc ? a.score - b.score : b.score - a.score
-				default:
-					return 0
+	const effectiveWindow = useMemo(() => {
+		const remaining = Math.max(0, maxGameweekId - firstGameweek + 1)
+		return clamp(numberOfGameweeks, 1, Math.max(1, remaining))
+	}, [firstGameweek, numberOfGameweeks, maxGameweekId])
+
+	const gameweekOptions = useMemo(() => {
+		const remaining = Math.max(0, maxGameweekId - firstGameweek + 1)
+		const candidates = [4, 5, 6, 8, 10, 12, 15, 20]
+
+		const options = new Set<number>()
+		options.add(effectiveWindow)
+
+		for (const value of candidates) {
+			if (value >= 1 && value <= remaining) {
+				options.add(value)
 			}
-		})
-		return sortableItems
-	}, [filteredData, sortConfig])
+		}
 
-	const handleSort = (key: 'team' | 'score') => {
-		let direction: 'ascending' | 'descending' = 'ascending'
-		if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-			direction = 'descending'
+		return Array.from(options).sort((a, b) => a - b)
+	}, [firstGameweek, maxGameweekId, effectiveWindow])
+
+	useEffect(() => {
+		let cancelled = false
+
+		const run = async () => {
+			setIsLoading(true)
+			try {
+				const result = await generateFixtureMatrix({
+					teams: bootstrapData.teams ?? [],
+					fixtures,
+					bootstrapData,
+					firstGameweek,
+					numberOfGameweeks: effectiveWindow,
+					difficultyType,
+				})
+				if (!cancelled) setFixtureData(result)
+			} finally {
+				if (!cancelled) setIsLoading(false)
+			}
 		}
-		// Default to sorting score descending first, as a higher score is better
-		if (key === 'score' && sortConfig.key !== 'score') {
-			direction = 'descending'
+
+		run()
+		return () => {
+			cancelled = true
 		}
-		setSortConfig({ key, direction })
-	}
+	}, [bootstrapData, fixtures, firstGameweek, effectiveWindow, difficultyType])
+
+	const gridRows: GridRow[] = useMemo(() => {
+		if (!fixtureData) return []
+		const rows: GridRow[] = []
+		const { fixtureMatrix, gameweekAttractivenessMatrix, teamNames } = fixtureData
+
+		for (let teamIndex = 0; teamIndex < teamNames.length; teamIndex += 1) {
+			const teamName = teamNames[teamIndex]
+			const fixturesSlice = fixtureMatrix[teamIndex]?.slice(0, effectiveWindow) ?? []
+			const scoresSlice =
+				gameweekAttractivenessMatrix[teamIndex]?.slice(0, effectiveWindow) ?? []
+			const total = scoresSlice.reduce((sum, value) => sum + (value ?? 0), 0)
+
+			rows.push({
+				team: teamName,
+				fixtures: fixturesSlice,
+				score: total,
+				gameweekScores: scoresSlice,
+			})
+		}
+		return rows
+	}, [fixtureData, effectiveWindow])
+
+	const sortedData: GridRow[] = useMemo(() => {
+		let base = [...gridRows]
+
+		if (selectedTeams.length > 0) {
+			const selected = new Set(selectedTeams)
+			base = base.filter((row) => selected.has(row.team))
+		}
+
+		if (sortConfig.key === 'team') {
+			base.sort((a, b) =>
+				sortConfig.direction === 'ascending'
+					? a.team.localeCompare(b.team)
+					: b.team.localeCompare(a.team),
+			)
+		} else {
+			base.sort((a, b) =>
+				sortConfig.direction === 'ascending' ? a.score - b.score : b.score - a.score,
+			)
+		}
+
+		return base
+	}, [gridRows, sortConfig, selectedTeams])
+
+	const sortedTeams = useMemo(() => sortedData.map((row) => row.team), [sortedData])
+
+	const teamAverageByName = useMemo(
+		() =>
+			Object.fromEntries(
+				sortedData.map((row) => [row.team, row.score / (effectiveWindow || 1)]),
+			),
+		[sortedData, effectiveWindow],
+	)
+
+	const handleSort = useCallback((key: SortKey) => {
+		setSortConfig((prev) => {
+			if (prev.key === key) {
+				const nextDirection: SortDirection =
+					prev.direction === 'ascending' ? 'descending' : 'ascending'
+				return { key, direction: nextDirection }
+			}
+			return { key, direction: 'ascending' }
+		})
+	}, [])
+
+	const setNumberOfGameweeksClamped = useCallback(
+		(value: number) => {
+			const remaining = Math.max(0, maxGameweekId - firstGameweek + 1)
+			setNumberOfGameweeks(clamp(value, 1, Math.max(1, remaining)))
+		},
+		[firstGameweek, maxGameweekId],
+	)
 
 	return {
-		teams,
-		events,
-		firstGameweek,
-		numberOfGameweeks,
-		setNumberOfGameweeks,
-		gameweekOptions,
-		sortedData,
-		sortConfig,
-		handleSort,
-		difficultyType,
-		setDifficultyType,
-		selectedTeams,
-		setSelectedTeams,
-		isLoading,
+		state: {
+			firstGameweek,
+			numberOfGameweeks: effectiveWindow,
+			difficultyType,
+			selectedTeams,
+			sortConfig,
+		},
+		actions: {
+			setFirstGameweek,
+			setNumberOfGameweeks: setNumberOfGameweeksClamped,
+			setDifficultyType,
+			setSelectedTeams,
+			handleSort,
+		},
+		data: {
+			gameweekOptions,
+			sortedData,
+			fixtureData,
+			isLoading,
+			sortedTeams,
+			teamAverageByName,
+		},
 	}
 }

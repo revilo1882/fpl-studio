@@ -23,7 +23,6 @@ describe('GameweekSelector', () => {
 		render(<GameweekSelector {...mockProps} />)
 
 		expect(screen.getByRole('combobox')).toBeInTheDocument()
-		// Check that the current value is displayed in the button
 		expect(screen.getByText('5')).toBeInTheDocument()
 	})
 
@@ -35,7 +34,6 @@ describe('GameweekSelector', () => {
 		expect(select).toHaveAttribute('aria-expanded', 'false')
 	})
 
-	// Skip complex interaction tests for now due to Radix UI complexity
 	it('receives correct props without errors', () => {
 		expect(() => render(<GameweekSelector {...mockProps} />)).not.toThrow()
 		expect(mockProps.numberOfGameweeks).toBe(5)
