@@ -1,118 +1,42 @@
-# 🏆 FPL Studio
+# FPL Studio – Fixture Difficulty Calculator
 
-> **Advanced Fixture Difficulty Analysis for Fantasy Premier League**
+A modern FPL tool for exploring **fixture difficulty ratings (FDR)** with custom calculations, visualizations, and planning tools.
+Hosted on **Vercel**: [https://fpl-studio.vercel.app/](https://fpl-studio.vercel.app/)
 
-A modern, data-driven tool for analyzing FPL fixture difficulty with dynamic ratings that go beyond the basic FPL difficulty scores.
+---
 
 ## ✨ Features
 
-### 🎯 **Dynamic Studio FDR System**
+- **Custom Fixture Difficulty**
+    - Overall, Attack, Defence difficulty views.
+    - Handles **Double Gameweeks** with aggregate attractiveness scoring.
+    - Confidence rating attached to every FDR score.
 
-Our advanced fixture difficulty rating system uses multiple data sources and sophisticated calculations:
+- **Interactive Views**
+    - **Fixture Grid**: upcoming fixtures for all teams.
+    - **Charts**: fixture attractiveness trends across teams, built with **Chart.js**.
+    - Filters: teams, difficulty view (FPL default / Overall / Attack / Defence), number of gameweeks.
+    - URL query string persistence → filters and state are shareable.
 
-**🧮 Multi-Factor Calculation Engine:**
+- **Team Pages**
+    - Per-team route (`/team/[slug]`).
+    - Snapshot metrics (Overall, Attack, Defence) with confidence.
+    - Trend line charts.
+    - Fixtures + results with DGW/blank indicators.
 
-- **Base Team Strength (60%)**: Uses all 6 FPL strength metrics with intelligent scaling
-- **Season Performance (25%)**: Points per game vs expected, goal difference trends
-- **Recent Form (10%)**: Weighted analysis of last 5 matches with opponent strength adjustment
-- **Home Advantage (5%)**: Venue-specific performance boosts
+- **Coming Soon**
+    - **Player Pages**: ownership %, form, fixtures overlayed with FDR.
+    - **Transfer Planner (MVP)**: local squad builder, fixture-weighted projections, “what if” transfers.
+    - **Export & Sharing**: CSV for grid, PNG for charts.
+    - **Homepage & Branding**: landing page, logo, favicon.
 
-**📊 Multiple Difficulty Views:**
+---
 
-- **Studio Overall**: Balanced view combining all factors
-- **Studio Attack**: Emphasizes opponent defensive strength (for attacking returns)
-- **Studio Defence**: Emphasizes opponent attacking strength (for clean sheets)
-- **FPL Default**: Original ratings for comparison
+## 🧮 Fixture Difficulty Methodology
 
-**🎚️ Dynamic Weighting System:**
+### 1) Base Normalization
 
-- **Early Season**: Higher reliance on base FPL strength ratings
-- **Mid Season**: Balanced integration of performance data
-- **Late Season**: Heavy weighting on actual season performance
-
-**🎯 Confidence System:**
-
-- **High**: 15+ games played, consistent performance data
-- **Medium**: 8+ games, reasonable sample size
-- **Low**: Limited data, early season fixtures
-
-### 📊 **Interactive Fixture Grid**
-
-- **Sortable columns** by team name or attractiveness score
-- **Team filtering** to focus on specific clubs
-- **Gameweek selection** (1-19 weeks ahead)
-- **Detailed fixture popovers** with:
-    - Opponent strength and form analysis
-    - Recent head-to-head record (W/D/L + goals)
-    - Precise kickoff times
-    - Club badges and team information
-- **Responsive design** optimized for desktop and mobile
-
-### 🎨 **Visual Design**
-
-- **Smart color coding**: Different scales for FPL (1-5) vs Studio (continuous) ratings
-- **Sticky headers and score columns** for easy comparison while scrolling
-- **Dark/light theme support** with system preference detection
-- **Club badges** with fallback handling and optimization
-- **Modern UI** using shadcn/ui components
-
-### 🔢 **Advanced Attractiveness Scoring**
-
-Our proprietary scoring system evaluates fixture runs comprehensively:
-
-- **Base difficulty scoring** with inverted scale (easier = higher score)
-- **Double/Triple gameweek bonuses** that properly value multiple fixtures
-- **Blank gameweek penalties** to account for missing fixtures
-- **Weighted gameweek analysis** showing best/worst periods
-- **Summary statistics** including singles/doubles/triples breakdown
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm, yarn, or pnpm
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/fpl-studio.git
-cd fpl-studio
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-Visit `http://localhost:3000` to see the application.
-
-### Usage
-
-1. **Select difficulty view**: Choose between Studio Overall/Attack/Defence or FPL Default
-2. **Filter teams**: Use the dropdown to focus on specific clubs (or leave blank for all teams)
-3. **Choose gameweeks**: Select how many weeks ahead to analyze (1-19 available)
-4. **Sort data**: Click column headers to sort by team name or attractiveness score
-5. **View details**: Click any fixture chip for detailed opponent information and recent form
-
-## 🛠️ Technical Stack
-
-- **Framework**: Next.js 15 with App Router and Server Components
-- **Language**: TypeScript with strict mode
-- **Styling**: Tailwind CSS + shadcn/ui component library
-- **Data Source**: Official FPL API with real-time updates
-- **State Management**: React hooks with custom useFplTable hook
-- **Testing**: Vitest + Testing Library + Happy DOM
-- **Code Quality**: ESLint, Prettier, Husky pre-commit hooks
-- **Deployment**: Vercel with Speed Insights
-
-## 🧠 How Studio FDR Works
-
-### **1. Base Strength Calculation**
-
-Uses all 6 FPL strength metrics (overall/attack/defence × home/away) with intelligent normalization:
+Uses all **6 FPL strength metrics** (overall/attack/defence × home/away) with intelligent normalization:
 
 ```typescript
 function normalizeStrengthToDifficulty(strength: number): number {
@@ -123,7 +47,7 @@ function normalizeStrengthToDifficulty(strength: number): number {
 }
 ```
 
-### **2. Season Performance Integration**
+### 2) Season Performance Integration
 
 Compares actual performance vs expected based on FPL strength:
 
@@ -132,179 +56,126 @@ Compares actual performance vs expected based on FPL strength:
 - **Home/away** specific performance where data available
 - **Sample size weighting** for confidence adjustment
 
-### **3. Form Analysis**
+### 3) Form Analysis
 
 Sophisticated recent form calculation:
 
-- **Last 5 matches** with recency weighting (1.0, 0.8, 0.6, 0.4, 0.2)
+- **Last 5 matches** with recency weighting **(1.0, 0.8, 0.6, 0.4, 0.2)**
 - **Opponent strength adjustment** for context
 - **Result and performance quality** (goals scored/conceded, win quality)
-- **Home advantage correction** (5% discount/bonus)
+- **Home advantage correction** (\~5% discount/bonus)
 
-### **4. Dynamic Weighting by Season Stage**
+### 4) Dynamic Weighting by Season Stage
 
 The system adapts its reliance on different factors:
 
-**Early Season (GW 1-5):**
+**Early Season (GW 1–5)**
 
-- Base: 80%, Season: 5%, Form: 10%, Home: 5%
+- Base: **80%**, Season: **5%**, Form: **10%**, Home: **5%**
 
-**Mid Season (GW 6-15):**
+**Mid Season (GW 6–15)**
 
-- Base: 60-80%, Season: 5-25%, Form: 15%, Home: 5%
+- Base: **60–80%**, Season: **5–25%**, Form: **15%**, Home: **5%**
 
-**Late Season (GW 16+):**
+**Late Season (GW 16+)**
 
-- Base: 50%, Season: 35%, Form: 10%, Home: 5%
+- Base: **50%**, Season: **35%**, Form: **10%**, Home: **5%**
 
-### **5. Confidence Intervals**
+### 5) Confidence Intervals
 
 Every rating includes uncertainty bounds based on:
 
-- **Sample size**: More games = higher confidence
-- **Season stage**: Early season = higher uncertainty
-- **Adjustment magnitude**: Large adjustments = lower confidence
+- **Sample size** (more games = higher confidence)
+- **Season stage** (early season = higher uncertainty)
+- **Adjustment magnitude** (larger adjustments = lower confidence)
 
-## 📈 Current Status & Roadmap
-
-### ✅ **Phase 1 Complete: Advanced FDR System**
-
-- [x] Multi-factor dynamic difficulty calculations
-- [x] Confidence interval system with uncertainty quantification
-- [x] Season-adaptive weighting that improves over time
-- [x] Multiple difficulty views (Overall, Attack, Defence)
-- [x] Comprehensive fixture grid with advanced sorting/filtering
-- [x] Rich fixture popovers with form data and team information
-- [x] Responsive design with dark/light theme support
-- [x] Comprehensive test suite with 90%+ coverage
-
-### 🎯 **Phase 2: Enhanced Features** (Next 4-6 weeks)
-
-**Priority 1: Team Detail Pages**
-
-- [ ] Individual team analysis pages (`/team/[slug]`)
-- [ ] Historical difficulty trends with accuracy tracking
-- [ ] Player-level form breakdowns and FPL relevance
-- [ ] Fixture swing analysis and optimal transfer timing
-- [ ] Head-to-head comparison tools
-
-**Priority 2: Data Enhancements**
-
-- [ ] Integration with additional data sources (injury reports, xG data)
-- [ ] Weather and contextual factors
-- [ ] Referee tendency analysis
-- [ ] Enhanced historical performance tracking
-
-**Priority 3: User Experience**
-
-- [ ] Advanced filtering and search capabilities
-- [ ] Export functionality (PDF, CSV, PNG)
-- [ ] User preferences and saved configurations
-- [ ] Improved mobile experience with touch interactions
-
-### 🔮 **Phase 3: Advanced Analytics** (Future)
-
-- [ ] Transfer recommendation engine
-- [ ] Wildcard and chip timing optimization
-- [ ] League-specific analysis tools
-- [ ] Community features and sharing
-- [ ] Premium tier with advanced analytics
-
-## 🧪 Testing & Quality
-
-```bash
-# Run tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Run type checking
-npm run type-check
-
-# Run linting
-npm run lint
-
-# Format code
-npm run format
-```
-
-**Current Test Coverage:** 90%+ across all critical paths
-**Performance:** <2s initial load, <500ms subsequent navigation
-**Accessibility:** WCAG 2.1 AA compliant
+---
 
 ## 📊 Data Quality & Accuracy
 
-### **Accuracy by Season Stage**
+### Accuracy by Season Stage
 
-- **Early Season (GW 1-5)**: Limited data, ~70% accuracy vs FPL baseline
-- **Mid Season (GW 6-15)**: Improving sample sizes, ~80% accuracy
-- **Late Season (GW 16+)**: High confidence, ~85%+ accuracy
-
-### **Known Limitations**
-
-- FPL API updates can be delayed during busy periods
-- Form calculations limited by available player data depth
-- No real-time injury/suspension integration (planned for Phase 2)
-- Weather and referee factors not yet included
-
-### **Continuous Improvements**
-
-- Algorithm accuracy tracking against actual fixture outcomes
-- User feedback integration for difficulty perception
-- Regular calibration against expert FPL community ratings
-- A/B testing for algorithm parameter optimization
-
-## 🔄 Performance & Reliability
-
-- **Load Time**: ~2-3 seconds for full difficulty matrix calculation
-- **Update Frequency**: Real-time with FPL API refresh cycles (every 15 minutes)
-- **Caching Strategy**: Intelligent caching with stale-while-revalidate
-- **Error Handling**: Graceful fallbacks to FPL ratings if calculations fail
-- **Monitoring**: Comprehensive error tracking and performance monitoring
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Run tests (`npm test`) and ensure they pass
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
-
-**Development Guidelines:**
-
-- Maintain test coverage above 85%
-- Follow the existing TypeScript and ESLint configuration
-- Update documentation for any new features
-- Ensure mobile responsiveness for all changes
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **FPL API** for providing comprehensive fantasy football data
-- **Premier League** for club badges and official team information
-- **shadcn/ui** for the excellent component library and design system
-- **FPL Community** for inspiration, feedback, and feature requests
-- **Vercel** for seamless deployment and performance insights
+- **Early Season (GW 1–5)**: limited data, \~70% accuracy vs FPL baseline
+- **Mid Season (GW 6–15)**: improving sample sizes, \~80% accuracy
+- **Late Season (GW 16+)**: high confidence, \~85%+ accuracy
 
 ---
 
-**Built with ❤️ for the FPL community**
+## 🛠 Tech Stack
 
-_Helping managers make better transfer decisions through advanced data analysis and intelligent fixture difficulty ratings._
-
-## 🚀 Quick Links
-
-- **Live Demo**: [fpl-studio.vercel.app](https://fpl-studio.vercel.app)
-- **Documentation**: [docs/](./docs/)
-- **Contributing Guide**: [CONTRIBUTING.md](./CONTRIBUTING.md)
-- **Roadmap**: [ROADMAP.md](./ROADMAP.md)
-- **Changelog**: [CHANGELOG.md](./CHANGELOG.md)
+- [Next.js 15](https://nextjs.org/) (App Router, Server Components, ISR, hosted on Vercel)
+- [TypeScript](https://www.typescriptlang.org/) (strict mode)
+- [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- [Chart.js](https://www.chartjs.org/) for visualizations
+- [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/)
 
 ---
 
-_Last Updated: January 2025 | Version 1.0_
+## 📂 Project Structure
+
+```text
+src/
+  app/
+    strengths/                # strengths view
+    team/[slug]/              # team detail pages
+      components/             # team-specific UI
+    page.tsx                  # home (grid + chart switcher)
+  components/
+    charts/                   # Chart.js helpers and wrappers
+    ui/                       # shadcn/ui components + custom wrappers
+  hooks/                      # state + URL sync
+  lib/
+    fdr/                      # core FDR algorithms (confidence, weights, form, etc.)
+    fpl/                      # FPL API integration + utilities
+  tests/                      # test setup + utils
+  types/                      # shared TypeScript types
+```
+
+---
+
+## 🔌 Data & Caching
+
+- **Source**: [Official FPL API](https://fantasy.premierleague.com/api/)
+- **Wrapper**: `fetchFPLData(endpoint, { revalidate: 900 })`
+    - Uses **stale-while-revalidate** (\~15 minutes).
+    - `?fresh=1` disables caching for debugging.
+
+- **Computed results** (fixture matrices, attractiveness) cached with stable keys:
+
+    ```
+    fdr:v1:{season}:{view}:{gwStart}:{gwCount}
+    ```
+
+---
+
+## ✅ Quality & Performance
+
+- **Performance budgets**:
+    - Page load < 1.5s
+    - Filter changes < 100ms
+
+- **Accessibility**: keyboard navigation, ARIA labels, colorblind-friendly scales.
+- **Testing**:
+    - Unit: Vitest
+    - Components: React Testing Library
+    - Coverage target: 85%+
+
+- **CI**: ESLint, Prettier, Vitest on push/PR.
+- **Deployment**: [Vercel](https://vercel.com/)
+
+---
+
+## 🚀 Development
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Runs on `http://localhost:3000`.
+
+---
+
+## 📌 Roadmap
+
+See [ROADMAP.md](./ROADMAP.md) for detailed phases and tasks.
