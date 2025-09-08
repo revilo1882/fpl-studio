@@ -36,10 +36,17 @@ export const useChartOptions = ({
 	useMemo<ChartOptions<'line'>>(
 		() => ({
 			responsive: true,
-			normalized: true,
 			maintainAspectRatio: false,
+			resizeDelay: 0,
 			spanGaps: false,
-			layout: { padding: { top: 12, bottom: 12 } },
+			layout: {
+				padding: {
+					top: -26,
+					bottom: -8,
+					left: 0,
+					right: 0,
+				},
+			},
 			plugins: {
 				title: {
 					display: true,
@@ -51,7 +58,16 @@ export const useChartOptions = ({
 				legend: {
 					display: true,
 					position: 'bottom',
-					labels: { color: tickColor, usePointStyle: true, boxWidth: 10, boxHeight: 10 },
+					labels: {
+						color: tickColor,
+						usePointStyle: true,
+						boxWidth: 10,
+						boxHeight: 10,
+						padding: 15,
+						font: {
+							size: 12,
+						},
+					},
 				},
 				tooltip: {
 					mode: 'index',
@@ -88,7 +104,13 @@ export const useChartOptions = ({
 			scales: {
 				x: {
 					grid: { color: gridColor, drawBorder: false },
-					ticks: { color: tickColor },
+					ticks: {
+						color: tickColor,
+						maxRotation: 0,
+						font: {
+							size: 11,
+						},
+					},
 					title: {
 						display: true,
 						text: 'Gameweek',
@@ -100,7 +122,13 @@ export const useChartOptions = ({
 					min: yMin,
 					max: yMax,
 					grid: { color: gridColor, drawBorder: false },
-					ticks: { color: tickColor, precision: 0 },
+					ticks: {
+						color: tickColor,
+						precision: 0,
+						font: {
+							size: 11,
+						},
+					},
 					title: {
 						display: true,
 						text: 'Attractiveness',
@@ -109,7 +137,16 @@ export const useChartOptions = ({
 					},
 				},
 			},
-			elements: { point: { hoverBorderWidth: 3 } },
+			elements: {
+				point: {
+					hoverBorderWidth: 3,
+					radius: 3,
+					hoverRadius: 5,
+				},
+				line: {
+					borderWidth: 2,
+				},
+			},
 		}),
 		[
 			title,

@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode, useState } from 'react'
+import { useState } from 'react'
 
 import dynamic from 'next/dynamic'
 
@@ -32,16 +32,6 @@ const FixtureAttractivenessChart = dynamic<FixtureAttractivenessChartProps>(
 		loading: () => <div className='h-96 w-full animate-pulse rounded-md bg-muted' />,
 	},
 )
-
-const ContentBlock = ({ children }: { children: ReactNode }) => {
-	return (
-		<div className='min-h-0'>
-			<div className='flex h-full min-h-0 flex-col'>
-				<div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
-			</div>
-		</div>
-	)
-}
 
 const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 	const events = bootstrapData.events ?? []
@@ -118,6 +108,8 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 				onNumberOfGameweeksChange={setNumberOfGameweeks}
 				gameweekOptions={gameweekOptions}
 			/>
+
+			{/* Grid View */}
 			{view === 'grid' && (
 				<div className='min-h-0 overflow-auto'>
 					<FixtureGrid
@@ -134,8 +126,9 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 				</div>
 			)}
 
+			{/* Chart View */}
 			{canShowChart && (
-				<ContentBlock>
+				<div className='h-full min-h-0 overflow-auto'>
 					<FixtureAttractivenessChart
 						gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
 						fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
@@ -148,25 +141,28 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 						sortedTeams={sortedTeams}
 						teamAverageByName={teamAverageByName}
 					/>
-				</ContentBlock>
+				</div>
 			)}
 
+			{/* Empty State */}
 			{isChartEmpty && (
-				<ContentBlock>
+				<div className='flex min-h-0 flex-col'>
 					<ChartEmptyState />
-				</ContentBlock>
+				</div>
 			)}
 
+			{/* Too Many Teams */}
 			{isChartTooMany && (
-				<ContentBlock>
+				<div className='flex min-h-0 flex-col'>
 					<ChartTooManyTeams
 						selectedCount={selectionCount}
 						maxTeams={MAX_CHART_TEAMS}
 						onClearTeams={() => setSelectedTeams([])}
 					/>
-				</ContentBlock>
+				</div>
 			)}
 
+			{/* Loading State */}
 			{isLoading && isChart && !fixtureData && (
 				<div className='h-96 w-full animate-pulse rounded-md bg-muted' />
 			)}

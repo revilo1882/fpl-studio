@@ -54,8 +54,8 @@ export function FixtureGrid({
 	const teamByName = useMemo(() => new Map(teams.map((team) => [team.name, team])), [teams])
 
 	return (
-		<div className='flex h-full flex-col rounded-lg border border-b-0 border-border bg-card shadow-sm'>
-			<div className='min-h-0 flex-1 overflow-x-auto overflow-y-auto rounded-b-lg border-b border-border'>
+		<div className='flex max-h-full flex-col rounded-lg border border-border bg-card shadow-sm'>
+			<div className='min-h-0 flex-1 overflow-x-auto overflow-y-auto rounded-b-lg'>
 				<Table className='min-w-max' style={{ position: 'relative' }}>
 					<TableHeader
 						className='border-b bg-card shadow-sm'
