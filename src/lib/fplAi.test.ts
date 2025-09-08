@@ -9,7 +9,7 @@ describe('fplApi', () => {
 		vi.resetAllMocks()
 	})
 
-	it('fetches data successfully', async () => {
+	it('fetches data successfully with default revalidate', async () => {
 		const mockData = { teams: [], events: [] }
 
 		vi.mocked(fetch).mockResolvedValueOnce({
@@ -18,6 +18,23 @@ describe('fplApi', () => {
 		} as Response)
 
 		const result = await fetchFPLData('bootstrap-static')
+
+		expect(fetch).toHaveBeenCalledWith(
+			'https://fantasy.premierleague.com/api/bootstrap-static/',
+			{ next: { revalidate: 900 } },
+		)
+		expect(result).toEqual(mockData)
+	})
+
+	it('forces no-store when forceFresh is true', async () => {
+		const mockData = { teams: [] }
+
+		vi.mocked(fetch).mockResolvedValueOnce({
+			ok: true,
+			json: async () => mockData,
+		} as Response)
+
+		const result = await fetchFPLData('bootstrap-static', { forceFresh: true })
 
 		expect(fetch).toHaveBeenCalledWith(
 			'https://fantasy.premierleague.com/api/bootstrap-static/',
@@ -45,7 +62,7 @@ describe('fplApi', () => {
 		await fetchFPLData('fixtures')
 
 		expect(fetch).toHaveBeenCalledWith('https://fantasy.premierleague.com/api/fixtures/', {
-			cache: 'no-store',
+			next: { revalidate: 900 },
 		})
 	})
 })
