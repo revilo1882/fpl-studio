@@ -1,4 +1,4 @@
-import FixtureGridPage from '@/components/FixtureGridPage'
+import FixtureDifficultyPage from '@/components/FixtureDifficultyPage'
 import { fetchFPLData } from '@/lib/fplApi'
 import type { BootstrapData, Fixtures } from '@/types/fpl'
 
@@ -8,5 +8,5 @@ export default async function HomePage() {
 		fetchFPLData<Fixtures>('fixtures', { revalidate: 900 }),
 	])
 
-	return <FixtureGridPage bootstrapData={bootstrapData} fixtures={fixtures} />
+	return <FixtureDifficultyPage bootstrapData={bootstrapData} fixtures={fixtures} />
 }

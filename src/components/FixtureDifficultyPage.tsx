@@ -18,7 +18,7 @@ import type { FixtureAttractivenessChartProps } from './FixtureAttractivenessCha
 
 export type ViewMode = 'grid' | 'chart'
 
-type FixtureGridPageProps = {
+type FixtureDifficultyPageProps = {
 	bootstrapData: BootstrapData
 	fixtures: Fixtures
 }
@@ -33,7 +33,7 @@ const FixtureAttractivenessChart = dynamic<FixtureAttractivenessChartProps>(
 	},
 )
 
-const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
+const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPageProps) => {
 	const events = bootstrapData.events ?? []
 	const teams = bootstrapData.teams ?? []
 
@@ -89,14 +89,16 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 	const canShowChart = isChart && !isChartEmpty && !isChartTooMany && !!fixtureData
 
 	return (
-		<div className='container mx-auto px-4 py-6'>
-			<FixturePageHeader
-				title='Fixture Difficulty'
-				subtitle='Analyse upcoming fixtures with Studio FDR ratings'
-				className='mb-4 sm:mb-6'
-			/>
+		<section className='container mx-auto flex h-[100dvh] flex-col gap-4 px-4 py-6 sm:gap-6'>
+			<div className='shrink-0'>
+				<FixturePageHeader
+					title='Fixture Difficulty'
+					subtitle='Analyse upcoming fixtures with Studio FDR ratings'
+					className='mb-2 sm:mb-0'
+				/>
+			</div>
 
-			<div className='sticky top-0 z-50 -mx-4 bg-background/95 px-4 pb-4 backdrop-blur sm:static sm:z-auto sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-6 sm:backdrop-blur-none'>
+			<div className='shrink-0'>
 				<FixtureControls
 					view={view}
 					onViewChange={setView}
@@ -112,7 +114,7 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 				/>
 			</div>
 
-			<div className={view === 'grid' ? 'h-[70vh] sm:h-[60vh]' : 'h-[70vh] sm:h-[65vh]'}>
+			<div className='min-h-0 flex-1'>
 				{view === 'grid' && (
 					<FixtureGrid
 						data={sortedData}
@@ -128,18 +130,20 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 				)}
 
 				{canShowChart && (
-					<FixtureAttractivenessChart
-						gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
-						fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
-						teamNames={fixtureData!.teamNames}
-						selectedTeams={selectedTeams}
-						firstGameweek={firstGameweek}
-						numberOfGameweeks={numberOfGameweeks}
-						difficultyType={difficultyType}
-						teams={teams}
-						sortedTeams={sortedTeams}
-						teamAverageByName={teamAverageByName}
-					/>
+					<div className='h-full'>
+						<FixtureAttractivenessChart
+							gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
+							fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
+							teamNames={fixtureData!.teamNames}
+							selectedTeams={selectedTeams}
+							firstGameweek={firstGameweek}
+							numberOfGameweeks={numberOfGameweeks}
+							difficultyType={difficultyType}
+							teams={teams}
+							sortedTeams={sortedTeams}
+							teamAverageByName={teamAverageByName}
+						/>
+					</div>
 				)}
 
 				{isChartEmpty && <ChartEmptyState />}
@@ -152,13 +156,12 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 					/>
 				)}
 
-				{/* Loading State */}
 				{isLoading && isChart && !fixtureData && (
 					<div className='h-96 w-full animate-pulse rounded-md bg-muted' />
 				)}
 			</div>
-		</div>
+		</section>
 	)
 }
 
-export default FixtureGridPage
+export default FixtureDifficultyPage
