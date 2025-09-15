@@ -54,6 +54,24 @@ export default {
 					5: 'hsl(var(--chart-5))',
 				},
 			},
+			keyframes: {
+				slideInUp: {
+					from: { transform: 'translateY(100%)' },
+					to: { transform: 'translateY(0)' },
+				},
+				slideOutDown: {
+					from: { transform: 'translateY(0)' },
+					to: { transform: 'translateY(100%)' },
+				},
+				fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
+				fadeOut: { from: { opacity: '1' }, to: { opacity: '0' } },
+			},
+			animation: {
+				slideInUp: 'slideInUp 0.3s ease-out',
+				slideOutDown: 'slideOutDown 0.3s ease-in',
+				fadeIn: 'fadeIn 0.3s ease-out',
+				fadeOut: 'fadeOut 0.3s ease-in',
+			},
 		},
 	},
 	plugins: [],

@@ -5,7 +5,7 @@ import { Table, TrendingUp } from 'lucide-react'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Label } from '@/components/ui/label'
 
-type View = 'grid' | 'chart'
+export type View = 'grid' | 'chart'
 
 export const ViewToggle = ({
 	view,

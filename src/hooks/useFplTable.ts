@@ -9,11 +9,11 @@ import {
 	type FixtureCell,
 } from '@/lib/generateFixtureMatrix'
 
-export type SortKey = 'team' | 'score'
+export type FixtureGridSortKey = 'team' | 'score'
 export type SortDirection = 'ascending' | 'descending'
 
-export type SortConfig = {
-	key: SortKey
+export type FixtureGridSortConfig = {
+	key: FixtureGridSortKey
 	direction: SortDirection
 }
 
@@ -40,14 +40,14 @@ export type UseFplTableResult = {
 		numberOfGameweeks: number
 		difficultyType: DifficultyType
 		selectedTeams: string[]
-		sortConfig: SortConfig
+		sortConfig: FixtureGridSortConfig
 	}
 	actions: {
 		setFirstGameweek: (value: number) => void
 		setNumberOfGameweeks: (value: number) => void
 		setDifficultyType: (value: DifficultyType) => void
 		setSelectedTeams: (teams: string[]) => void
-		handleSort: (key: SortKey) => void
+		handleSort: (key: FixtureGridSortKey) => void
 	}
 	data: {
 		gameweekOptions: number[]
@@ -79,7 +79,7 @@ export const useFplTable = ({
 	const [numberOfGameweeks, setNumberOfGameweeks] = useState<number>(initialWindow)
 	const [difficultyType, setDifficultyType] = useState<DifficultyType>(initialDifficultyType)
 	const [selectedTeams, setSelectedTeams] = useState<string[]>([])
-	const [sortConfig, setSortConfig] = useState<SortConfig>({
+	const [sortConfig, setSortConfig] = useState<FixtureGridSortConfig>({
 		key: 'team',
 		direction: 'ascending',
 	})
@@ -189,7 +189,7 @@ export const useFplTable = ({
 		[sortedData, effectiveWindow],
 	)
 
-	const handleSort = useCallback((key: SortKey) => {
+	const handleSort = useCallback((key: FixtureGridSortKey) => {
 		setSortConfig((prev) => {
 			if (prev.key === key) {
 				const nextDirection: SortDirection =

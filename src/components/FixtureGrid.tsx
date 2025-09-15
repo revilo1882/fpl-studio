@@ -5,6 +5,7 @@ import { useMemo } from 'react'
 import { Table, TableBody, TableHeader } from '@/components/ui/table'
 import type { Fixtures, Gameweek, Team } from '@/types/fpl'
 import type { DifficultyType, SingleFixture } from '@/lib/generateFixtureMatrix'
+import { type FixtureGridSortConfig, type FixtureGridSortKey } from '@/hooks/useFplTable'
 
 import { FixtureGridRow } from './FixtureGridRow'
 import { FixtureGridHeader } from './FixtureGridHeader'
@@ -18,18 +19,14 @@ export type RowData = {
 	gameweekScores: number[]
 }
 
-type SortKey = 'team' | 'score'
-type SortDirection = 'ascending' | 'descending'
-export type SortConfig = { key: SortKey; direction: SortDirection }
-
 type FixtureGridProps = {
 	data: RowData[]
 	events: Gameweek[]
 	teams: Team[]
 	firstGameweek: number
 	numberOfGameweeks: number
-	onSort: (key: SortKey) => void
-	sortConfig: SortConfig
+	onSort: (key: FixtureGridSortKey) => void
+	sortConfig: FixtureGridSortConfig
 	difficultyType: DifficultyType
 	allFixtures: Fixtures
 }
@@ -55,17 +52,9 @@ export function FixtureGrid({
 
 	return (
 		<div className='flex max-h-full flex-col rounded-lg border border-border bg-card shadow-sm'>
-			<div className='min-h-0 flex-1 overflow-x-auto overflow-y-auto rounded-b-lg'>
+			<div className='min-h-0 flex-1 touch-pan-x touch-pan-y overflow-x-auto overflow-y-auto rounded-b-lg'>
 				<Table className='min-w-max' style={{ position: 'relative' }}>
-					<TableHeader
-						className='border-b bg-card shadow-sm'
-						style={{
-							position: 'sticky',
-							top: 0,
-							zIndex: 30,
-							backgroundColor: 'hsl(var(--card))',
-						}}
-					>
+					<TableHeader className='sticky top-0 z-30 border-b bg-card shadow-sm'>
 						<FixtureGridHeader
 							events={events}
 							firstGameweek={firstGameweek}

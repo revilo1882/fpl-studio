@@ -5,10 +5,9 @@ import { useEffect, useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import type { DifficultyType } from '@/lib/generateFixtureMatrix'
+import { type View } from '@/components/ViewToggle'
 
-type View = 'grid' | 'chart'
-type SortKey = 'team' | 'score'
-type SortDirection = 'ascending' | 'descending'
+import { type FixtureGridSortKey, type SortDirection } from './useFplTable'
 
 const toCsv = (list: string[]) => list.join(',')
 const fromCsv = (v: string | null) => (v ? v.split(',').filter(Boolean) : [])
@@ -37,14 +36,14 @@ export const useQuerySync = ({
 	difficultyType: DifficultyType
 	firstGameweek: number
 	numberOfGameweeks: number
-	sortKey: SortKey
+	sortKey: FixtureGridSortKey
 	sortDirection: SortDirection
 	setView: (v: View) => void
 	setSelectedTeams: (teams: string[]) => void
 	setDifficultyType: (v: DifficultyType) => void
 	setFirstGameweek: (n: number) => void
 	setNumberOfGameweeks: (n: number) => void
-	setSortKey: (k: SortKey) => void
+	setSortKey: (k: FixtureGridSortKey) => void
 }) => {
 	const searchParams = useSearchParams()
 	const pathname = usePathname()
@@ -57,7 +56,7 @@ export const useQuerySync = ({
 		const qsType = qp.get('type') as DifficultyType | null
 		const qsFg = qp.get('fg')
 		const qsNgw = qp.get('ngw')
-		const qsSort = qp.get('sort') as SortKey | null
+		const qsSort = qp.get('sort') as FixtureGridSortKey | null
 		if (qsView === 'grid' || qsView === 'chart') setView(qsView)
 		if (qsTeams.length > 0) setSelectedTeams(qsTeams)
 		if (qsType) setDifficultyType(qsType)

@@ -89,29 +89,31 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 	const canShowChart = isChart && !isChartEmpty && !isChartTooMany && !!fixtureData
 
 	return (
-		<section className='container mx-auto grid h-[100dvh] grid-rows-[auto_auto_1fr] gap-6 px-4 py-6'>
+		<div className='container mx-auto px-4 py-6'>
 			<FixturePageHeader
 				title='Fixture Difficulty'
 				subtitle='Analyse upcoming fixtures with Studio FDR ratings'
+				className='mb-4 sm:mb-6'
 			/>
 
-			<FixtureControls
-				view={view}
-				onViewChange={setView}
-				teams={teams}
-				selectedTeams={selectedTeams}
-				onSelectionChange={setSelectedTeams}
-				maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
-				difficultyType={difficultyType}
-				onDifficultyTypeChange={setDifficultyType}
-				numberOfGameweeks={numberOfGameweeks}
-				onNumberOfGameweeksChange={setNumberOfGameweeks}
-				gameweekOptions={gameweekOptions}
-			/>
+			<div className='sticky top-0 z-50 -mx-4 bg-background/95 px-4 pb-4 backdrop-blur sm:static sm:z-auto sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-6 sm:backdrop-blur-none'>
+				<FixtureControls
+					view={view}
+					onViewChange={setView}
+					teams={teams}
+					selectedTeams={selectedTeams}
+					onSelectionChange={setSelectedTeams}
+					maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
+					difficultyType={difficultyType}
+					onDifficultyTypeChange={setDifficultyType}
+					numberOfGameweeks={numberOfGameweeks}
+					onNumberOfGameweeksChange={setNumberOfGameweeks}
+					gameweekOptions={gameweekOptions}
+				/>
+			</div>
 
-			{/* Grid View */}
-			{view === 'grid' && (
-				<div className='min-h-0 overflow-auto'>
+			<div className={view === 'grid' ? 'h-[70vh] sm:h-[60vh]' : 'h-[70vh] sm:h-[65vh]'}>
+				{view === 'grid' && (
 					<FixtureGrid
 						data={sortedData}
 						events={events}
@@ -123,12 +125,9 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 						difficultyType={difficultyType}
 						allFixtures={fixtures}
 					/>
-				</div>
-			)}
+				)}
 
-			{/* Chart View */}
-			{canShowChart && (
-				<div className='h-full min-h-0 overflow-auto'>
+				{canShowChart && (
 					<FixtureAttractivenessChart
 						gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
 						fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
@@ -141,32 +140,24 @@ const FixtureGridPage = ({ bootstrapData, fixtures }: FixtureGridPageProps) => {
 						sortedTeams={sortedTeams}
 						teamAverageByName={teamAverageByName}
 					/>
-				</div>
-			)}
+				)}
 
-			{/* Empty State */}
-			{isChartEmpty && (
-				<div className='flex min-h-0 flex-col'>
-					<ChartEmptyState />
-				</div>
-			)}
+				{isChartEmpty && <ChartEmptyState />}
 
-			{/* Too Many Teams */}
-			{isChartTooMany && (
-				<div className='flex min-h-0 flex-col'>
+				{isChartTooMany && (
 					<ChartTooManyTeams
 						selectedCount={selectionCount}
 						maxTeams={MAX_CHART_TEAMS}
 						onClearTeams={() => setSelectedTeams([])}
 					/>
-				</div>
-			)}
+				)}
 
-			{/* Loading State */}
-			{isLoading && isChart && !fixtureData && (
-				<div className='h-96 w-full animate-pulse rounded-md bg-muted' />
-			)}
-		</section>
+				{/* Loading State */}
+				{isLoading && isChart && !fixtureData && (
+					<div className='h-96 w-full animate-pulse rounded-md bg-muted' />
+				)}
+			</div>
+		</div>
 	)
 }
 

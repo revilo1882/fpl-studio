@@ -20,7 +20,8 @@ type TeamFilterProps = {
 	teams: Team[]
 	selectedTeams: string[]
 	onSelectionChange: (selected: string[]) => void
-	maxTeams?: number // Optional limit
+	maxTeams?: number
+	inline?: boolean
 }
 
 export const TeamFilter = ({
@@ -28,6 +29,7 @@ export const TeamFilter = ({
 	selectedTeams,
 	onSelectionChange,
 	maxTeams,
+	inline,
 }: TeamFilterProps) => {
 	const handleSelect = (teamName: string) => {
 		const isSelected = selectedTeams.includes(teamName)
@@ -63,14 +65,20 @@ export const TeamFilter = ({
 					</span>
 				</span>
 			</Label>
-			<DropdownMenu modal={false}>
+			<DropdownMenu modal={!inline}>
 				<DropdownMenuTrigger asChild>
 					<Button variant='outline' className='w-[200px] justify-between'>
 						{getButtonText()}
 						<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
 					</Button>
 				</DropdownMenuTrigger>
-				<DropdownMenuContent className='max-h-80 w-[200px] overflow-y-auto'>
+				<DropdownMenuContent
+					align='start'
+					side='bottom'
+					sideOffset={8}
+					collisionPadding={8}
+					className='z-[9999] max-h-[60vh] w-[min(92vw,22rem)] overflow-auto sm:w-64'
+				>
 					{selectedTeams.length > 0 && (
 						<>
 							<DropdownMenuItem
