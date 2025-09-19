@@ -1,12 +1,16 @@
+'use client'
+
 import FixtureDifficultyPage from '@/components/FixtureDifficultyPage'
-import { fetchFPLData } from '@/lib/fplApi'
-import type { BootstrapData, Fixtures } from '@/types/fpl'
+import { withFPLData } from '@/components/withFPLData'
+import { type BootstrapData } from '@/types/bootstrap'
+import { type Fixtures } from '@/types/fixtures'
 
-export default async function HomePage() {
-	const [bootstrapData, fixtures] = await Promise.all([
-		fetchFPLData<BootstrapData>('bootstrap-static', { revalidate: 900 }),
-		fetchFPLData<Fixtures>('fixtures', { revalidate: 900 }),
-	])
+interface HomePageProps {
+	bootstrapData: BootstrapData
+	fixtures: Fixtures
+}
 
+function HomePage({ bootstrapData, fixtures }: HomePageProps) {
 	return <FixtureDifficultyPage bootstrapData={bootstrapData} fixtures={fixtures} />
 }
+export default withFPLData(HomePage)

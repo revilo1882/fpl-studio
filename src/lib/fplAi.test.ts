@@ -35,7 +35,7 @@ describe('fetchFPLData', () => {
 		})
 	})
 
-	it('honors forceFresh flag', async () => {
+	it('honours forceFresh flag', async () => {
 		vi.mocked(fetch).mockResolvedValueOnce({
 			ok: true,
 			json: async () => ({ ok: 1 }),
@@ -49,9 +49,8 @@ describe('fetchFPLData', () => {
 	})
 
 	it('throws on non-ok response', async () => {
-		vi.mocked(fetch).mockResolvedValueOnce({ ok: false } as Response)
-		await expect(fetchFPLData('fixtures')).rejects.toThrow(
-			'Failed to fetch FPL data from fixtures',
-		)
+		vi.mocked(fetch).mockResolvedValueOnce({ ok: false, status: 500 } as Response)
+
+		await expect(fetchFPLData('fixtures')).rejects.toThrow('HTTP 500')
 	})
 })

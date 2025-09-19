@@ -1,17 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { type SeasonPerformance } from '@/lib/fdr'
 import { getFormSummary } from '@/lib/fixtureGridUtils'
 import type { Fixtures } from '@/types/fpl'
 
 interface TeamPerformanceCardProps {
-	teamPerformance: {
-		gamesPlayed: number
-		points: number
-		wins: number
-		draws: number
-		losses: number
-		goalsFor: number
-		goalsAgainst: number
-	}
+	teamPerformance: SeasonPerformance
 	teamId: number
 	allFixtures: Fixtures
 }
