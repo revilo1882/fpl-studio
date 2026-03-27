@@ -1,3 +1,5 @@
+'use client'
+
 import { useFPLServerContext } from '@/contexts/FPLServerContext'
 import DataUnavailable from '@/components/DataUnavailable'
 import { type BootstrapData } from '@/types/bootstrap'
