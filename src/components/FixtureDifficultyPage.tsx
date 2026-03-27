@@ -60,6 +60,7 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 		setFirstGameweek,
 		setSelectedTeams,
 		handleSort,
+		setSortConfig,
 	} = actions
 	const { gameweekOptions, sortedData, fixtureData, isLoading, sortedTeams, teamAverageByName } =
 		data
@@ -80,6 +81,7 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 		setFirstGameweek,
 		setNumberOfGameweeks,
 		setSortKey: (key) => handleSort(key),
+		setSortConfig,
 	})
 
 	const selectionCount = selectedTeams.length
@@ -89,7 +91,7 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 	const canShowChart = isChart && !isChartEmpty && !isChartTooMany && !!fixtureData
 
 	return (
-		<section className='container mx-auto flex h-[100dvh] flex-col gap-4 px-4 py-6 sm:gap-6'>
+		<section className='container mx-auto flex h-[calc(100dvh-3.5rem)] flex-col gap-4 px-4 py-4 sm:gap-6 sm:py-6'>
 			<div className='shrink-0'>
 				<FixturePageHeader
 					title='Fixture Difficulty'

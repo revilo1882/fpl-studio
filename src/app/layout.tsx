@@ -8,7 +8,7 @@ import type { BootstrapData } from '@/types/bootstrap'
 import type { Fixtures } from '@/types/fixtures'
 import DataUnavailable from '@/components/DataUnavailable'
 import { FPLProvider } from '@/contexts/FPLServerContext'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { AppHeader } from '@/components/AppHeader'
 
 const REVALIDATE_SECONDS = Number(process.env.NEXT_PUBLIC_REVALIDATE_SECONDS) || 900
 
@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 					enableSystem
 					disableTransitionOnChange
 				>
-					<ThemeToggle />
+					<AppHeader />
 
 					{!dataIsAvailable ? (
 						<DataUnavailable />

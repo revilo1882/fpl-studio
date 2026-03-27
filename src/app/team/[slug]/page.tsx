@@ -4,6 +4,7 @@
 import { use, useState, useEffect } from 'react'
 
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
 import { ChevronLeft } from 'lucide-react'
 
@@ -39,7 +40,10 @@ function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPagePr
 	const [loading, setLoading] = useState(true)
 	const [teamData, setTeamData] = useState<ITeamData>()
 
-	const team = bootstrapData.teams.find((t) => t.short_name.toLowerCase() === params.slug)!
+	const maybeTeam = bootstrapData.teams.find((t) => t.short_name.toLowerCase() === params.slug)
+	if (!maybeTeam) notFound()
+	// notFound() throws — non-null assertion is safe here
+	const team = maybeTeam!
 
 	const currentGameweek =
 		bootstrapData.events.find((event) => event.is_current)?.id ||

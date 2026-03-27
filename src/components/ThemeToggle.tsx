@@ -20,7 +20,6 @@ export const ThemeToggle = () => {
 			size='icon'
 			onClick={toggleTheme}
 			suppressHydrationWarning
-			className='absolute left-4 top-4'
 		>
 			<Sun className='theme-icon-light h-[1.2rem] w-[1.2rem] transition-all' />
 			<Moon className='theme-icon-dark absolute h-[1.2rem] w-[1.2rem] transition-all' />

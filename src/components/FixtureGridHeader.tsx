@@ -63,8 +63,8 @@ export const FixtureGridHeader = ({
 					</div>
 				</TableHead>
 			))}
-			<TableHead
-				className='relative top-0 z-40 w-[90px] border-l border-border bg-background p-0 text-right font-semibold sm:sticky sm:right-0'
+		<TableHead
+			className='sticky right-0 top-0 z-40 w-[90px] border-l border-border bg-background p-0 text-right font-semibold'
 				aria-sort={ariaSortScore as 'ascending' | 'descending' | 'none'}
 			>
 				<div className='flex items-center justify-end gap-2 px-3 py-2'>

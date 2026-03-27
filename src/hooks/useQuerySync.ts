@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { DifficultyType } from '@/lib/generateFixtureMatrix'
 import { type View } from '@/components/ViewToggle'
 
-import { type FixtureGridSortKey, type SortDirection } from './useFplTable'
+import { type FixtureGridSortConfig, type FixtureGridSortKey, type SortDirection } from './useFplTable'
 
 const toCsv = (list: string[]) => list.join(',')
 const fromCsv = (v: string | null) => (v ? v.split(',').filter(Boolean) : [])
@@ -30,6 +30,7 @@ export const useQuerySync = ({
 	setFirstGameweek,
 	setNumberOfGameweeks,
 	setSortKey,
+	setSortConfig,
 }: {
 	view: View
 	selectedTeams: string[]
@@ -44,6 +45,7 @@ export const useQuerySync = ({
 	setFirstGameweek: (n: number) => void
 	setNumberOfGameweeks: (n: number) => void
 	setSortKey: (k: FixtureGridSortKey) => void
+	setSortConfig: (config: FixtureGridSortConfig) => void
 }) => {
 	const searchParams = useSearchParams()
 	const pathname = usePathname()
@@ -57,12 +59,17 @@ export const useQuerySync = ({
 		const qsFg = qp.get('fg')
 		const qsNgw = qp.get('ngw')
 		const qsSort = qp.get('sort') as FixtureGridSortKey | null
+		const qsDir = qp.get('dir') as SortDirection | null
 		if (qsView === 'grid' || qsView === 'chart') setView(qsView)
 		if (qsTeams.length > 0) setSelectedTeams(qsTeams)
 		if (qsType) setDifficultyType(qsType)
 		if (qsFg && !Number.isNaN(Number(qsFg))) setFirstGameweek(Number(qsFg))
 		if (qsNgw && !Number.isNaN(Number(qsNgw))) setNumberOfGameweeks(Number(qsNgw))
-		if (qsSort) setSortKey(qsSort)
+		if (qsSort && (qsDir === 'ascending' || qsDir === 'descending')) {
+			setSortConfig({ key: qsSort, direction: qsDir })
+		} else if (qsSort) {
+			setSortKey(qsSort)
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 

@@ -48,6 +48,7 @@ export type UseFplTableResult = {
 		setDifficultyType: (value: DifficultyType) => void
 		setSelectedTeams: (teams: string[]) => void
 		handleSort: (key: FixtureGridSortKey) => void
+		setSortConfig: (config: FixtureGridSortConfig) => void
 	}
 	data: {
 		gameweekOptions: number[]
@@ -222,6 +223,7 @@ export const useFplTable = ({
 			setDifficultyType,
 			setSelectedTeams,
 			handleSort,
+			setSortConfig,
 		},
 		data: {
 			gameweekOptions,

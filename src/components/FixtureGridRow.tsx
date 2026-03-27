@@ -69,7 +69,7 @@ export const FixtureGridRow = ({
 				)
 			})}
 
-			<TableCell className='z-20 border-l border-border bg-card p-0 text-right sm:sticky sm:right-0'>
+			<TableCell className='sticky right-0 z-20 border-l border-border bg-card p-0 text-right'>
 				<div className='flex h-full items-center justify-center px-3'>
 					<span className='text-sm font-bold tabular-nums text-foreground'>
 						{(row.score / numberOfGameweeks).toFixed(2)}

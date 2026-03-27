@@ -4,7 +4,7 @@ import { mockTeams, mockFixtures, mockBootstrapData } from '../lib/test-mocks'
 
 import { generateFixtureMatrix } from './generateFixtureMatrix'
 
-const allDifficultyTypes = ['fpl', 'overall', 'attack', 'defence'] as const
+const allDifficultyTypes = ['FPL', 'Overall', 'Attack', 'Defence'] as const
 
 describe('generateFixtureMatrix', () => {
 	it.each(allDifficultyTypes)(
@@ -44,7 +44,7 @@ describe('generateFixtureMatrix', () => {
 			bootstrapData: mockBootstrapData,
 			firstGameweek: 1,
 			numberOfGameweeks: 3,
-			difficultyType: 'fpl',
+			difficultyType: 'FPL',
 		})
 
 		expect(result.teamNames.length).toBe(mockTeams.length)

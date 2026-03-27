@@ -139,12 +139,9 @@ src/
 - **Wrapper**: `fetchFPLData(endpoint, { revalidate: 900 })`
     - Uses **stale-while-revalidate** (\~15 minutes).
     - `?fresh=1` disables caching for debugging.
+    - `bootstrap-static` uses `cache: 'no-store'` to avoid Next.js's 2 MB data cache limit on the large response.
 
-- **Computed results** (fixture matrices, attractiveness) cached with stable keys:
-
-    ```
-    fdr:v1:{season}:{view}:{gwStart}:{gwCount}
-    ```
+- **Computed FDR results** are derived client-side per filter change; per-fixture results are memoised within `generateFixtureMatrix` using a `teamId-fixtureId-gameweek` key to avoid redundant recalculations.
 
 ---
 
@@ -176,6 +173,3 @@ Runs on `http://localhost:3000`.
 
 ---
 
-## 📌 Roadmap
-
-See [ROADMAP.md](./ROADMAP.md) for detailed phases and tasks.
