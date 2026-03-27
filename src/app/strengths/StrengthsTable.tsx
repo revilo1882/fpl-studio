@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import Link from 'next/link'
+
 import {
 	Table,
 	TableBody,
@@ -85,10 +87,15 @@ export function StrengthsTable({ teams }: { teams: Team[] }) {
 				<TableBody>
 					{sorted.map((team) => (
 						<TableRow key={team.id} className='hover:bg-muted/30'>
-							<TableCell className='font-medium'>
-								{team.name}{' '}
-								<span className='text-xs text-muted-foreground'>({team.short_name})</span>
-							</TableCell>
+						<TableCell className='font-medium'>
+							<Link
+								href={`/team/${team.short_name.toLowerCase()}`}
+								className='hover:underline'
+							>
+								{team.name}
+							</Link>{' '}
+							<span className='text-xs text-muted-foreground'>({team.short_name})</span>
+						</TableCell>
 							<TableCell className='text-right tabular-nums'>{team.strength}</TableCell>
 							<TableCell className='text-right tabular-nums'>
 								{team.strength_overall_home}

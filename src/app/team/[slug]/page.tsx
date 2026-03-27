@@ -1,4 +1,3 @@
-// page.tsx
 'use client'
 
 import { use, useState, useEffect } from 'react'
@@ -15,18 +14,13 @@ import {
 } from '@/lib/fdr'
 import { calculateDynamicFDR } from '@/lib/fdr/dynamicFDR'
 import { generateFixtureMatrix, type SingleFixture } from '@/lib/generateFixtureMatrix'
-import type { BootstrapData, Fixture, Fixtures, Team as FPLTeam } from '@/types/fpl'
+import type { Fixture, Team as FPLTeam } from '@/types/fpl'
 import { TeamHeader } from '@/app/team/[slug]/components/TeamHeader'
 import { TeamPerformanceCard } from '@/app/team/[slug]/components/TeamPerformanceCard'
 import { TeamStrengthCard } from '@/app/team/[slug]/components/TeamStrengthCard'
 import { TeamFixturesTabs } from '@/app/team/[slug]/components/TeamFixturesTabs'
-import { withFPLData } from '@/components/withFPLData'
-
-interface TeamPageProps {
-	params: Promise<{ slug: string }>
-	bootstrapData: BootstrapData
-	fixtures: Fixtures
-}
+import { useFPLServerContext } from '@/contexts/FPLServerContext'
+import DataUnavailable from '@/components/DataUnavailable'
 
 interface ITeamData {
 	teamPerformance: SeasonPerformance
@@ -35,28 +29,35 @@ interface ITeamData {
 	pastFixtures: Fixture[]
 }
 
-function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPageProps) {
+export default function TeamPage({
+	params: paramsPromise,
+}: {
+	params: Promise<{ slug: string }>
+}) {
 	const params = use(paramsPromise)
+	const { bootstrapData, fixtures } = useFPLServerContext()
 	const [loading, setLoading] = useState(true)
-	const [teamData, setTeamData] = useState<ITeamData>()
+	const [teamData, setTeamData] = useState<ITeamData | undefined>()
 
-	const maybeTeam = bootstrapData.teams.find((t) => t.short_name.toLowerCase() === params.slug)
-	if (!maybeTeam) notFound()
-	// notFound() throws — non-null assertion is safe here
-	const team = maybeTeam!
+	const team = bootstrapData?.teams.find(
+		(t) => t.short_name.toLowerCase() === params.slug,
+	)
 
 	const currentGameweek =
-		bootstrapData.events.find((event) => event.is_current)?.id ||
-		bootstrapData.events.find((event) => event.is_next)?.id ||
+		bootstrapData?.events.find((e) => e.is_current)?.id ??
+		bootstrapData?.events.find((e) => e.is_next)?.id ??
 		1
 
 	useEffect(() => {
+		if (!team || !bootstrapData || !fixtures) return
+
 		async function loadTeamData() {
+			setLoading(true)
 			try {
 				const [teamPerformance, teamOverallFDR, { fixtureMatrix }] = await Promise.all([
-					calculateSeasonPerformance(team.id, fixtures, currentGameweek),
+					calculateSeasonPerformance(team!.id, fixtures!, currentGameweek),
 					calculateDynamicFDR(
-						team,
+						team!,
 						{
 							id: 999,
 							name: 'Average Opponent',
@@ -72,51 +73,49 @@ function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPagePr
 							code: 0,
 							form: '',
 						},
-						fixtures,
-						bootstrapData.teams,
+						fixtures!,
+						bootstrapData!.teams,
 						true,
 						currentGameweek,
 					),
 					generateFixtureMatrix({
-						teams: bootstrapData.teams,
-						fixtures,
-						bootstrapData,
+						teams: bootstrapData!.teams,
+						fixtures: fixtures!,
+						bootstrapData: bootstrapData!,
 						firstGameweek: 1,
 						numberOfGameweeks: 38,
 						difficultyType: 'Overall',
 					}),
 				])
 
-				const teamIndex = bootstrapData.teams.findIndex((t) => t.id === team.id)
+				const teamIndex = bootstrapData!.teams.findIndex((t) => t.id === team!.id)
 				const currentTeamProcessedFixtures: SingleFixture[] =
 					teamIndex !== -1 ? fixtureMatrix[teamIndex].flat() : []
 
 				const upcomingFixtures = currentTeamProcessedFixtures.filter(
-					(fixture) => fixture.gameweekId >= currentGameweek && fixture.label !== '-',
+					(f) => f.gameweekId >= currentGameweek && f.label !== '-',
 				)
 
-				const pastFixtures = fixtures
+				const pastFixtures = fixtures!
 					.filter(
-						(fixture) =>
-							(fixture.team_h === team.id || fixture.team_a === team.id) &&
-							fixture.finished &&
-							(fixture.event ?? 0) < currentGameweek,
+						(f) =>
+							(f.team_h === team!.id || f.team_a === team!.id) &&
+							f.finished &&
+							(f.event ?? 0) < currentGameweek,
 					)
 					.sort((a, b) => (b.event ?? 0) - (a.event ?? 0))
 
-				setTeamData({
-					teamPerformance,
-					teamOverallFDR,
-					upcomingFixtures,
-					pastFixtures,
-				})
+				setTeamData({ teamPerformance, teamOverallFDR, upcomingFixtures, pastFixtures })
 			} finally {
 				setLoading(false)
 			}
 		}
 
 		loadTeamData()
-	}, [team.id, fixtures, bootstrapData, currentGameweek, team])
+	}, [team?.id, fixtures, bootstrapData, currentGameweek, team])
+
+	if (!bootstrapData || !fixtures) return <DataUnavailable />
+	if (!team) notFound()
 
 	if (loading) {
 		return (
@@ -130,13 +129,13 @@ function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPagePr
 
 	return (
 		<main className='container mx-auto max-w-7xl px-4 py-6'>
-		<Link
-			href='/fixtures'
-			className='mb-6 inline-flex items-center text-sm text-muted-foreground hover:underline'
-		>
-			<ChevronLeft className='mr-1 h-4 w-4' />
-			Back to Fixture Grid
-		</Link>
+			<Link
+				href='/fixtures'
+				className='mb-6 inline-flex items-center text-sm text-muted-foreground hover:underline'
+			>
+				<ChevronLeft className='mr-1 h-4 w-4' />
+				Back to Fixture Grid
+			</Link>
 
 			<TeamHeader team={team} />
 
@@ -144,7 +143,7 @@ function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPagePr
 				<div className='flex h-full min-h-0 flex-col md:col-span-2 lg:col-span-2 xl:col-span-2'>
 					{teamData?.teamPerformance && (
 						<TeamPerformanceCard
-							teamPerformance={teamData?.teamPerformance}
+							teamPerformance={teamData.teamPerformance}
 							teamId={team.id}
 							allFixtures={fixtures}
 						/>
@@ -154,7 +153,7 @@ function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPagePr
 					{teamData?.teamOverallFDR && (
 						<TeamStrengthCard
 							teamName={team.name}
-							teamOverallFDR={teamData?.teamOverallFDR}
+							teamOverallFDR={teamData.teamOverallFDR}
 						/>
 					)}
 				</div>
@@ -171,5 +170,3 @@ function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPagePr
 		</main>
 	)
 }
-
-export default withFPLData(TeamPage)
