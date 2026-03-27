@@ -9,16 +9,16 @@ interface TeamHeaderProps {
 
 export function TeamHeader({ team }: TeamHeaderProps) {
 	return (
-		<div className='mb-8 flex items-center gap-4'>
+		<div className='mb-4 flex items-center gap-4'>
 			{team.code !== 0 && (
-				<Image
-					src={getTeamBadgeUrl(team.code) || '/placeholder.svg'}
-					alt={`${team.name} badge`}
-					width={64}
-					height={64}
-					className='rounded-full'
-					unoptimized
-				/>
+			<Image
+				src={getTeamBadgeUrl(team.code, 100) || '/placeholder.svg'}
+				alt={`${team.name} badge`}
+				width={80}
+				height={80}
+				className='object-contain'
+				unoptimized
+			/>
 			)}
 			<div>
 				<h1 className='text-4xl font-bold tracking-tight text-foreground'>{team.name}</h1>

@@ -7,18 +7,18 @@ export default function LandingPage() {
 	return (
 		<div className='flex flex-col'>
 			{/* Hero */}
-			<section className='container mx-auto flex flex-col items-center px-4 pb-16 pt-20 text-center sm:pt-28'>
-				<div className='mb-5 flex items-center gap-2.5'>
-					<BarChart2 className='h-8 w-8 text-primary sm:h-10 sm:w-10' />
-					<span className='text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>
-						FPL Studio
-					</span>
-				</div>
+		<section className='container mx-auto flex flex-col items-center px-4 pb-16 pt-10 text-center sm:pt-14'>
+			<div className='mb-8 flex items-center gap-3'>
+				<BarChart2 className='h-10 w-10 text-primary sm:h-12 sm:w-12' />
+				<span className='text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl'>
+					FPL Studio
+				</span>
+			</div>
 
-				<h1 className='mb-6 max-w-3xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl'>
-					Fixture difficulty,{' '}
-					<span className='text-primary'>recalculated.</span>
-				</h1>
+			<h1 className='mb-6 max-w-3xl text-xl font-semibold tracking-tight text-muted-foreground sm:text-2xl lg:text-3xl'>
+				Fixture difficulty,{' '}
+				<span className='text-primary'>recalculated.</span>
+			</h1>
 
 				<p className='mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl'>
 					The official FPL ratings are static. FPL Studio builds a dynamic model from

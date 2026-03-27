@@ -1,2 +1,2 @@
-export const getTeamBadgeUrl = (teamCode: number) =>
-	`https://resources.premierleague.com/premierleague/badges/25/t${teamCode}.png`
+export const getTeamBadgeUrl = (teamCode: number, size: 25 | 100 = 25) =>
+	`https://resources.premierleague.com/premierleague/badges/${size}/t${teamCode}.png`

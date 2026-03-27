@@ -9,6 +9,7 @@ interface FDRConfidenceDisplayProps {
 	confidenceInterval: [number, number]
 	confidenceScore: number
 	title?: string
+	subtitle?: string
 	showInterpretation?: boolean
 	compact?: boolean
 }
@@ -18,6 +19,7 @@ export function FDRConfidenceDisplay({
 	confidenceInterval,
 	confidenceScore,
 	title = 'FDR with Confidence Intervals',
+	subtitle,
 	showInterpretation = false,
 	compact = false,
 }: FDRConfidenceDisplayProps) {
@@ -49,15 +51,15 @@ export function FDRConfidenceDisplay({
 		<div
 			className={`rounded-lg bg-card text-card-foreground shadow-sm ${compact ? 'w-full' : 'w-full max-w-md'}`}
 		>
-			<div className='flex flex-col space-y-1.5 p-6 pb-4'>
-				<h3 className='flex items-center gap-2 text-lg font-semibold leading-none tracking-tight'>
-					{title}
-					{showInterpretation && (
-						<div className='relative'>
-							<Info
-								className='h-4 w-4 cursor-help text-muted-foreground transition-colors hover:text-foreground'
-								onMouseEnter={() => setShowTooltip(true)}
-								onMouseLeave={() => setShowTooltip(false)}
+	<div className='flex flex-col space-y-1.5 p-6 pb-4'>
+		<h3 className='flex items-center gap-2 text-lg font-semibold leading-none tracking-tight'>
+			{title}
+				{showInterpretation && (
+					<div className='relative'>
+						<Info
+							className='h-4 w-4 cursor-help text-muted-foreground transition-colors hover:text-foreground'
+							onMouseEnter={() => setShowTooltip(true)}
+							onMouseLeave={() => setShowTooltip(false)}
 							/>
 							{showTooltip && (
 								<div className='absolute -top-2 left-6 z-50 w-64 transform rounded-md border bg-popover p-3 text-sm text-popover-foreground shadow-md'>
@@ -97,8 +99,9 @@ export function FDRConfidenceDisplay({
 						</div>
 					)}
 				</h3>
-			</div>
-			<div className='space-y-4 p-6 pt-0'>
+			{subtitle && <p className='text-xs text-muted-foreground'>{subtitle}</p>}
+		</div>
+		<div className='space-y-4 p-6 pt-0'>
 				<div className='flex items-center justify-between'>
 					<span className='text-sm font-medium text-muted-foreground'>FDR Rating</span>
 					<span className='text-2xl font-bold tabular-nums'>{fdrRating.toFixed(1)}</span>

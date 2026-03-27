@@ -92,18 +92,21 @@ export default function TeamPage({
 				const currentTeamProcessedFixtures: SingleFixture[] =
 					teamIndex !== -1 ? fixtureMatrix[teamIndex].flat() : []
 
+				const now = new Date()
 				const upcomingFixtures = currentTeamProcessedFixtures.filter(
-					(f) => f.gameweekId >= currentGameweek && f.label !== '-',
+					(f) =>
+						f.gameweekId >= currentGameweek &&
+						f.label !== '-' &&
+						(!f.kickoffTime || new Date(f.kickoffTime) > now),
 				)
 
-				const pastFixtures = fixtures!
-					.filter(
-						(f) =>
-							(f.team_h === team!.id || f.team_a === team!.id) &&
-							f.finished &&
-							(f.event ?? 0) < currentGameweek,
-					)
-					.sort((a, b) => (b.event ?? 0) - (a.event ?? 0))
+			const pastFixtures = fixtures!
+				.filter(
+					(f) =>
+						(f.team_h === team!.id || f.team_a === team!.id) &&
+						f.finished,
+				)
+				.sort((a, b) => (b.event ?? 0) - (a.event ?? 0))
 
 				setTeamData({ teamPerformance, teamOverallFDR, upcomingFixtures, pastFixtures })
 			} finally {
@@ -119,28 +122,30 @@ export default function TeamPage({
 
 	if (loading) {
 		return (
-			<main className='container mx-auto max-w-7xl px-4 py-6'>
-				<div className='flex h-64 items-center justify-center'>
-					<div>Loading team data...</div>
-				</div>
+			<main className='container mx-auto flex h-[calc(100dvh-3.5rem)] max-w-7xl items-center justify-center px-4'>
+				<div className='text-muted-foreground'>Loading team data...</div>
 			</main>
 		)
 	}
 
 	return (
-		<main className='container mx-auto max-w-7xl px-4 py-6'>
+		<main className='container mx-auto flex h-[calc(100dvh-3.5rem)] max-w-7xl flex-col overflow-hidden px-4 py-6'>
 			<Link
 				href='/fixtures'
-				className='mb-6 inline-flex items-center text-sm text-muted-foreground hover:underline'
+				className='mb-4 inline-flex shrink-0 items-center text-sm text-muted-foreground hover:underline'
 			>
 				<ChevronLeft className='mr-1 h-4 w-4' />
 				Back to Fixture Grid
 			</Link>
 
-			<TeamHeader team={team} />
+			<div className='shrink-0'>
+				<TeamHeader team={team} />
+			</div>
 
-			<div className='grid h-[calc(100dvh-3.5rem-200px)] grid-cols-1 gap-6 overflow-hidden md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6'>
-				<div className='flex h-full min-h-0 flex-col md:col-span-2 lg:col-span-2 xl:col-span-2'>
+			{/* Two-column grid that fills all remaining height */}
+			<div className='grid min-h-0 flex-1 grid-cols-1 gap-6 overflow-hidden md:grid-cols-2'>
+				{/* Stats column — content-height cards, scrolls within column if needed */}
+				<div className='flex flex-col gap-6 overflow-y-auto pb-4'>
 					{teamData?.teamPerformance && (
 						<TeamPerformanceCard
 							teamPerformance={teamData.teamPerformance}
@@ -148,8 +153,6 @@ export default function TeamPage({
 							allFixtures={fixtures}
 						/>
 					)}
-				</div>
-				<div className='flex h-full min-h-0 flex-col md:col-span-2 lg:col-span-2 xl:col-span-2'>
 					{teamData?.teamOverallFDR && (
 						<TeamStrengthCard
 							teamName={team.name}
@@ -157,7 +160,9 @@ export default function TeamPage({
 						/>
 					)}
 				</div>
-				<div className='flex h-full min-h-0 flex-col md:col-span-2 lg:col-span-4 xl:col-span-2'>
+
+				{/* Fixtures column — fills remaining height, scrolls internally */}
+				<div className='flex min-h-0 flex-col overflow-hidden'>
 					<TeamFixturesTabs
 						team={team as FPLTeam}
 						upcomingFixtures={teamData?.upcomingFixtures || []}

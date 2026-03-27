@@ -12,7 +12,9 @@ import { useQuerySync } from '@/hooks/useQuerySync'
 import { FixtureGrid } from './FixtureGrid'
 import { FixturePageHeader } from './FixturePageHeader'
 import { FixtureControls } from './FixtureControls'
+import { DifficultyLegend } from './DifficultyLegend'
 import { ChartEmptyState } from './ChartEmptyState'
+
 import { ChartTooManyTeams } from './ChartTooManyTeams'
 import type { FixtureAttractivenessChartProps } from './FixtureAttractivenessChart'
 
@@ -100,25 +102,36 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 				/>
 			</div>
 
-			<div className='shrink-0'>
-				<FixtureControls
-					view={view}
-					onViewChange={setView}
-					teams={teams}
-					selectedTeams={selectedTeams}
-					onSelectionChange={setSelectedTeams}
-					maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
-					difficultyType={difficultyType}
-					onDifficultyTypeChange={setDifficultyType}
-					numberOfGameweeks={numberOfGameweeks}
-					onNumberOfGameweeksChange={setNumberOfGameweeks}
-					gameweekOptions={gameweekOptions}
-				/>
-			</div>
+		<div className='shrink-0'>
+			<FixtureControls
+				view={view}
+				onViewChange={setView}
+				teams={teams}
+				selectedTeams={selectedTeams}
+				onSelectionChange={setSelectedTeams}
+				maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
+				difficultyType={difficultyType}
+				onDifficultyTypeChange={setDifficultyType}
+				numberOfGameweeks={numberOfGameweeks}
+				onNumberOfGameweeksChange={setNumberOfGameweeks}
+				gameweekOptions={gameweekOptions}
+				rightSlot={
+					view === 'grid' ? (
+						<DifficultyLegend difficultyType={difficultyType} />
+					) : undefined
+				}
+			/>
+			{/* On mobile the legend sits below the filter sheet button */}
+			{view === 'grid' && (
+				<div className='mt-2 sm:hidden'>
+					<DifficultyLegend difficultyType={difficultyType} />
+				</div>
+			)}
+		</div>
 
-			<div className='min-h-0 flex-1'>
-				{view === 'grid' && (
-					<FixtureGrid
+		<div className='min-h-0 flex-1'>
+			{view === 'grid' && (
+				<FixtureGrid
 						data={sortedData}
 						events={events}
 						teams={teams}

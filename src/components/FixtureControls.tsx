@@ -2,6 +2,8 @@
 
 import * as React from 'react'
 
+import type { ReactNode } from 'react'
+
 import { SlidersHorizontal } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -36,6 +38,8 @@ type FixtureControlsProps = {
 	numberOfGameweeks: number
 	onNumberOfGameweeksChange: (n: number) => void
 	gameweekOptions: number[]
+	/** Optional element rendered right-aligned on the desktop controls row */
+	rightSlot?: ReactNode
 }
 
 export const FixtureControls = ({
@@ -50,6 +54,7 @@ export const FixtureControls = ({
 	numberOfGameweeks,
 	onNumberOfGameweeksChange,
 	gameweekOptions,
+	rightSlot,
 }: FixtureControlsProps) => {
 	const diffShort =
 		difficultyType === 'FPL'
@@ -106,26 +111,27 @@ export const FixtureControls = ({
 				</div>
 			</div>
 
-			<div className='hidden sm:flex sm:flex-wrap sm:items-end sm:gap-6'>
-				<div className='flex flex-wrap items-end gap-4'>
-					<ViewToggle view={view} onViewChange={onViewChange} />
-					<TeamFilter
-						teams={teams}
-						selectedTeams={selectedTeams}
-						onSelectionChange={onSelectionChange}
-						maxTeams={maxTeams}
-					/>
-					<DifficultySelector
-						difficultyType={difficultyType}
-						setDifficultyType={onDifficultyTypeChange}
-					/>
-					<GameweekSelector
-						numberOfGameweeks={numberOfGameweeks}
-						setNumberOfGameweeks={onNumberOfGameweeksChange}
-						gameweekOptions={gameweekOptions}
-					/>
-				</div>
+		<div className='hidden sm:flex sm:items-end sm:justify-between sm:gap-6'>
+			<div className='flex flex-wrap items-end gap-4'>
+				<ViewToggle view={view} onViewChange={onViewChange} />
+				<TeamFilter
+					teams={teams}
+					selectedTeams={selectedTeams}
+					onSelectionChange={onSelectionChange}
+					maxTeams={maxTeams}
+				/>
+				<DifficultySelector
+					difficultyType={difficultyType}
+					setDifficultyType={onDifficultyTypeChange}
+				/>
+				<GameweekSelector
+					numberOfGameweeks={numberOfGameweeks}
+					setNumberOfGameweeks={onNumberOfGameweeksChange}
+					gameweekOptions={gameweekOptions}
+				/>
 			</div>
+			{rightSlot && <div className='shrink-0 self-end pb-0.5'>{rightSlot}</div>}
+		</div>
 		</>
 	)
 }

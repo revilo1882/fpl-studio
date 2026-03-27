@@ -5,6 +5,7 @@ import Image from 'next/image'
 import type { Fixtures, Team } from '@/types/fpl'
 import type { DifficultyType, SingleFixture } from '@/lib/generateFixtureMatrix'
 import { getTeamBadgeUrl } from '@/lib/fpl/badges'
+import { FormBadges } from '@/components/FormBadges'
 
 type FixtureChipPopoverContentProps = {
 	fixture: SingleFixture
@@ -61,12 +62,12 @@ export const FixtureChipPopoverContent = ({
 					</span>
 				</div>
 
-				{opponentTeam && (
-					<div className='col-span-2 flex justify-between'>
-						<span className='text-muted-foreground'>Form:</span>
-						<span className='font-mono'>{formSummary}</span>
-					</div>
-				)}
+			{opponentTeam && (
+				<div className='col-span-2 flex items-start justify-between gap-2'>
+					<span className='mt-0.5 text-muted-foreground'>Form:</span>
+					<FormBadges formSummary={formSummary} />
+				</div>
+			)}
 
 				{fixture.kickoffTime && (
 					<div className='col-span-2 flex justify-between'>

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { type SeasonPerformance } from '@/lib/fdr'
 import { getFormSummary } from '@/lib/fixtureGridUtils'
+import { FormBadges } from '@/components/FormBadges'
 import type { Fixtures } from '@/types/fpl'
 
 interface TeamPerformanceCardProps {
@@ -22,7 +23,7 @@ export function TeamPerformanceCard({
 			: '0.0'
 
 	return (
-		<Card className='flex h-full flex-col overflow-hidden border'>
+		<Card className='flex flex-col overflow-hidden border'>
 			<CardHeader className='border-b pb-4'>
 				<CardTitle className='flex items-center justify-between'>
 					<span>Season Performance</span>
@@ -31,7 +32,7 @@ export function TeamPerformanceCard({
 					</span>
 				</CardTitle>
 			</CardHeader>
-			<CardContent className='flex-1 space-y-6 overflow-y-auto pt-6'>
+			<CardContent className='space-y-6 pt-6'>
 				<div className='grid grid-cols-2 gap-4'>
 					<div className='text-center'>
 						<div className='text-3xl font-bold text-foreground'>
@@ -93,16 +94,14 @@ export function TeamPerformanceCard({
 						<div className='text-sm text-muted-foreground'>Goals Against</div>
 					</div>
 				</div>
-				<div className='rounded-lg bg-muted/30 p-4'>
-					<div className='flex items-center justify-between'>
-						<span className='text-sm font-medium text-muted-foreground'>
-							Recent Form
-						</span>
-						<span className='font-mono text-lg font-bold text-foreground'>
-							{formSummary || 'No recent games'}
-						</span>
-					</div>
+			<div className='rounded-lg bg-muted/30 p-4'>
+				<div className='flex items-start justify-between gap-2'>
+					<span className='mt-1 text-sm font-medium text-muted-foreground'>
+						Recent Form
+					</span>
+					<FormBadges formSummary={formSummary || 'No recent games'} />
 				</div>
+			</div>
 			</CardContent>
 		</Card>
 	)

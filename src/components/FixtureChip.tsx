@@ -15,9 +15,11 @@ type FixtureChipProps = {
 	teams: Team[]
 	difficultyType: DifficultyType
 	fixtures: Fixtures
+	/** Compact mode: shows only the FDR score as an inline pill (no opponent label). Hover popover still works. */
+	compact?: boolean
 }
 
-export const FixtureChip = ({ fixture, teams, difficultyType, fixtures }: FixtureChipProps) => {
+export const FixtureChip = ({ fixture, teams, difficultyType, fixtures, compact = false }: FixtureChipProps) => {
 	const opponentTeam = getOpponentTeam(fixture.opponentName, teams)
 	const [formSummary, setFormSummary] = useState<string>('Loading...')
 	const [open, setOpen] = useState(false)
@@ -41,42 +43,61 @@ export const FixtureChip = ({ fixture, teams, difficultyType, fixtures }: Fixtur
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<div
-					role='button'
-					aria-label='Show fixture details'
-					// Mouse: hover to open, leave to schedule close
-					onPointerEnter={(e) => { if (e.pointerType === 'mouse') openPopover() }}
-					onPointerLeave={(e) => { if (e.pointerType === 'mouse') scheduleClose() }}
-					className={cn(
-						'group/chip flex flex-1 cursor-pointer items-center justify-center whitespace-nowrap rounded-md',
-						'px-1.5 py-1 sm:px-3 sm:py-2',
-						'text-xs sm:text-sm',
-						'transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-md hover:shadow-black/10',
-						'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-						getDifficultyUI(fixture.difficulty, difficultyType).bg,
-					)}
-				>
-					<div className='flex flex-col items-center leading-tight sm:flex-row sm:items-center sm:gap-1'>
-						<span className='font-medium text-black dark:text-white'>
-							{fixture.label}
-						</span>
-
-						<span className='mt-0.5 font-mono text-[11px] tabular-nums text-black/60 dark:text-white/60 sm:ml-1 sm:mt-0'>
-							(
-							{difficultyType === 'FPL'
-								? fixture.difficulty
-								: fixture.difficulty.toFixed(2)}
-							)
-						</span>
-					</div>
-
-					{typeof fixture.attractivenessScore === 'number' &&
-						fixture.attractivenessScore > 0 && (
-							<span className='ml-1 hidden text-xs text-blue-600 dark:text-blue-400 sm:inline'>
-								★{fixture.attractivenessScore.toFixed(1)}
-							</span>
+				{compact ? (
+					/* Inline score pill — no opponent label, just the FDR number */
+					<div
+						role='button'
+						aria-label='Show fixture details'
+						onPointerEnter={(e) => { if (e.pointerType === 'mouse') openPopover() }}
+						onPointerLeave={(e) => { if (e.pointerType === 'mouse') scheduleClose() }}
+						className={cn(
+							'inline-flex cursor-pointer items-center rounded px-2 py-0.5',
+							'text-sm font-semibold tabular-nums text-black dark:text-white',
+							'transition-all duration-200 hover:scale-105 hover:shadow-sm',
+							'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+							getDifficultyUI(fixture.difficulty, difficultyType).bg,
 						)}
-				</div>
+					>
+						{difficultyType === 'FPL'
+							? fixture.difficulty
+							: fixture.difficulty.toFixed(2)}
+					</div>
+				) : (
+					/* Full chip — opponent label + score */
+					<div
+						role='button'
+						aria-label='Show fixture details'
+						onPointerEnter={(e) => { if (e.pointerType === 'mouse') openPopover() }}
+						onPointerLeave={(e) => { if (e.pointerType === 'mouse') scheduleClose() }}
+						className={cn(
+							'group/chip flex flex-1 cursor-pointer items-center justify-center whitespace-nowrap rounded-md',
+							'px-1.5 py-1 sm:px-3 sm:py-2',
+							'text-xs sm:text-sm',
+							'transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-md hover:shadow-black/10',
+							'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+							getDifficultyUI(fixture.difficulty, difficultyType).bg,
+						)}
+					>
+						<div className='flex flex-col items-center leading-tight sm:flex-row sm:items-center sm:gap-1'>
+							<span className='font-medium text-black dark:text-white'>
+								{fixture.label}
+							</span>
+							<span className='mt-0.5 font-mono text-[11px] tabular-nums text-black/60 dark:text-white/60 sm:ml-1 sm:mt-0'>
+								(
+								{difficultyType === 'FPL'
+									? fixture.difficulty
+									: fixture.difficulty.toFixed(2)}
+								)
+							</span>
+						</div>
+						{typeof fixture.attractivenessScore === 'number' &&
+							fixture.attractivenessScore > 0 && (
+								<span className='ml-1 hidden text-xs text-blue-600 dark:text-blue-400 sm:inline'>
+									★{fixture.attractivenessScore.toFixed(1)}
+								</span>
+							)}
+					</div>
+				)}
 			</PopoverTrigger>
 
 		<PopoverContent
