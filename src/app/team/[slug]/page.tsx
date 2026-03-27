@@ -140,7 +140,7 @@ function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPagePr
 
 			<TeamHeader team={team} />
 
-			<div className='grid h-[calc(100vh-200px)] grid-cols-1 gap-6 overflow-hidden md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6'>
+			<div className='grid h-[calc(100dvh-3.5rem-200px)] grid-cols-1 gap-6 overflow-hidden md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6'>
 				<div className='flex h-full min-h-0 flex-col md:col-span-2 lg:col-span-2 xl:col-span-2'>
 					{teamData?.teamPerformance && (
 						<TeamPerformanceCard

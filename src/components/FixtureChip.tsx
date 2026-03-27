@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { Fixtures, Team } from '@/types/fpl'
@@ -20,18 +20,33 @@ type FixtureChipProps = {
 export const FixtureChip = ({ fixture, teams, difficultyType, fixtures }: FixtureChipProps) => {
 	const opponentTeam = getOpponentTeam(fixture.opponentName, teams)
 	const [formSummary, setFormSummary] = useState<string>('Loading...')
+	const [open, setOpen] = useState(false)
+	const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
 	useEffect(() => {
 		if (opponentTeam) setFormSummary(getFormSummary(opponentTeam.id, fixtures))
 		else setFormSummary('N/A')
 	}, [opponentTeam, fixtures])
 
+	useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current) }, [])
+
+	const openPopover = () => {
+		if (closeTimer.current) clearTimeout(closeTimer.current)
+		setOpen(true)
+	}
+	const scheduleClose = () => {
+		closeTimer.current = setTimeout(() => setOpen(false), 150)
+	}
+
 	return (
-		<Popover>
+		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
 				<div
 					role='button'
 					aria-label='Show fixture details'
+					// Mouse: hover to open, leave to schedule close
+					onPointerEnter={(e) => { if (e.pointerType === 'mouse') openPopover() }}
+					onPointerLeave={(e) => { if (e.pointerType === 'mouse') scheduleClose() }}
 					className={cn(
 						'group/chip flex flex-1 cursor-pointer items-center justify-center whitespace-nowrap rounded-md',
 						'px-1.5 py-1 sm:px-3 sm:py-2',
@@ -64,14 +79,17 @@ export const FixtureChip = ({ fixture, teams, difficultyType, fixtures }: Fixtur
 				</div>
 			</PopoverTrigger>
 
-			<PopoverContent
-				side='top'
-				align='center'
-				sideOffset={8}
-				avoidCollisions
-				collisionPadding={8}
-				className='w-64 rounded-md border bg-popover p-3 text-sm text-popover-foreground shadow-lg'
-			>
+		<PopoverContent
+			side='top'
+			align='center'
+			sideOffset={8}
+			avoidCollisions
+			collisionPadding={8}
+			className='w-64 rounded-md border bg-popover p-3 text-sm text-popover-foreground shadow-lg'
+			// Keep open while mouse is over the content panel
+			onPointerEnter={(e) => { if (e.pointerType === 'mouse') openPopover() }}
+			onPointerLeave={(e) => { if (e.pointerType === 'mouse') scheduleClose() }}
+		>
 				<FixtureChipPopoverContent
 					fixture={fixture}
 					difficultyType={difficultyType}
