@@ -130,13 +130,13 @@ function TeamPage({ params: paramsPromise, bootstrapData, fixtures }: TeamPagePr
 
 	return (
 		<main className='container mx-auto max-w-7xl px-4 py-6'>
-			<Link
-				href='/'
-				className='mb-6 inline-flex items-center text-sm text-muted-foreground hover:underline'
-			>
-				<ChevronLeft className='mr-1 h-4 w-4' />
-				Back to Fixture Grid
-			</Link>
+		<Link
+			href='/fixtures'
+			className='mb-6 inline-flex items-center text-sm text-muted-foreground hover:underline'
+		>
+			<ChevronLeft className='mr-1 h-4 w-4' />
+			Back to Fixture Grid
+		</Link>
 
 			<TeamHeader team={team} />
 

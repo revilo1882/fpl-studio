@@ -28,7 +28,7 @@ const StrengthsPage = async () => {
 	const sortedTeams = [...teams].sort((a, b) => a.name.localeCompare(b.name))
 
 	return (
-		<div className='mt-20 space-y-4'>
+		<div className='container mx-auto space-y-4 px-4 py-8'>
 			<div className='flex items-end justify-between'>
 				<h1 className='text-2xl font-bold tracking-tight'>Team Strength Snapshot</h1>
 				<p className='text-sm text-muted-foreground'>As of {formattedNow}</p>
