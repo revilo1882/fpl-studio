@@ -1,11 +1,11 @@
 import { ArrowUp, ArrowDown } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { type FixtureGridSortConfig, type FixtureGridSortKey } from '@/hooks/useFplTable'
+import type { SortDirection } from '@/hooks/useFplTable'
 
 interface SortIndicatorProps {
-	columnKey: FixtureGridSortKey
-	sortConfig: FixtureGridSortConfig
+	columnKey: string
+	sortConfig: { key: string; direction: SortDirection }
 }
 
 export function SortIndicator({ columnKey, sortConfig }: SortIndicatorProps) {

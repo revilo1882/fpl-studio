@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { BarChart2 } from 'lucide-react'
 
+import { NavLinks } from './NavLinks'
 import { ThemeToggle } from './ThemeToggle'
 
 export const AppHeader = () => (
@@ -16,20 +17,7 @@ export const AppHeader = () => (
 					<span className='text-base font-semibold tracking-tight'>FPL Studio</span>
 				</Link>
 
-				<nav className='hidden sm:flex sm:items-center sm:gap-1'>
-					<Link
-						href='/fixtures'
-						className='rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-					>
-						Fixtures
-					</Link>
-					<Link
-						href='/strengths'
-						className='rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-					>
-						Strengths
-					</Link>
-				</nav>
+				<NavLinks />
 			</div>
 
 			<ThemeToggle />

@@ -1,0 +1,117 @@
+'use client'
+
+import { useState } from 'react'
+
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table'
+import { SortIndicator } from '@/components/SortIndicator'
+import type { Team } from '@/types/fpl'
+
+type SortKey = keyof Pick<
+	Team,
+	| 'name'
+	| 'strength'
+	| 'strength_overall_home'
+	| 'strength_overall_away'
+	| 'strength_attack_home'
+	| 'strength_attack_away'
+	| 'strength_defence_home'
+	| 'strength_defence_away'
+>
+
+type SortDir = 'ascending' | 'descending'
+
+const columns: { key: SortKey; label: string; align?: 'right' }[] = [
+	{ key: 'name', label: 'Team' },
+	{ key: 'strength', label: 'Strength', align: 'right' },
+	{ key: 'strength_overall_home', label: 'Overall (H)', align: 'right' },
+	{ key: 'strength_overall_away', label: 'Overall (A)', align: 'right' },
+	{ key: 'strength_attack_home', label: 'Attack (H)', align: 'right' },
+	{ key: 'strength_attack_away', label: 'Attack (A)', align: 'right' },
+	{ key: 'strength_defence_home', label: 'Defence (H)', align: 'right' },
+	{ key: 'strength_defence_away', label: 'Defence (A)', align: 'right' },
+]
+
+export function StrengthsTable({ teams }: { teams: Team[] }) {
+	const [sortKey, setSortKey] = useState<SortKey>('name')
+	const [sortDir, setSortDir] = useState<SortDir>('ascending')
+
+	const handleSort = (key: SortKey) => {
+		if (key === sortKey) {
+			setSortDir((d) => (d === 'ascending' ? 'descending' : 'ascending'))
+		} else {
+			setSortKey(key)
+			setSortDir(key === 'name' ? 'ascending' : 'descending')
+		}
+	}
+
+	const sorted = [...teams].sort((a, b) => {
+		const av = a[sortKey]
+		const bv = b[sortKey]
+		const cmp =
+			typeof av === 'string' ? av.localeCompare(bv as string) : (av as number) - (bv as number)
+		return sortDir === 'ascending' ? cmp : -cmp
+	})
+
+	const sortConfig = { key: sortKey as string, direction: sortDir }
+
+	return (
+		<div className='overflow-x-auto rounded-lg border'>
+			<Table className='min-w-max text-sm'>
+				<TableHeader>
+					<TableRow>
+						{columns.map(({ key, label, align }) => (
+							<TableHead
+								key={key}
+								className={align === 'right' ? 'whitespace-nowrap text-right' : 'whitespace-nowrap'}
+							>
+								<button
+									onClick={() => handleSort(key)}
+									className='inline-flex items-center gap-1.5 transition-colors hover:text-foreground'
+								>
+									{label}
+									<SortIndicator columnKey={key} sortConfig={sortConfig} />
+								</button>
+							</TableHead>
+						))}
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{sorted.map((team) => (
+						<TableRow key={team.id} className='hover:bg-muted/30'>
+							<TableCell className='font-medium'>
+								{team.name}{' '}
+								<span className='text-xs text-muted-foreground'>({team.short_name})</span>
+							</TableCell>
+							<TableCell className='text-right tabular-nums'>{team.strength}</TableCell>
+							<TableCell className='text-right tabular-nums'>
+								{team.strength_overall_home}
+							</TableCell>
+							<TableCell className='text-right tabular-nums'>
+								{team.strength_overall_away}
+							</TableCell>
+							<TableCell className='text-right tabular-nums'>
+								{team.strength_attack_home}
+							</TableCell>
+							<TableCell className='text-right tabular-nums'>
+								{team.strength_attack_away}
+							</TableCell>
+							<TableCell className='text-right tabular-nums'>
+								{team.strength_defence_home}
+							</TableCell>
+							<TableCell className='text-right tabular-nums'>
+								{team.strength_defence_away}
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+		</div>
+	)
+}

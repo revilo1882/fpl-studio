@@ -1,12 +1,6 @@
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table'
 import type { Team } from '@/types/fpl'
+
+import { StrengthsTable } from './StrengthsTable'
 
 const fetchTeams = async (): Promise<Team[]> => {
 	const res = await fetch('https://fantasy.premierleague.com/api/bootstrap-static/', {
@@ -19,82 +13,32 @@ const fetchTeams = async (): Promise<Team[]> => {
 
 const StrengthsPage = async () => {
 	const teams = await fetchTeams()
+
 	const formattedNow = new Intl.DateTimeFormat('en-GB', {
 		dateStyle: 'medium',
 		timeStyle: 'short',
 		timeZone: 'Europe/London',
 	}).format(new Date())
 
-	const sortedTeams = [...teams].sort((a, b) => a.name.localeCompare(b.name))
-
 	return (
 		<div className='container mx-auto space-y-4 px-4 py-8'>
 			<div className='flex items-end justify-between'>
-				<h1 className='text-2xl font-bold tracking-tight'>Team Strength Snapshot</h1>
-				<p className='text-sm text-muted-foreground'>As of {formattedNow}</p>
+				<div>
+					<h1 className='text-2xl font-bold tracking-tight'>Team Strength Snapshot</h1>
+					<p className='mt-1 text-sm text-muted-foreground'>
+						The raw FPL strength metrics used as base inputs to the FDR algorithm.
+						Click any column header to sort.
+					</p>
+				</div>
+				<p className='shrink-0 text-sm text-muted-foreground'>As of {formattedNow}</p>
 			</div>
 
-			<div className='overflow-x-auto rounded-lg border'>
-				<Table className='text-sm'>
-					<TableHeader>
-						<TableRow>
-							<TableHead className='whitespace-nowrap'>Team</TableHead>
-							<TableHead className='whitespace-nowrap text-right'>Strength</TableHead>
-							<TableHead className='whitespace-nowrap text-right'>
-								Overall (Home)
-							</TableHead>
-							<TableHead className='whitespace-nowrap text-right'>
-								Overall (Away)
-							</TableHead>
-							<TableHead className='whitespace-nowrap text-right'>
-								Attack (Home)
-							</TableHead>
-							<TableHead className='whitespace-nowrap text-right'>
-								Attack (Away)
-							</TableHead>
-							<TableHead className='whitespace-nowrap text-right'>
-								Defence (Home)
-							</TableHead>
-							<TableHead className='whitespace-nowrap text-right'>
-								Defence (Away)
-							</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{sortedTeams.map((team) => (
-							<TableRow key={team.id} className='hover:bg-muted/30'>
-								<TableCell className='font-medium'>
-									{team.name} ({team.short_name})
-								</TableCell>
-								<TableCell className='text-right tabular-nums'>
-									{team.strength}
-								</TableCell>
-								<TableCell className='text-right tabular-nums'>
-									{team.strength_overall_home}
-								</TableCell>
-								<TableCell className='text-right tabular-nums'>
-									{team.strength_overall_away}
-								</TableCell>
-								<TableCell className='text-right tabular-nums'>
-									{team.strength_attack_home}
-								</TableCell>
-								<TableCell className='text-right tabular-nums'>
-									{team.strength_attack_away}
-								</TableCell>
-								<TableCell className='text-right tabular-nums'>
-									{team.strength_defence_home}
-								</TableCell>
-								<TableCell className='text-right tabular-nums'>
-									{team.strength_defence_away}
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</div>
+			<StrengthsTable teams={teams} />
 
 			<p className='text-xs text-muted-foreground'>
-				Data from FPL bootstrap; take a screenshot now and compare again in ~5 weeks.
+				Source: Official FPL API (
+				<code className='text-xs'>bootstrap-static</code>). Strength values are on a
+				1000–1400 scale; FPL Studio normalises these to a 1–5 rating for the FDR model.
 			</p>
 		</div>
 	)

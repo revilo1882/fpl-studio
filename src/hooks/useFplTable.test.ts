@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 
 import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
 
@@ -56,7 +56,6 @@ describe('useFplTable', () => {
 	it('sets isLoading to false eventually (after fixture generation)', async () => {
 		const { result } = renderHook(() => useFplTable(defaultParams))
 
-		await new Promise((resolve) => setTimeout(resolve, 50))
-		expect(result.current.data.isLoading).toBe(false)
+		await waitFor(() => expect(result.current.data.isLoading).toBe(false), { timeout: 2000 })
 	})
 })

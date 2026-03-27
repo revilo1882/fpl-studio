@@ -8,12 +8,14 @@ export default function LandingPage() {
 		<div className='flex flex-col'>
 			{/* Hero */}
 			<section className='container mx-auto flex flex-col items-center px-4 pb-16 pt-20 text-center sm:pt-28'>
-				<div className='mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted/60 px-4 py-1.5 text-sm text-muted-foreground'>
-					<BarChart2 className='h-3.5 w-3.5' />
-					Custom fixture difficulty ratings
+				<div className='mb-5 flex items-center gap-2.5'>
+					<BarChart2 className='h-8 w-8 text-primary sm:h-10 sm:w-10' />
+					<span className='text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>
+						FPL Studio
+					</span>
 				</div>
 
-				<h1 className='mb-6 max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl'>
+				<h1 className='mb-6 max-w-3xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl'>
 					Fixture difficulty,{' '}
 					<span className='text-primary'>recalculated.</span>
 				</h1>
@@ -45,11 +47,11 @@ export default function LandingPage() {
 					</h2>
 
 					<div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
-						<FeatureCard
-							icon={<TrendingUp className='h-5 w-5' />}
-							title='Dynamic FDR'
-							description='Ratings that evolve as the season progresses. Early on, team strength dominates. Later, actual season data and recent form take over.'
-						/>
+					<FeatureCard
+						icon={<TrendingUp className='h-5 w-5' />}
+						title='Fixture Difficulty Rating (FDR)'
+						description='Ratings that evolve as the season progresses. Early on, team strength dominates. Later, actual season data and recent form take over.'
+					/>
 						<FeatureCard
 							icon={<LayoutGrid className='h-5 w-5' />}
 							title='Fixture Grid'
