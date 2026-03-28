@@ -1,4 +1,5 @@
 import type { Team } from '@/types/fpl'
+import { FixturePageHeader } from '@/components/FixturePageHeader'
 
 import { StrengthsTable } from './StrengthsTable'
 
@@ -14,23 +15,14 @@ const fetchTeams = async (): Promise<Team[]> => {
 const StrengthsPage = async () => {
 	const teams = await fetchTeams()
 
-	const formattedNow = new Intl.DateTimeFormat('en-GB', {
-		dateStyle: 'medium',
-		timeStyle: 'short',
-		timeZone: 'Europe/London',
-	}).format(new Date())
-
 	return (
-		<div className='container mx-auto flex flex-col gap-4 px-4 py-6 sm:h-full sm:overflow-hidden sm:py-8'>
-			<div className='shrink-0 flex items-end justify-between'>
-				<div>
-					<h1 className='text-2xl font-bold tracking-tight'>Team Strength Snapshot</h1>
-					<p className='mt-1 text-sm text-muted-foreground'>
-						The raw FPL strength metrics used as base inputs to the FDR algorithm.
-						Click any column header to sort.
-					</p>
-				</div>
-				<p className='shrink-0 text-sm text-muted-foreground'>As of {formattedNow}</p>
+		<div className='container mx-auto flex flex-col gap-4 px-4 py-4 sm:h-full sm:overflow-hidden sm:gap-6 sm:py-6'>
+			<div className='shrink-0'>
+				<FixturePageHeader
+					title='Team Strength Snapshot'
+					subtitle='The raw FPL strength metrics used as base inputs to the FDR algorithm. Click any column header to sort.'
+					className='mb-2 sm:mb-0'
+				/>
 			</div>
 
 			<div className='sm:min-h-0 sm:flex-1'>

@@ -141,22 +141,22 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 					/>
 				)}
 
-				{canShowChart && (
-					<div className='h-full'>
-						<FixtureAttractivenessChart
-							gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
-							fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
-							teamNames={fixtureData!.teamNames}
-							selectedTeams={selectedTeams}
-							firstGameweek={firstGameweek}
-							numberOfGameweeks={numberOfGameweeks}
-							difficultyType={difficultyType}
-							teams={teams}
-							sortedTeams={sortedTeams}
-							teamAverageByName={teamAverageByName}
-						/>
-					</div>
-				)}
+			{canShowChart && (
+				<div className='h-full'>
+					<FixtureAttractivenessChart
+						gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
+						fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
+						teamNames={fixtureData!.teamNames}
+						selectedTeams={selectedTeams}
+						firstGameweek={firstGameweek}
+						numberOfGameweeks={numberOfGameweeks}
+						difficultyType={difficultyType}
+						teams={teams}
+						sortedTeams={sortedTeams}
+						teamAverageByName={teamAverageByName}
+					/>
+				</div>
+			)}
 
 				{isChartEmpty && <ChartEmptyState />}
 
