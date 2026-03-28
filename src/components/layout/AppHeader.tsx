@@ -14,6 +14,7 @@ import { ThemeToggle } from './ThemeToggle'
 const NAV_LINKS = [
 	{ href: '/fixtures', label: 'Fixtures' },
 	{ href: '/strengths', label: 'Strengths' },
+	{ href: '/about', label: 'About' },
 ]
 
 export const AppHeader = () => {

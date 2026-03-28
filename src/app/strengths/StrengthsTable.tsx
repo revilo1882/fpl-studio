@@ -64,7 +64,7 @@ export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 	const sortConfig = { key: sortKey as string, direction: sortDir }
 
 	return (
-		<div className='overflow-x-auto overflow-y-visible rounded-lg border sm:max-h-full sm:overflow-auto'>
+		<div className='overflow-x-auto overflow-y-visible rounded-lg border lg:max-h-full lg:overflow-auto'>
 			<Table className='min-w-max text-sm'>
 				<TableHeader>
 					<TableRow>

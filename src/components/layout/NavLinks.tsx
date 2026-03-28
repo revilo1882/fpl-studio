@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 const links = [
 	{ href: '/fixtures', label: 'Fixtures' },
 	{ href: '/strengths', label: 'Strengths' },
+	{ href: '/about', label: 'About' },
 ]
 
 export const NavLinks = () => {

@@ -10,12 +10,19 @@ export type View = 'grid' | 'chart'
 export const ViewToggle = ({
 	view,
 	onViewChange,
+	compact = false,
 }: {
 	view: View
 	onViewChange: (v: View) => void
+	/** Single-row toolbar: hide visible label, tighter layout */
+	compact?: boolean
 }) => (
-	<div className='flex flex-col gap-2'>
-		<Label>View</Label>
+	<div
+		className={
+			compact ? 'flex shrink-0 items-center gap-2' : 'flex flex-col gap-2'
+		}
+	>
+		<Label className={compact ? 'sr-only' : undefined}>View</Label>
 		<ToggleGroup
 			type='single'
 			value={view}

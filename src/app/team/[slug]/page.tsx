@@ -117,7 +117,7 @@ const TeamPage = ({
 }
 
 	return (
-		<main className='container mx-auto flex max-w-7xl flex-col px-4 py-6 md:h-full md:min-h-0 md:overflow-hidden'>
+		<main className='container mx-auto flex max-w-7xl flex-col px-4 py-6 lg:h-full lg:min-h-0 lg:overflow-hidden'>
 			<Link
 				href='/fixtures'
 				className='mb-4 inline-flex shrink-0 items-center text-sm text-muted-foreground hover:underline'
@@ -131,7 +131,7 @@ const TeamPage = ({
 			</div>
 
 			{/* Two-column grid that fills all remaining height */}
-			<div className='grid grid-cols-1 gap-6 md:min-h-0 md:flex-1 md:grid-cols-2 md:overflow-hidden'>
+			<div className='grid grid-cols-1 gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-2 lg:overflow-hidden'>
 				{/* Stats column — content-height cards, scrolls within column if needed */}
 				<div className='flex flex-col gap-6 overflow-y-auto pb-4'>
 					{teamData?.teamPerformance && (

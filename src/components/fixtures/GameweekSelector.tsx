@@ -13,21 +13,32 @@ interface GameweekSelectorProps {
 	numberOfGameweeks: number
 	setNumberOfGameweeks: (num: number) => void
 	gameweekOptions: number[]
+	compact?: boolean
 }
 
 export const GameweekSelector = ({
 	numberOfGameweeks,
 	setNumberOfGameweeks,
 	gameweekOptions,
+	compact = false,
 }: GameweekSelectorProps) => {
 	return (
-		<div className='flex flex-col gap-2'>
-			<Label htmlFor='gameweek-select'>Gameweeks</Label>
+		<div
+			className={
+				compact ? 'flex shrink-0 items-center gap-2' : 'flex flex-col gap-2'
+			}
+		>
+			<Label htmlFor='gameweek-select' className={compact ? 'sr-only' : undefined}>
+				Gameweeks
+			</Label>
 			<Select
 				value={String(numberOfGameweeks)}
 				onValueChange={(value) => setNumberOfGameweeks(Number(value))}
 			>
-				<SelectTrigger id='gameweek-select' className='w-[100px]'>
+				<SelectTrigger
+					id='gameweek-select'
+					className={compact ? 'h-9 w-[4.25rem]' : 'w-[100px]'}
+				>
 					<SelectValue placeholder='Select GWs' />
 				</SelectTrigger>
 				<SelectContent>

@@ -22,6 +22,8 @@ type TeamFilterProps = {
 	onSelectionChange: (selected: string[]) => void
 	maxTeams?: number
 	inline?: boolean
+	/** Toolbar row: sr-only label, narrower trigger */
+	compact?: boolean
 }
 
 export const TeamFilter = ({
@@ -30,6 +32,7 @@ export const TeamFilter = ({
 	onSelectionChange,
 	maxTeams,
 	inline,
+	compact = false,
 }: TeamFilterProps) => {
 	const handleSelect = (teamName: string) => {
 		const isSelected = selectedTeams.includes(teamName)
@@ -56,8 +59,15 @@ export const TeamFilter = ({
 	const isAtLimit = maxTeams && selectedTeams.length >= maxTeams
 
 	return (
-		<div className='grid gap-2'>
-			<Label htmlFor='team-filter' className='mb-1 block'>
+		<div className={compact ? 'flex shrink-0 items-center gap-2' : 'grid gap-2'}>
+			<Label
+				htmlFor='team-filter'
+				className={
+					compact
+						? 'sr-only'
+						: 'mb-1 block'
+				}
+			>
 				<span className='inline-flex items-baseline gap-2'>
 					<span>Filter Teams</span>
 					<span className='inline-block w-[60px] text-xs text-muted-foreground'>
@@ -65,9 +75,17 @@ export const TeamFilter = ({
 					</span>
 				</span>
 			</Label>
-			<DropdownMenu modal={!inline}>
+			<DropdownMenu modal={!inline && !compact}>
 				<DropdownMenuTrigger asChild>
-					<Button variant='outline' className='w-[200px] justify-between'>
+					<Button
+						id='team-filter'
+						variant='outline'
+						className={
+							compact
+								? 'h-9 w-[min(11rem,42vw)] justify-between px-2.5 sm:w-44'
+								: 'w-[200px] justify-between'
+						}
+					>
 						{getButtonText()}
 						<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
 					</Button>

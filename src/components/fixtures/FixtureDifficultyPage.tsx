@@ -93,83 +93,81 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 	const canShowChart = isChart && !isChartEmpty && !isChartTooMany && !!fixtureData
 
 	return (
-		<section className='container mx-auto flex flex-col gap-4 px-4 py-4 sm:h-full sm:overflow-hidden sm:gap-6 sm:py-6'>
+		<section className='container mx-auto flex flex-col gap-3 px-4 py-4 sm:gap-4 sm:py-6 lg:h-full lg:overflow-hidden'>
 			<div className='shrink-0'>
 				<FixturePageHeader
 					title='Fixture Difficulty'
 					subtitle='Analyse upcoming fixtures with Studio FDR ratings'
-					className='mb-2 sm:mb-0'
+					className='mb-1 sm:mb-0'
 				/>
 			</div>
 
-	<FixtureControls
-		view={view}
-		onViewChange={setView}
-		teams={teams}
-		selectedTeams={selectedTeams}
-		onSelectionChange={setSelectedTeams}
-		maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
-		difficultyType={difficultyType}
-		onDifficultyTypeChange={setDifficultyType}
-		numberOfGameweeks={numberOfGameweeks}
-		onNumberOfGameweeksChange={setNumberOfGameweeks}
-		gameweekOptions={gameweekOptions}
-		rightSlot={
-			view === 'grid' ? (
-				<DifficultyLegend difficultyType={difficultyType} />
-			) : undefined
-		}
-		mobileLegend={
-			view === 'grid' ? (
-				<DifficultyLegend difficultyType={difficultyType} />
-			) : undefined
-		}
-	/>
+			<FixtureControls
+				view={view}
+				onViewChange={setView}
+				teams={teams}
+				selectedTeams={selectedTeams}
+				onSelectionChange={setSelectedTeams}
+				maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
+				difficultyType={difficultyType}
+				onDifficultyTypeChange={setDifficultyType}
+				numberOfGameweeks={numberOfGameweeks}
+				onNumberOfGameweeksChange={setNumberOfGameweeks}
+				gameweekOptions={gameweekOptions}
+			/>
 
-		<div className='-mx-4 sm:mx-0 sm:min-h-0 sm:flex-1'>
-			{view === 'grid' && (
-				<FixtureGrid
-						data={sortedData}
-						events={events}
-						teams={teams}
-						firstGameweek={firstGameweek}
-						numberOfGameweeks={numberOfGameweeks}
-						onSort={handleSort}
-						sortConfig={sortConfig}
-						difficultyType={difficultyType}
-						allFixtures={fixtures}
-					/>
-				)}
+			<div className='flex min-h-0 flex-1 flex-col'>
+				<div className='-mx-4 min-h-0 flex-1 lg:mx-0 lg:min-h-0'>
+					{view === 'grid' && (
+						<FixtureGrid
+							data={sortedData}
+							events={events}
+							teams={teams}
+							firstGameweek={firstGameweek}
+							numberOfGameweeks={numberOfGameweeks}
+							onSort={handleSort}
+							sortConfig={sortConfig}
+							difficultyType={difficultyType}
+							allFixtures={fixtures}
+						/>
+					)}
 
-			{canShowChart && (
-				<div className='h-full'>
-					<FixtureAttractivenessChart
-						gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
-						fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
-						teamNames={fixtureData!.teamNames}
-						selectedTeams={selectedTeams}
-						firstGameweek={firstGameweek}
-						numberOfGameweeks={numberOfGameweeks}
-						difficultyType={difficultyType}
-						teams={teams}
-						sortedTeams={sortedTeams}
-						teamAverageByName={teamAverageByName}
-					/>
+					{canShowChart && (
+						<div className='h-full'>
+							<FixtureAttractivenessChart
+								gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
+								fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
+								teamNames={fixtureData!.teamNames}
+								selectedTeams={selectedTeams}
+								firstGameweek={firstGameweek}
+								numberOfGameweeks={numberOfGameweeks}
+								difficultyType={difficultyType}
+								teams={teams}
+								sortedTeams={sortedTeams}
+								teamAverageByName={teamAverageByName}
+							/>
+						</div>
+					)}
+
+					{isChartEmpty && <ChartEmptyState />}
+
+					{isChartTooMany && (
+						<ChartTooManyTeams
+							selectedCount={selectionCount}
+							maxTeams={MAX_CHART_TEAMS}
+							onClearTeams={() => setSelectedTeams([])}
+						/>
+					)}
+
+					{isLoading && isChart && !fixtureData && (
+						<div className='h-96 w-full animate-pulse rounded-md bg-muted' />
+					)}
 				</div>
-			)}
 
-				{isChartEmpty && <ChartEmptyState />}
-
-				{isChartTooMany && (
-					<ChartTooManyTeams
-						selectedCount={selectionCount}
-						maxTeams={MAX_CHART_TEAMS}
-						onClearTeams={() => setSelectedTeams([])}
-					/>
-				)}
-
-				{isLoading && isChart && !fixtureData && (
-					<div className='h-96 w-full animate-pulse rounded-md bg-muted' />
+				{view === 'grid' && (
+					<div className='shrink-0 border-t border-border/50 pt-2'>
+						<DifficultyLegend difficultyType={difficultyType} />
+					</div>
 				)}
 			</div>
 		</section>

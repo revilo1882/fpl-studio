@@ -17,7 +17,7 @@ const StrengthsPage = async () => {
 	const teams: Team[] = bootstrap?.teams ?? []
 
 	return (
-		<div className='container mx-auto flex flex-col gap-4 px-4 py-4 sm:h-full sm:overflow-hidden sm:gap-6 sm:py-6'>
+		<div className='container mx-auto flex flex-col gap-4 px-4 py-4 sm:gap-6 sm:py-6 lg:h-full lg:overflow-hidden'>
 			<div className='shrink-0'>
 				<FixturePageHeader
 					title='Team Strength Snapshot'
@@ -26,7 +26,7 @@ const StrengthsPage = async () => {
 				/>
 			</div>
 
-			<div className='sm:min-h-0 sm:flex-1'>
+			<div className='lg:min-h-0 lg:flex-1'>
 				<StrengthsTable teams={teams} />
 			</div>
 
