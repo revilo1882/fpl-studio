@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 
 import dynamic from 'next/dynamic'
 
@@ -69,6 +69,23 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 
 	const [view, setView] = useState<ViewMode>('grid')
 
+	const stickyFiltersRef = useRef<HTMLDivElement>(null)
+	const [stickyFiltersHeight, setStickyFiltersHeight] = useState(48)
+
+	useLayoutEffect(() => {
+		const el = stickyFiltersRef.current
+		if (!el) return
+
+		const measure = () => {
+			setStickyFiltersHeight(el.getBoundingClientRect().height)
+		}
+
+		measure()
+		const ro = new ResizeObserver(measure)
+		ro.observe(el)
+		return () => ro.disconnect()
+	}, [view])
+
 	useQuerySync({
 		view,
 		selectedTeams,
@@ -92,8 +109,15 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 	const isChartTooMany = isChart && selectionCount > MAX_CHART_TEAMS
 	const canShowChart = isChart && !isChartEmpty && !isChartTooMany && !!fixtureData
 
+	const sectionStyle = {
+		'--fixture-sticky-top': `${stickyFiltersHeight}px`,
+	} as CSSProperties
+
 	return (
-		<section className='container mx-auto flex flex-col gap-3 px-4 py-4 sm:gap-4 sm:py-6 lg:h-full lg:overflow-hidden'>
+		<section
+			className='container mx-auto flex min-w-0 flex-col gap-3 px-4 py-4 sm:gap-4 sm:py-6 lg:h-full lg:overflow-hidden'
+			style={sectionStyle}
+		>
 			<div className='shrink-0'>
 				<FixturePageHeader
 					title='Fixture Difficulty'
@@ -102,22 +126,27 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 				/>
 			</div>
 
-			<FixtureControls
-				view={view}
-				onViewChange={setView}
-				teams={teams}
-				selectedTeams={selectedTeams}
-				onSelectionChange={setSelectedTeams}
-				maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
-				difficultyType={difficultyType}
-				onDifficultyTypeChange={setDifficultyType}
-				numberOfGameweeks={numberOfGameweeks}
-				onNumberOfGameweeksChange={setNumberOfGameweeks}
-				gameweekOptions={gameweekOptions}
-			/>
+			<div
+				ref={stickyFiltersRef}
+				className='sticky top-0 z-50 -mx-4 shrink-0 border-b border-border/60 bg-background/95 px-4 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:mx-0 sm:px-0 sm:py-2'
+			>
+				<FixtureControls
+					view={view}
+					onViewChange={setView}
+					teams={teams}
+					selectedTeams={selectedTeams}
+					onSelectionChange={setSelectedTeams}
+					maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
+					difficultyType={difficultyType}
+					onDifficultyTypeChange={setDifficultyType}
+					numberOfGameweeks={numberOfGameweeks}
+					onNumberOfGameweeksChange={setNumberOfGameweeks}
+					gameweekOptions={gameweekOptions}
+				/>
+			</div>
 
-			<div className='flex min-h-0 flex-1 flex-col'>
-				<div className='-mx-4 min-h-0 flex-1 lg:mx-0 lg:min-h-0'>
+			<div className='flex min-h-0 min-w-0 flex-1 flex-col'>
+				<div className='-mx-4 min-h-0 min-w-0 flex-1 lg:mx-0 lg:min-h-0'>
 					{view === 'grid' && (
 						<FixtureGrid
 							data={sortedData}

@@ -29,15 +29,15 @@ type SortKey = keyof Pick<
 
 type SortDir = 'ascending' | 'descending'
 
-const columns: { key: SortKey; label: string; align?: 'right' }[] = [
+const columns: { key: SortKey; label: string; numeric?: boolean }[] = [
 	{ key: 'name', label: 'Team' },
-	{ key: 'strength', label: 'Strength', align: 'right' },
-	{ key: 'strength_overall_home', label: 'Overall (H)', align: 'right' },
-	{ key: 'strength_overall_away', label: 'Overall (A)', align: 'right' },
-	{ key: 'strength_attack_home', label: 'Attack (H)', align: 'right' },
-	{ key: 'strength_attack_away', label: 'Attack (A)', align: 'right' },
-	{ key: 'strength_defence_home', label: 'Defence (H)', align: 'right' },
-	{ key: 'strength_defence_away', label: 'Defence (A)', align: 'right' },
+	{ key: 'strength', label: 'Strength', numeric: true },
+	{ key: 'strength_overall_home', label: 'Overall (H)', numeric: true },
+	{ key: 'strength_overall_away', label: 'Overall (A)', numeric: true },
+	{ key: 'strength_attack_home', label: 'Attack (H)', numeric: true },
+	{ key: 'strength_attack_away', label: 'Attack (A)', numeric: true },
+	{ key: 'strength_defence_home', label: 'Defence (H)', numeric: true },
+	{ key: 'strength_defence_away', label: 'Defence (A)', numeric: true },
 ]
 
 export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
@@ -64,25 +64,29 @@ export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 	const sortConfig = { key: sortKey as string, direction: sortDir }
 
 	return (
-		<div className='overflow-x-auto overflow-y-visible rounded-lg border lg:max-h-full lg:overflow-auto'>
-			<Table className='min-w-max text-sm'>
+		<div className='min-w-0 rounded-lg border lg:max-h-full lg:min-h-0 lg:overflow-auto'>
+			<Table className='min-w-max border-separate border-spacing-0 text-sm'>
 				<TableHeader>
-					<TableRow>
-						{columns.map(({ key, label, align }) => (
+					<TableRow hoverHighlight={false} className='border-b'>
+						{columns.map(({ key, label, numeric }) => (
 							<TableHead
 								key={key}
 								className={
 									key === 'name'
-										? 'sticky left-0 top-0 z-20 whitespace-nowrap bg-card shadow-sm'
-										: align === 'right'
-											? 'sticky top-0 z-10 whitespace-nowrap bg-card text-right shadow-sm'
-											: 'sticky top-0 z-10 whitespace-nowrap bg-card shadow-sm'
+										? 'sticky left-0 top-0 z-40 h-auto min-h-0 whitespace-nowrap bg-card shadow-sm'
+										: numeric
+											? 'sticky top-0 z-30 h-auto min-h-0 whitespace-nowrap bg-card text-center shadow-sm'
+											: 'sticky top-0 z-30 h-auto min-h-0 whitespace-nowrap bg-card shadow-sm'
 								}
 							>
 								<button
 									type='button'
 									onClick={() => handleSort(key)}
-									className='inline-flex items-center gap-1.5 transition-colors hover:text-foreground'
+									className={
+										numeric
+											? 'inline-flex w-full items-center justify-center gap-1.5 transition-colors hover:text-foreground'
+											: 'inline-flex items-center gap-1.5 transition-colors hover:text-foreground'
+									}
 								>
 									{label}
 									<SortIndicator columnKey={key} sortConfig={sortConfig} />
@@ -93,7 +97,7 @@ export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 				</TableHeader>
 				<TableBody>
 					{sorted.map((team) => (
-						<TableRow key={team.id} className='hover:bg-muted/30'>
+						<TableRow key={team.id} hoverHighlight={false}>
 							<TableCell className='sticky left-0 z-10 bg-card font-medium'>
 								<Link
 									href={`/team/${team.short_name.toLowerCase()}`}
@@ -103,23 +107,23 @@ export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 								</Link>{' '}
 								<span className='text-xs text-muted-foreground'>({team.short_name})</span>
 							</TableCell>
-							<TableCell className='text-right tabular-nums'>{team.strength}</TableCell>
-							<TableCell className='text-right tabular-nums'>
+							<TableCell className='text-center tabular-nums'>{team.strength}</TableCell>
+							<TableCell className='text-center tabular-nums'>
 								{team.strength_overall_home}
 							</TableCell>
-							<TableCell className='text-right tabular-nums'>
+							<TableCell className='text-center tabular-nums'>
 								{team.strength_overall_away}
 							</TableCell>
-							<TableCell className='text-right tabular-nums'>
+							<TableCell className='text-center tabular-nums'>
 								{team.strength_attack_home}
 							</TableCell>
-							<TableCell className='text-right tabular-nums'>
+							<TableCell className='text-center tabular-nums'>
 								{team.strength_attack_away}
 							</TableCell>
-							<TableCell className='text-right tabular-nums'>
+							<TableCell className='text-center tabular-nums'>
 								{team.strength_defence_home}
 							</TableCell>
-							<TableCell className='text-right tabular-nums'>
+							<TableCell className='text-center tabular-nums'>
 								{team.strength_defence_away}
 							</TableCell>
 						</TableRow>

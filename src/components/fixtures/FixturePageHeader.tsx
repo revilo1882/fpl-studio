@@ -12,7 +12,9 @@ export const FixturePageHeader = ({ title, subtitle, className }: FixturePageHea
 			{title}
 		</h1>
 		{subtitle ? (
-			<p className='hidden text-base text-muted-foreground sm:block sm:text-lg'>{subtitle}</p>
+			<p className='text-sm leading-snug text-muted-foreground sm:text-base sm:text-lg'>
+				{subtitle}
+			</p>
 		) : null}
 	</div>
 )

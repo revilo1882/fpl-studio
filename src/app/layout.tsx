@@ -59,7 +59,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
 				>
 					<AppHeader />
 
-					<div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+					<div className='flex min-h-0 flex-1 flex-col overflow-auto'>
 						{!dataIsAvailable ? (
 							<DataUnavailable />
 						) : (

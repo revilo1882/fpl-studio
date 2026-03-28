@@ -2,6 +2,7 @@
 
 import type { DifficultyType } from '@/lib/fixtures/generateFixtureMatrix'
 import type { Team } from '@/types/fpl'
+import { cn } from '@/lib/utils'
 
 import { type View, ViewToggle } from './ViewToggle'
 import { TeamFilter } from './TeamFilter'
@@ -23,6 +24,8 @@ type FixtureControlsProps = {
 	numberOfGameweeks: number
 	onNumberOfGameweeksChange: (n: number) => void
 	gameweekOptions: number[]
+	/** Extra classes on the outer wrapper (e.g. when chrome is provided by a sticky parent) */
+	className?: string
 }
 
 export const FixtureControls = ({
@@ -37,9 +40,10 @@ export const FixtureControls = ({
 	numberOfGameweeks,
 	onNumberOfGameweeksChange,
 	gameweekOptions,
+	className,
 }: FixtureControlsProps) => {
 	return (
-		<div className='-mx-4 shrink-0 border-b border-border/60 bg-background/80 px-3 py-1.5 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none'>
+		<div className={cn('shrink-0', className)}>
 			<div
 				className='flex flex-nowrap items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:thin] sm:gap-3'
 				role='toolbar'
