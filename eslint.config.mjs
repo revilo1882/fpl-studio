@@ -118,8 +118,8 @@ export default [
 				},
 			],
 
-			// General Code Quality
-			'no-console': 'warn',
+			// General Code Quality (allow warn/error for intentional API / FDR diagnostics)
+			'no-console': ['warn', { allow: ['warn', 'error'] }],
 			'prefer-const': 'error',
 			'no-var': 'error',
 			'object-shorthand': 'error',

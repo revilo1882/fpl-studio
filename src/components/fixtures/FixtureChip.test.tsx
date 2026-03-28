@@ -1,3 +1,5 @@
+import type { ImageProps } from 'next/image'
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 
@@ -8,11 +10,23 @@ import { type Team } from '@/types/fpl'
 
 import { FixtureChip } from './FixtureChip'
 
+function mockImageSrc(src: ImageProps['src']): string {
+	if (typeof src === 'string') return src
+	if (typeof src === 'object' && src !== null && 'src' in src) {
+		return String((src as { src: string }).src)
+	}
+	return ''
+}
+
 vi.mock('next/image', () => ({
 	__esModule: true,
-	default: (props: any) => {
-		const { src, alt = '', unoptimized, ...rest } = props
-		return <img src={src} alt={alt} {...rest} unoptimized={String(unoptimized)} />
+	default: (props: ImageProps) => {
+		const { src, alt = '', unoptimized: _u, ...rest } = props
+		return (
+			// Test double only; real app uses next/image
+			// eslint-disable-next-line @next/next/no-img-element -- mock replaces next/image in Vitest
+			<img src={mockImageSrc(src)} alt={alt} {...rest} />
+		)
 	},
 }))
 
