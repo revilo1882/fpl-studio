@@ -1,6 +1,8 @@
-import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+
 import Link from 'next/link'
+
+import type { Metadata } from 'next'
 import { BarChart2, TrendingUp, LayoutGrid, ChevronRight, Shield, Activity, Gauge } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'

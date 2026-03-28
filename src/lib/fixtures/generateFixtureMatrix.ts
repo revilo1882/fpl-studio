@@ -1,7 +1,8 @@
 import type { Fixtures, Team, BootstrapData } from '@/types/fpl'
 
-import { calculateAttractivenessScore } from './attractivenessScore'
 import { calculateDynamicFDR } from '../fdr/dynamicFDR'
+
+import { calculateAttractivenessScore } from './attractivenessScore'
 
 export type SingleFixture = {
 	label: string

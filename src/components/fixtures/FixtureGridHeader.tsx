@@ -5,10 +5,10 @@ import { HelpCircle } from 'lucide-react'
 import { TableHead, TableRow } from '@/components/ui/table'
 import type { Gameweek } from '@/types/fpl'
 import { type FixtureGridSortConfig, type FixtureGridSortKey } from '@/hooks/useFplTable'
-
-import { SortIndicator } from './SortIndicator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+
+import { SortIndicator } from './SortIndicator'
 
 type FixtureGridHeaderProps = {
 	events: Gameweek[]

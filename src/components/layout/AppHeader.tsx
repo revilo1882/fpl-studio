@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation'
 import { BarChart2, Menu, X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+
 import { NavLinks } from './NavLinks'
 import { ThemeToggle } from './ThemeToggle'
 

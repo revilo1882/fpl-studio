@@ -14,7 +14,6 @@ import { FixturePageHeader } from './FixturePageHeader'
 import { FixtureControls } from './FixtureControls'
 import { DifficultyLegend } from './DifficultyLegend'
 import { ChartEmptyState } from './ChartEmptyState'
-
 import { ChartTooManyTeams } from './ChartTooManyTeams'
 import type { FixtureAttractivenessChartProps } from './FixtureAttractivenessChart'
 
