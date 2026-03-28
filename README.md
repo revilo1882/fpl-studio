@@ -1,175 +1,113 @@
-# FPL Studio – Fixture Difficulty Calculator
+# FPL Studio
 
-A modern FPL tool for exploring **fixture difficulty ratings (FDR)** with custom calculations, visualizations, and planning tools.
-Hosted on **Vercel**: [https://fpl-studio.vercel.app/](https://fpl-studio.vercel.app/)
+A Next.js app for **Fantasy Premier League** transfer planning: a **custom fixture difficulty rating (FDR)** on a 1–5 scale, built from official API data plus season performance, form, and dynamic weighting by gameweek.
 
----
-
-## ✨ Features
-
-- **Custom Fixture Difficulty**
-    - Overall, Attack, Defence difficulty views.
-    - Handles **Double Gameweeks** with aggregate attractiveness scoring.
-    - Confidence rating attached to every FDR score.
-
-- **Interactive Views**
-    - **Fixture Grid**: upcoming fixtures for all teams.
-    - **Charts**: fixture attractiveness trends across teams, built with **Chart.js**.
-    - Filters: teams, difficulty view (FPL default / Overall / Attack / Defence), number of gameweeks.
-    - URL query string persistence → filters and state are shareable.
-
-- **Team Pages**
-    - Per-team route (`/team/[slug]`).
-    - Snapshot metrics (Overall, Attack, Defence) with confidence.
-    - Trend line charts.
-    - Fixtures + results with DGW/blank indicators.
-
-- **Coming Soon**
-    - **Player Pages**: ownership %, form, fixtures overlayed with FDR.
-    - **Transfer Planner (MVP)**: local squad builder, fixture-weighted projections, “what if” transfers.
-    - **Export & Sharing**: CSV for grid, PNG for charts.
-    - **Homepage & Branding**: landing page, logo, favicon.
+**Live site:** [fpl-studio.vercel.app](https://fpl-studio.vercel.app/)
 
 ---
 
-## 🧮 Fixture Difficulty Methodology
+## Features
 
-### 1) Base Normalization
-
-Uses all **6 FPL strength metrics** (overall/attack/defence × home/away) with intelligent normalization:
-
-```typescript
-function normalizeStrengthToDifficulty(strength: number): number {
-	const minStrength = 1000
-	const maxStrength = 1400
-	const clampedStrength = Math.max(minStrength, Math.min(maxStrength, strength))
-	return 1 + (4 * (clampedStrength - minStrength)) / (maxStrength - minStrength)
-}
-```
-
-### 2) Season Performance Integration
-
-Compares actual performance vs expected based on FPL strength:
-
-- **Points per game** vs league-adjusted expectations
-- **Goal difference** trends and efficiency
-- **Home/away** specific performance where data available
-- **Sample size weighting** for confidence adjustment
-
-### 3) Form Analysis
-
-Sophisticated recent form calculation:
-
-- **Last 5 matches** with recency weighting **(1.0, 0.8, 0.6, 0.4, 0.2)**
-- **Opponent strength adjustment** for context
-- **Result and performance quality** (goals scored/conceded, win quality)
-- **Home advantage correction** (\~5% discount/bonus)
-
-### 4) Dynamic Weighting by Season Stage
-
-The system adapts its reliance on different factors:
-
-**Early Season (GW 1–5)**
-
-- Base: **80%**, Season: **5%**, Form: **10%**, Home: **5%**
-
-**Mid Season (GW 6–15)**
-
-- Base: **60–80%**, Season: **5–25%**, Form: **15%**, Home: **5%**
-
-**Late Season (GW 16+)**
-
-- Base: **50%**, Season: **35%**, Form: **10%**, Home: **5%**
-
-### 5) Confidence Intervals
-
-Every rating includes uncertainty bounds based on:
-
-- **Sample size** (more games = higher confidence)
-- **Season stage** (early season = higher uncertainty)
-- **Adjustment magnitude** (larger adjustments = lower confidence)
+- **Fixture difficulty (`/fixtures`)** — Sortable grid of all teams across a chosen gameweek window; switch **Overall / Attack / Defence** views; optional **FPL** difficulty mode vs **Studio** ratings. **Chart** view for up to five selected teams. Difficulty colour legend; fixture detail popovers (hover on desktop). URL query params keep filters shareable.
+- **Team pages (`/team/[slug]`)** — Per-team FDR snapshot, fixtures vs results (matches), opponent links, and PL badge assets.
+- **Strengths snapshot (`/strengths`)** — Sortable table of **raw FPL strength fields** (1000–1400 scale + FPL’s summary strength); same inputs feed the FDR base layer.
+- **Landing page (`/`)** — Product overview and how the model combines factors.
+- **App shell** — Sticky header, active route styling, light/dark theme, responsive navigation (including mobile menu).
 
 ---
 
-## 📊 Data Quality & Accuracy
+## How the FDR model works (summary)
 
-### Accuracy by Season Stage
+1. **Base layer** — The six FPL strength metrics (overall, attack, defence × home/away) are linearly mapped from the API’s ~1000–1400 range to **1–5** (clamped). Attack/defence difficulty uses the relevant opponent strengths for the fixture context.
+2. **Season performance** — Adjustments from actual vs expected performance (e.g. points per game, goal difference), weighted by how much of the season has been played.
+3. **Form** — Last five fixtures with recency weighting and opponent-aware context.
+4. **Home advantage** — Small fixed correction, scaled by the active weights.
+5. **Dynamic weights** — Early season leans on base strength; later in the season, season stats carry more weight (see `src/lib/fdr/weights.ts` and related modules).
+6. **Confidence** — Intervals and a confidence score reflect sample size, gameweek, and size of adjustments.
 
-- **Early Season (GW 1–5)**: limited data, \~70% accuracy vs FPL baseline
-- **Mid Season (GW 6–15)**: improving sample sizes, \~80% accuracy
-- **Late Season (GW 16+)**: high confidence, \~85%+ accuracy
-
----
-
-## 🛠 Tech Stack
-
-- [Next.js 15](https://nextjs.org/) (App Router, Server Components, ISR, hosted on Vercel)
-- [TypeScript](https://www.typescriptlang.org/) (strict mode)
-- [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
-- [Chart.js](https://www.chartjs.org/) for visualizations
-- [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/)
+Implementation lives under `src/lib/fdr/` (e.g. `dynamicFDR.ts`, `confidence.ts`, `formAnalysis.ts`, `seasonPerformance.ts`).
 
 ---
 
-## 📂 Project Structure
+## Tech stack
+
+| Area | Choice |
+|------|--------|
+| Framework | **Next.js 16** (App Router), **React 19** |
+| Language | **TypeScript** |
+| Styling | **Tailwind CSS**, **shadcn/ui** (Radix primitives) |
+| Charts | **Chart.js** + **react-chartjs-2** (client-only chart route) |
+| Theming | **next-themes** |
+| Tests | **Vitest**, **React Testing Library**, **happy-dom** |
+| Tooling | ESLint, Prettier, Husky (pre-commit runs tests) |
+
+---
+
+## Project structure
 
 ```text
 src/
   app/
-    strengths/                # strengths view
-    team/[slug]/              # team detail pages
-      components/             # team-specific UI
-    page.tsx                  # home (grid + chart switcher)
-  components/
-    charts/                   # Chart.js helpers and wrappers
-    ui/                       # shadcn/ui components + custom wrappers
-  hooks/                      # state + URL sync
+    page.tsx                 # Landing
+    fixtures/page.tsx        # Fixture grid + chart (FPL data via HOC)
+    strengths/               # Raw strengths table
+    team/[slug]/             # Team detail + tabbed matches
+    layout.tsx               # Theme + FPL provider + header
+  components/                # Feature UI (grid, controls, charts, etc.)
+    charts/
+    ui/                      # shadcn components
+  contexts/                  # FPL server / client data context
+  hooks/                     # Table state, URL sync
   lib/
-    fdr/                      # core FDR algorithms (confidence, weights, form, etc.)
-    fpl/                      # FPL API integration + utilities
-  tests/                      # test setup + utils
-  types/                      # shared TypeScript types
+    fdr/                     # FDR algorithms
+    fpl/                     # API helpers, badge URLs
+    generateFixtureMatrix.ts # Matrix + memoised difficulty cells
+  tests/                     # Vitest setup
+  types/                     # FPL / bootstrap types
 ```
 
 ---
 
-## 🔌 Data & Caching
+## Data & caching
 
-- **Source**: [Official FPL API](https://fantasy.premierleague.com/api/)
-- **Wrapper**: `fetchFPLData(endpoint, { revalidate: 900 })`
-    - Uses **stale-while-revalidate** (\~15 minutes).
-    - `?fresh=1` disables caching for debugging.
-    - `bootstrap-static` uses `cache: 'no-store'` to avoid Next.js's 2 MB data cache limit on the large response.
+- **Source:** [Official FPL HTTP API](https://fantasy.premierleague.com/api/) (`bootstrap-static`, fixtures, etc.).
+- Fetch helper: `src/lib/fplApi.ts` (`fetchFPLData`) — revalidation / `no-store` where needed for large payloads and Next.js cache limits.
+- Heavy **client-side** work: fixture matrix and FDR for cells are computed in the browser; memoisation reduces repeat work when filters change.
 
-- **Computed FDR results** are derived client-side per filter change; per-fixture results are memoised within `generateFixtureMatrix` using a `teamId-fixtureId-gameweek` key to avoid redundant recalculations.
+Optional env vars — see `.env.example` (`NEXT_PUBLIC_REVALIDATE_SECONDS`, etc.).
 
 ---
 
-## ✅ Quality & Performance
-
-- **Performance budgets**:
-    - Page load < 1.5s
-    - Filter changes < 100ms
-
-- **Accessibility**: keyboard navigation, ARIA labels, colorblind-friendly scales.
-- **Testing**:
-    - Unit: Vitest
-    - Components: React Testing Library
-    - Coverage target: 85%+
-
-- **CI**: ESLint, Prettier, Vitest on push/PR.
-- **Deployment**: [Vercel](https://vercel.com/)
-
----
-
-## 🚀 Development
+## Scripts
 
 ```bash
 pnpm install
-pnpm dev
+pnpm dev          # http://localhost:3000
+pnpm build        # runs vitest then next build
+pnpm test         # vitest watch
+pnpm test:coverage
+pnpm lint
+pnpm format
 ```
 
-Runs on `http://localhost:3000`.
+**Node:** `package.json` lists `engines.node` as `>=22 <23`; newer Node versions often work but may show a warning from tooling.
 
 ---
 
+## Testing
+
+Vitest + Testing Library cover **hooks** (`useFplTable`), **FDR-related utilities**, **fixture matrix / grid utils**, **FPL fetch behaviour**, and **selected UI** (e.g. header, nav, fixture chip, selectors, strengths table, chart empty states, team badge). Run `pnpm test` before pushing; Husky runs tests on commit.
+
+---
+
+## Roadmap ideas (not scheduled)
+
+- Player-level views and transfer planning
+- Exports (CSV / chart image)
+- Favicon and further branding polish
+
+---
+
+## Licence
+
+Private / personal project unless you add an explicit licence.
