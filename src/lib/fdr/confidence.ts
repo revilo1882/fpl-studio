@@ -1,11 +1,11 @@
 import type { SeasonPerformance } from './types'
 
-export function calculateConfidenceInterval(
+export const calculateConfidenceInterval = (
 	rating: number,
 	gamesPlayed: number,
 	currentGameweek: number,
 	adjustmentMagnitude: number,
-): { interval: [number, number]; confidenceScore: number } {
+): { interval: [number, number]; confidenceScore: number } => {
 	const sampleSizeUncertainty = gamesPlayed < 5 ? 0.6 : gamesPlayed < 10 ? 0.4 : 0.2
 	const earlySeasonUncertainty = currentGameweek <= 8 ? 0.5 : 0.2
 	const adjustmentUncertainty = Math.min(0.4, adjustmentMagnitude * 0.3)
@@ -21,10 +21,10 @@ export function calculateConfidenceInterval(
 	}
 }
 
-export function calculateConfidence(
+export const calculateConfidence = (
 	performance: SeasonPerformance,
 	currentGameweek: number,
-): 'high' | 'medium' | 'low' {
+): 'high' | 'medium' | 'low' => {
 	const gamesPlayed = performance.gamesPlayed
 
 	if (currentGameweek <= 8) {

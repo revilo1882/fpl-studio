@@ -40,7 +40,26 @@ type StudioFdrCache = Map<
 	{ difficulty: number; confidenceInterval?: [number, number]; confidenceScore?: number }
 >
 
-async function fillStudioFdrCache(
+const calculateMultiFixtureBonus = (numFixtures: number, avgDifficulty: number): number => {
+	if (numFixtures <= 1) return 0
+
+	let bonus = 0
+
+	if (numFixtures === 2) {
+		if (avgDifficulty <= 2.5) bonus = 3.0
+		else if (avgDifficulty <= 3.5) bonus = 2.0
+		else if (avgDifficulty <= 4.0) bonus = 1.0
+		else bonus = 0.5
+	} else if (numFixtures >= 3) {
+		if (avgDifficulty <= 3.0) bonus = 5.0
+		else if (avgDifficulty <= 4.0) bonus = 3.5
+		else bonus = 2.0
+	}
+
+	return bonus
+}
+
+const fillStudioFdrCache = async (
 	teamMap: Map<number, Team>,
 	teams: Team[],
 	fixtures: Fixtures,
@@ -48,7 +67,7 @@ async function fillStudioFdrCache(
 	numberOfGameweeks: number,
 	difficultyType: DifficultyType,
 	onlyTeamId?: number,
-): Promise<StudioFdrCache> {
+): Promise<StudioFdrCache> => {
 	const studioFDRCache: StudioFdrCache = new Map()
 
 	if (difficultyType === 'FPL') {
@@ -156,7 +175,7 @@ async function fillStudioFdrCache(
 	return studioFDRCache
 }
 
-function buildFixtureRowForTeam(
+const buildFixtureRowForTeam = (
 	team: Team,
 	teamMap: Map<number, Team>,
 	fixtures: Fixtures,
@@ -164,7 +183,7 @@ function buildFixtureRowForTeam(
 	numberOfGameweeks: number,
 	difficultyType: DifficultyType,
 	studioFDRCache: StudioFdrCache,
-): FixtureCell[] {
+): FixtureCell[] => {
 	const row: FixtureCell[] = []
 
 	for (let gameweek = firstGameweek; gameweek < firstGameweek + numberOfGameweeks; gameweek++) {
@@ -248,9 +267,9 @@ function buildFixtureRowForTeam(
 }
 
 /** Full-season (or window) fixture row for one club — same cells as `generateFixtureMatrix` but ~20× fewer FDR evaluations. */
-export async function generateTeamFixtureRow(
+export const generateTeamFixtureRow = async (
 	params: GenerateFixtureMatrixProps & { teamId: number },
-): Promise<FixtureCell[]> {
+): Promise<FixtureCell[]> => {
 	const { teamId, teams, fixtures, firstGameweek, numberOfGameweeks, difficultyType } = params
 	const teamMap = new Map(teams.map((t) => [t.id, t]))
 	const team = teamMap.get(teamId)
@@ -343,23 +362,4 @@ export const generateFixtureMatrix = async ({
 		totalAttractivenessScores,
 		gameweekAttractivenessMatrix,
 	}
-}
-
-function calculateMultiFixtureBonus(numFixtures: number, avgDifficulty: number): number {
-	if (numFixtures <= 1) return 0
-
-	let bonus = 0
-
-	if (numFixtures === 2) {
-		if (avgDifficulty <= 2.5) bonus = 3.0
-		else if (avgDifficulty <= 3.5) bonus = 2.0
-		else if (avgDifficulty <= 4.0) bonus = 1.0
-		else bonus = 0.5
-	} else if (numFixtures >= 3) {
-		if (avgDifficulty <= 3.0) bonus = 5.0
-		else if (avgDifficulty <= 4.0) bonus = 3.5
-		else bonus = 2.0
-	}
-
-	return bonus
 }

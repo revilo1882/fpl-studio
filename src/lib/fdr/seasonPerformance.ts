@@ -2,11 +2,11 @@ import type { Team, Fixtures } from '@/types/fpl'
 
 import type { SeasonPerformance, TeamPerformanceData } from './types'
 
-export async function calculateSeasonPerformance(
+export const calculateSeasonPerformance = async (
 	teamId: number,
 	fixtures: Fixtures,
 	currentGameweek: number,
-): Promise<SeasonPerformance> {
+): Promise<SeasonPerformance> => {
 	const teamFixtures = fixtures
 		.filter(
 			(fixture) =>
@@ -71,11 +71,11 @@ export async function calculateSeasonPerformance(
 	}
 }
 
-export async function calculateAllTeamsPerformance(
+export const calculateAllTeamsPerformance = async (
 	teams: Team[],
 	fixtures: Fixtures,
 	currentGameweek: number,
-): Promise<TeamPerformanceData[]> {
+): Promise<TeamPerformanceData[]> => {
 	const performancePromises = teams.map(async (team) => {
 		const performance = await calculateSeasonPerformance(team.id, fixtures, currentGameweek)
 
@@ -119,14 +119,46 @@ export async function calculateAllTeamsPerformance(
 	return Promise.all(performancePromises)
 }
 
-export function calculateSeasonAdjustment(
+const calculateExpectedPPG = (team: Team, allTeams: Team[]): number => {
+	const teamStrengths = allTeams.map((t) => ({
+		id: t.id,
+		strength: (t.strength_overall_home + t.strength_overall_away) / 2,
+	}))
+
+	teamStrengths.sort((a, b) => b.strength - a.strength)
+
+	const teamRank = teamStrengths.findIndex((t) => t.id === team.id) + 1
+	const totalTeams = allTeams.length
+
+	const rankPercentile = teamRank / totalTeams
+
+	if (rankPercentile <= 0.3) {
+		const topPosition = (rankPercentile - 0) / 0.3
+		return 2.2 - topPosition * 0.4
+	}
+
+	if (rankPercentile <= 0.6) {
+		const midPosition = (rankPercentile - 0.3) / 0.3
+		return 1.8 - midPosition * 0.4
+	}
+
+	if (rankPercentile <= 0.8) {
+		const lowerMidPosition = (rankPercentile - 0.6) / 0.2
+		return 1.4 - lowerMidPosition * 0.3
+	}
+
+	const bottomPosition = (rankPercentile - 0.8) / 0.2
+	return 1.1 - bottomPosition * 0.3
+}
+
+export const calculateSeasonAdjustment = (
 	team: Team,
 	performance: SeasonPerformance,
 	allTeamsPerformance: TeamPerformanceData[],
 	allTeams: Team[],
 	currentGameweek: number,
 	isHome: boolean,
-): number {
+): number => {
 	if (performance.gamesPlayed < 2) return 0
 
 	const teamData = allTeamsPerformance.find((t) => t.teamId === team.id)
@@ -163,36 +195,4 @@ export function calculateSeasonAdjustment(
 	const totalAdjustment = (ppgAdjustment + gdAdjustment + venueAdjustment) * confidenceWeight
 
 	return Math.max(-1.0, Math.min(1.0, totalAdjustment))
-}
-
-function calculateExpectedPPG(team: Team, allTeams: Team[]): number {
-	const teamStrengths = allTeams.map((t) => ({
-		id: t.id,
-		strength: (t.strength_overall_home + t.strength_overall_away) / 2,
-	}))
-
-	teamStrengths.sort((a, b) => b.strength - a.strength)
-
-	const teamRank = teamStrengths.findIndex((t) => t.id === team.id) + 1
-	const totalTeams = allTeams.length
-
-	const rankPercentile = teamRank / totalTeams
-
-	if (rankPercentile <= 0.3) {
-		const topPosition = (rankPercentile - 0) / 0.3
-		return 2.2 - topPosition * 0.4
-	}
-
-	if (rankPercentile <= 0.6) {
-		const midPosition = (rankPercentile - 0.3) / 0.3
-		return 1.8 - midPosition * 0.4
-	}
-
-	if (rankPercentile <= 0.8) {
-		const lowerMidPosition = (rankPercentile - 0.6) / 0.2
-		return 1.4 - lowerMidPosition * 0.3
-	}
-
-	const bottomPosition = (rankPercentile - 0.8) / 0.2
-	return 1.1 - bottomPosition * 0.3
 }

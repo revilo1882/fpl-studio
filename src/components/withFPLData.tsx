@@ -9,10 +9,12 @@ type InjectedProps = { bootstrapData: BootstrapData; fixtures: Fixtures }
  * HOC that injects bootstrapData and fixtures from context, leaving only the
  * router-provided props (e.g. params) visible to Next.js's page type checker.
  */
-export function withFPLData<P extends InjectedProps>(Component: React.ComponentType<P>) {
+export const withFPLData = <P extends InjectedProps,>(
+	Component: React.ComponentType<P>,
+) => {
 	type ExternalProps = Omit<P, keyof InjectedProps>
 
-	return function WrappedComponent(props: ExternalProps) {
+	return (props: ExternalProps) => {
 		const { bootstrapData, fixtures } = useFPLServerContext()
 
 		if (!bootstrapData || !fixtures) {

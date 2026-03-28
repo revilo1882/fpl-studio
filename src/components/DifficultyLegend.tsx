@@ -10,7 +10,7 @@ interface DifficultyLegendProps {
 	difficultyType: DifficultyType
 }
 
-export function DifficultyLegend({ difficultyType }: DifficultyLegendProps) {
+export const DifficultyLegend = ({ difficultyType }: DifficultyLegendProps) => {
 	const swatches = difficultyType === 'FPL' ? FPL_SWATCHES : CUSTOM_SWATCHES
 
 	return (

@@ -15,7 +15,7 @@ interface DifficultySelectorProps {
 	setDifficultyType: (type: DifficultyType) => void
 }
 
-export function DifficultySelector({ difficultyType, setDifficultyType }: DifficultySelectorProps) {
+export const DifficultySelector = ({ difficultyType, setDifficultyType }: DifficultySelectorProps) => {
 	const difficultyTypes: DifficultyType[] = ['Overall', 'Attack', 'Defence', 'FPL']
 
 	return (

@@ -12,7 +12,7 @@ export interface FPLDataValue {
 
 export const FPLServerContext = createContext<FPLDataValue | null>(null)
 
-export function useFPLServerContext(): FPLDataValue {
+export const useFPLServerContext = (): FPLDataValue => {
 	const contextValue = useContext(FPLServerContext)
 	if (!contextValue) {
 		throw new Error('useFPLServerContext must be used inside <FPLProvider>')
@@ -20,12 +20,10 @@ export function useFPLServerContext(): FPLDataValue {
 	return contextValue
 }
 
-export function FPLProvider({
+export const FPLProvider = ({
 	value,
 	children,
 }: {
 	value: FPLDataValue
 	children: React.ReactNode
-}) {
-	return <FPLServerContext.Provider value={value}>{children}</FPLServerContext.Provider>
-}
+}) => <FPLServerContext.Provider value={value}>{children}</FPLServerContext.Provider>

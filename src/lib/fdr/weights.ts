@@ -1,9 +1,9 @@
 import type { WeightConfig } from './types'
 
-export function calculateDynamicWeights(
+export const calculateDynamicWeights = (
 	currentGameweek: number,
 	gamesPlayed: number,
-): WeightConfig {
+): WeightConfig => {
 	const seasonProgress = Math.min(1, currentGameweek / 38)
 
 	const dataAvailability = Math.min(1, gamesPlayed / 10)

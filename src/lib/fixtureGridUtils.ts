@@ -2,7 +2,7 @@ import { type Fixtures, type Team } from '@/types/fpl'
 
 import { type DifficultyType } from './generateFixtureMatrix'
 
-export function getDifficultyUI(score: number, difficultyType: DifficultyType) {
+export const getDifficultyUI = (score: number, difficultyType: DifficultyType) => {
 	const roundedScore = Math.round(score)
 
 	if (difficultyType === 'FPL') {
@@ -32,11 +32,11 @@ export function getDifficultyUI(score: number, difficultyType: DifficultyType) {
 	if (score < 4.5) return { bg: 'bg-red-500/60', text: 'text-red-500' }
 	return { bg: 'bg-red-600/60', text: 'text-red-600' }
 }
-export function getOpponentTeam(opponentName: string, teams: Team[]) {
-	return teams.find((team) => team.name === opponentName)
-}
 
-export function getFormSummary(teamId: number, fixtures: Fixtures): string {
+export const getOpponentTeam = (opponentName: string, teams: Team[]) =>
+	teams.find((team) => team.name === opponentName)
+
+export const getFormSummary = (teamId: number, fixtures: Fixtures): string => {
 	const recentFixtures = fixtures
 		.filter(
 			(fixture) =>

@@ -31,7 +31,7 @@ type FixtureGridProps = {
 	allFixtures: Fixtures
 }
 
-export function FixtureGrid({
+export const FixtureGrid = ({
 	data,
 	events,
 	teams,
@@ -41,7 +41,7 @@ export function FixtureGrid({
 	sortConfig,
 	difficultyType,
 	allFixtures,
-}: FixtureGridProps) {
+}: FixtureGridProps) => {
 	const gameweekIds = useMemo(
 		() =>
 			events.slice(firstGameweek - 1, firstGameweek - 1 + numberOfGameweeks).map((g) => g.id),

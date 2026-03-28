@@ -14,7 +14,7 @@ interface FDRConfidenceDisplayProps {
 	compact?: boolean
 }
 
-export function FDRConfidenceDisplay({
+export const FDRConfidenceDisplay = ({
 	fdrRating,
 	confidenceInterval,
 	confidenceScore,
@@ -22,7 +22,7 @@ export function FDRConfidenceDisplay({
 	subtitle,
 	showInterpretation = false,
 	compact = false,
-}: FDRConfidenceDisplayProps) {
+}: FDRConfidenceDisplayProps) => {
 	// Interval is [lower, upper] on the FDR scale (1 = easy … 5 = hard)
 	const [lowerFdr, upperFdr] = confidenceInterval
 	const intervalRange = upperFdr - lowerFdr

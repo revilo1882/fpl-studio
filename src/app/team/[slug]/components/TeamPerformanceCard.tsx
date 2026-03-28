@@ -10,11 +10,11 @@ interface TeamPerformanceCardProps {
 	allFixtures: Fixtures
 }
 
-export function TeamPerformanceCard({
+export const TeamPerformanceCard = ({
 	teamPerformance,
 	teamId,
 	allFixtures,
-}: TeamPerformanceCardProps) {
+}: TeamPerformanceCardProps) => {
 	const formSummary = getFormSummary(teamId, allFixtures)
 	const goalDifference = teamPerformance.goalsFor - teamPerformance.goalsAgainst
 	const pointsPerGame =

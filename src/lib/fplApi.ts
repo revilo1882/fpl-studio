@@ -2,10 +2,10 @@ type FetchOpts = { revalidate?: number; forceFresh?: boolean }
 
 const LARGE_ENDPOINTS = new Set(['bootstrap-static'])
 
-export async function fetchFPLData<T>(
+export const fetchFPLData = async <T>(
 	endpoint: string,
 	opts: FetchOpts = { revalidate: 900 },
-): Promise<T | null> {
+): Promise<T | null> => {
 	const url = `https://fantasy.premierleague.com/api/${endpoint}/`
 
 	// Force no-store for large responses to avoid Next data cache 2MB limit

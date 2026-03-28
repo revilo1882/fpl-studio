@@ -2,11 +2,63 @@ import type { Team, Fixtures } from '@/types/fpl'
 
 import type { MatchPerformance } from './types'
 
-export async function calculateFormAdjustment(
+const calculateStrengthAdjustedScore = (
+	points: number,
+	goalsFor: number,
+	goalsAgainst: number,
+	opponentStrength: number,
+	isHome: boolean,
+): number => {
+	let adjustedScore = points
+	const strengthFactor = opponentStrength / 1200
+
+	if (points === 3) {
+		adjustedScore += Math.max(0, (strengthFactor - 1) * 2)
+	} else if (points === 0) {
+		adjustedScore -= Math.max(0, (1 - strengthFactor) * 1.5)
+	}
+
+	if (goalsFor >= 3) adjustedScore += 0.5
+	else if (goalsFor >= 2) adjustedScore += 0.25
+	else if (goalsFor === 0) adjustedScore -= 0.25
+
+	if (goalsAgainst === 0) adjustedScore += 0.3
+	else if (goalsAgainst >= 3) adjustedScore -= 0.5
+	else if (goalsAgainst >= 2) adjustedScore -= 0.25
+
+	if (isHome) {
+		adjustedScore *= 0.95
+	} else {
+		adjustedScore *= 1.05
+	}
+
+	return adjustedScore
+}
+
+const calculateWeightedFormScore = (performances: MatchPerformance[]): number => {
+	if (performances.length === 0) return 0
+
+	const weights = [1.0, 0.8, 0.6, 0.4, 0.2]
+
+	let totalWeightedScore = 0
+	let totalWeights = 0
+
+	performances.forEach((perf, index) => {
+		const weight = weights[index] || 0.1
+		totalWeightedScore += perf.strengthAdjustedScore * weight
+		totalWeights += weight
+	})
+
+	const averageScore = totalWeights > 0 ? totalWeightedScore / totalWeights : 0
+
+	return Math.max(-0.5, Math.min(0.5, (averageScore - 1.5) / 3))
+}
+
+export const calculateFormAdjustment = async (
 	teamId: number,
 	fixtures: Fixtures,
 	teams: Team[],
-): Promise<number> {
+): Promise<number> => {
 	const recentFixtures = fixtures
 		.filter(
 			(fixture) =>
@@ -62,56 +114,4 @@ export async function calculateFormAdjustment(
 	}
 
 	return calculateWeightedFormScore(performances)
-}
-
-function calculateStrengthAdjustedScore(
-	points: number,
-	goalsFor: number,
-	goalsAgainst: number,
-	opponentStrength: number,
-	isHome: boolean,
-): number {
-	let adjustedScore = points
-	const strengthFactor = opponentStrength / 1200
-
-	if (points === 3) {
-		adjustedScore += Math.max(0, (strengthFactor - 1) * 2)
-	} else if (points === 0) {
-		adjustedScore -= Math.max(0, (1 - strengthFactor) * 1.5)
-	}
-
-	if (goalsFor >= 3) adjustedScore += 0.5
-	else if (goalsFor >= 2) adjustedScore += 0.25
-	else if (goalsFor === 0) adjustedScore -= 0.25
-
-	if (goalsAgainst === 0) adjustedScore += 0.3
-	else if (goalsAgainst >= 3) adjustedScore -= 0.5
-	else if (goalsAgainst >= 2) adjustedScore -= 0.25
-
-	if (isHome) {
-		adjustedScore *= 0.95
-	} else {
-		adjustedScore *= 1.05
-	}
-
-	return adjustedScore
-}
-
-function calculateWeightedFormScore(performances: MatchPerformance[]): number {
-	if (performances.length === 0) return 0
-
-	const weights = [1.0, 0.8, 0.6, 0.4, 0.2]
-
-	let totalWeightedScore = 0
-	let totalWeights = 0
-
-	performances.forEach((perf, index) => {
-		const weight = weights[index] || 0.1
-		totalWeightedScore += perf.strengthAdjustedScore * weight
-		totalWeights += weight
-	})
-
-	const averageScore = totalWeights > 0 ? totalWeightedScore / totalWeights : 0
-
-	return Math.max(-0.5, Math.min(0.5, (averageScore - 1.5) / 3))
 }

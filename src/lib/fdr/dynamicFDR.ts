@@ -10,14 +10,35 @@ import {
 } from './seasonPerformance'
 import { calculateFormAdjustment } from './formAnalysis'
 
-export async function calculateDynamicFDR(
+const normalizeStrengthToDifficulty = (strength: number): number => {
+	const minStrength = 1000
+	const maxStrength = 1400
+	const clampedStrength = Math.max(minStrength, Math.min(maxStrength, strength))
+	return 1 + (4 * (clampedStrength - minStrength)) / (maxStrength - minStrength)
+}
+
+const calculateAttackingDifficulty = (opponent: Team, isHome: boolean): number => {
+	const opponentDefStrength = isHome
+		? opponent.strength_defence_home
+		: opponent.strength_defence_away
+	return normalizeStrengthToDifficulty(opponentDefStrength)
+}
+
+const calculateDefensiveDifficulty = (opponent: Team, isHome: boolean): number => {
+	const opponentAttStrength = isHome
+		? opponent.strength_attack_home
+		: opponent.strength_attack_away
+	return normalizeStrengthToDifficulty(opponentAttStrength)
+}
+
+export const calculateDynamicFDR = async (
 	homeTeam: Team,
 	awayTeam: Team,
 	fixtures: Fixtures,
 	teams: Team[],
 	isHome: boolean = false,
 	currentGameweek: number = 1,
-): Promise<EnhancedFDRResult> {
+): Promise<EnhancedFDRResult> => {
 	const opponent = isHome ? awayTeam : homeTeam
 	const [opponentPerformance, allTeamsPerformance] = await Promise.all([
 		calculateSeasonPerformance(opponent.id, fixtures, currentGameweek),
@@ -103,25 +124,4 @@ export async function calculateDynamicFDR(
 			weights,
 		},
 	}
-}
-
-function calculateAttackingDifficulty(opponent: Team, isHome: boolean): number {
-	const opponentDefStrength = isHome
-		? opponent.strength_defence_home
-		: opponent.strength_defence_away
-	return normalizeStrengthToDifficulty(opponentDefStrength)
-}
-
-function calculateDefensiveDifficulty(opponent: Team, isHome: boolean): number {
-	const opponentAttStrength = isHome
-		? opponent.strength_attack_home
-		: opponent.strength_attack_away
-	return normalizeStrengthToDifficulty(opponentAttStrength)
-}
-
-function normalizeStrengthToDifficulty(strength: number): number {
-	const minStrength = 1000
-	const maxStrength = 1400
-	const clampedStrength = Math.max(minStrength, Math.min(maxStrength, strength))
-	return 1 + (4 * (clampedStrength - minStrength)) / (maxStrength - minStrength)
 }

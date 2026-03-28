@@ -8,7 +8,7 @@ interface SortIndicatorProps {
 	sortConfig: { key: string; direction: SortDirection }
 }
 
-export function SortIndicator({ columnKey, sortConfig }: SortIndicatorProps) {
+export const SortIndicator = ({ columnKey, sortConfig }: SortIndicatorProps) => {
 	const isActive = sortConfig.key === columnKey
 	const isAscending = sortConfig.direction === 'ascending'
 

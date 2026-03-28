@@ -11,7 +11,7 @@ interface TeamBadgeProps {
 	className?: string
 }
 
-export function TeamBadge({ code, name, size = 20, className }: TeamBadgeProps) {
+export const TeamBadge = ({ code, name, size = 20, className }: TeamBadgeProps) => {
 	if (code === 0) return null
 	const urlSize: 25 | 100 = size >= 50 ? 100 : 25
 	return (

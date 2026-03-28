@@ -15,11 +15,11 @@ interface GameweekSelectorProps {
 	gameweekOptions: number[]
 }
 
-export function GameweekSelector({
+export const GameweekSelector = ({
 	numberOfGameweeks,
 	setNumberOfGameweeks,
 	gameweekOptions,
-}: GameweekSelectorProps) {
+}: GameweekSelectorProps) => {
 	return (
 		<div className='flex flex-col gap-2'>
 			<Label htmlFor='gameweek-select'>Gameweeks</Label>

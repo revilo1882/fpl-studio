@@ -22,7 +22,36 @@ export interface AttractivenessResult {
 	}
 }
 
-export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): AttractivenessResult {
+/**
+ * Convert difficulty to base score (lower difficulty = higher score)
+ * Scale: 1.0 (hardest) to 5.0 (easiest)
+ */
+const calculateDifficultyScore = (avgDifficulty: number): number => 6 - avgDifficulty
+
+/**
+ * Calculate bonus for multiple fixtures - this is the key insight!
+ * Even mediocre DGWs are often better than good SGWs
+ */
+const calculateMultiFixtureBonus = (numFixtures: number, avgDifficulty: number): number => {
+	if (numFixtures <= 1) return 0
+
+	let bonus = 0
+
+	if (numFixtures === 2) {
+		if (avgDifficulty <= 2.5) bonus = 3.0
+		else if (avgDifficulty <= 3.5) bonus = 2.0
+		else if (avgDifficulty <= 4.0) bonus = 1.0
+		else bonus = 0.5
+	} else if (numFixtures >= 3) {
+		if (avgDifficulty <= 3.0) bonus = 5.0
+		else if (avgDifficulty <= 4.0) bonus = 3.5
+		else bonus = 2.0
+	}
+
+	return bonus
+}
+
+export const calculateAttractivenessScore = (fixtureMatrix: FixtureCell[]): AttractivenessResult => {
 	const gameweekBreakdown: GameweekScore[] = []
 	let totalScore = 0
 
@@ -107,40 +136,9 @@ export function calculateAttractivenessScore(fixtureMatrix: FixtureCell[]): Attr
 }
 
 /**
- * Convert difficulty to base score (lower difficulty = higher score)
- * Scale: 1.0 (hardest) to 5.0 (easiest)
- */
-function calculateDifficultyScore(avgDifficulty: number): number {
-	return 6 - avgDifficulty
-}
-
-/**
- * Calculate bonus for multiple fixtures - this is the key insight!
- * Even mediocre DGWs are often better than good SGWs
- */
-function calculateMultiFixtureBonus(numFixtures: number, avgDifficulty: number): number {
-	if (numFixtures <= 1) return 0
-
-	let bonus = 0
-
-	if (numFixtures === 2) {
-		if (avgDifficulty <= 2.5) bonus = 3.0
-		else if (avgDifficulty <= 3.5) bonus = 2.0
-		else if (avgDifficulty <= 4.0) bonus = 1.0
-		else bonus = 0.5
-	} else if (numFixtures >= 3) {
-		if (avgDifficulty <= 3.0) bonus = 5.0
-		else if (avgDifficulty <= 4.0) bonus = 3.5
-		else bonus = 2.0
-	}
-
-	return bonus
-}
-
-/**
  * Get a human-readable summary of the fixture run
  */
-export function getFixtureRunSummary(result: AttractivenessResult): string {
+export const getFixtureRunSummary = (result: AttractivenessResult): string => {
 	const { summary } = result
 
 	const parts: string[] = []
@@ -161,12 +159,12 @@ export function getFixtureRunSummary(result: AttractivenessResult): string {
 /**
  * Compare two teams' fixture attractiveness
  */
-export function compareFixtureRuns(
+export const compareFixtureRuns = (
 	team1Result: AttractivenessResult,
 	team1Name: string,
 	team2Result: AttractivenessResult,
 	team2Name: string,
-): string {
+): string => {
 	const diff = team1Result.totalScore - team2Result.totalScore
 
 	if (Math.abs(diff) < 0.5) {

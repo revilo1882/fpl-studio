@@ -6,6 +6,6 @@ export const metadata: Metadata = {
 		'Browse every Premier League club in a live grid with Studio FDR ratings, gameweek windows, and attractiveness charts.',
 }
 
-export default function FixturesLayout({ children }: { children: React.ReactNode }) {
-	return children
-}
+const FixturesLayout = ({ children }: { children: React.ReactNode }) => children
+
+export default FixturesLayout

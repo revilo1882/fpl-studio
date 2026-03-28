@@ -40,7 +40,7 @@ const columns: { key: SortKey; label: string; align?: 'right' }[] = [
 	{ key: 'strength_defence_away', label: 'Defence (A)', align: 'right' },
 ]
 
-export function StrengthsTable({ teams }: { teams: Team[] }) {
+export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 	const [sortKey, setSortKey] = useState<SortKey>('name')
 	const [sortDir, setSortDir] = useState<SortDir>('ascending')
 

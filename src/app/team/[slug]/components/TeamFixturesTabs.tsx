@@ -20,15 +20,14 @@ const RESULT_STYLES: Record<MatchResult, string> = {
 	L: 'bg-red-500 text-white',
 }
 
-function getResult(myScore: number, theirScore: number): MatchResult {
+const getResult = (myScore: number, theirScore: number): MatchResult => {
 	if (myScore > theirScore) return 'W'
 	if (myScore < theirScore) return 'L'
 	return 'D'
 }
 
-function formatDate(dateStr: string) {
-	return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-}
+const formatDate = (dateStr: string) =>
+	new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 
 interface MatchCardProps {
 	gw: number | string | null
@@ -40,7 +39,7 @@ interface MatchCardProps {
 	children: ReactNode
 }
 
-function MatchCard({ gw, date, opponentCode, opponentName, opponentHref, venue, children }: MatchCardProps) {
+const MatchCard = ({ gw, date, opponentCode, opponentName, opponentHref, venue, children }: MatchCardProps) => {
 	return (
 		<div className='flex flex-col gap-2 rounded-lg border p-3'>
 			<div className='flex items-center justify-between'>
@@ -73,13 +72,13 @@ interface TeamFixturesTabsProps {
 	allFixtures: Fixtures
 }
 
-export function TeamFixturesTabs({
+export const TeamFixturesTabs = ({
 	team,
 	upcomingFixtures,
 	pastFixtures,
 	allTeams,
 	allFixtures,
-}: TeamFixturesTabsProps) {
+}: TeamFixturesTabsProps) => {
 	return (
 		<Card className='flex h-full flex-col overflow-hidden border'>
 			<CardHeader className='border-b pb-3 pt-4'>

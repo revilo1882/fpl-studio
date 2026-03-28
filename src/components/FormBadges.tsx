@@ -11,7 +11,7 @@ interface FormBadgesProps {
 	className?: string
 }
 
-export function FormBadges({ formSummary, className }: FormBadgesProps) {
+export const FormBadges = ({ formSummary, className }: FormBadgesProps) => {
 	const match = formSummary.match(/^([WDL]+)\s+\((.+)\)$/)
 	if (!match) {
 		return (

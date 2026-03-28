@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { BarChart2, TrendingUp, LayoutGrid, ChevronRight, Shield, Activity, Gauge } from 'lucide-react'
 
@@ -47,7 +48,71 @@ const BORDER_STYLES: Record<AccentColor, string> = {
 	slate: 'border-l-slate-400',
 }
 
-export default function LandingPage() {
+const FeatureCard = ({
+	icon,
+	accent,
+	title,
+	description,
+}: {
+	icon: ReactNode
+	accent: AccentColor
+	title: string
+	description: string
+}) => (
+	<div className='rounded-xl border border-border bg-card p-6 shadow-sm'>
+		<div
+			className={cn(
+				'mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg',
+				ICON_STYLES[accent],
+			)}
+		>
+			{icon}
+		</div>
+		<h3 className='mb-2 font-semibold text-foreground'>{title}</h3>
+		<p className='text-sm leading-relaxed text-muted-foreground'>{description}</p>
+	</div>
+)
+
+const ModelFactorCard = ({
+	icon,
+	accent,
+	title,
+	description,
+	weight,
+}: {
+	icon: ReactNode
+	accent: AccentColor
+	title: string
+	description: string
+	weight: string
+}) => (
+	<div
+		className={cn(
+			'rounded-lg border border-border border-l-4 bg-card p-5',
+			BORDER_STYLES[accent],
+		)}
+	>
+		<div className='mb-2 flex items-center justify-between gap-2 text-sm font-medium text-foreground'>
+			<div className='flex min-w-0 items-center gap-1.5'>
+				<span className={cn('inline-flex shrink-0 items-center', ICON_TEXT[accent])}>
+					{icon}
+				</span>
+				<span className='truncate'>{title}</span>
+			</div>
+			<span
+				className={cn(
+					'shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
+					BADGE_STYLES[accent],
+				)}
+			>
+				{weight}
+			</span>
+		</div>
+		<p className='text-sm leading-relaxed text-muted-foreground'>{description}</p>
+	</div>
+)
+
+const LandingPage = () => {
 	return (
 		<div className='flex flex-col'>
 			{/* ── Hero ── */}
@@ -186,70 +251,4 @@ export default function LandingPage() {
 	)
 }
 
-function FeatureCard({
-	icon,
-	accent,
-	title,
-	description,
-}: {
-	icon: React.ReactNode
-	accent: AccentColor
-	title: string
-	description: string
-}) {
-	return (
-		<div className='rounded-xl border border-border bg-card p-6 shadow-sm'>
-			<div
-				className={cn(
-					'mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg',
-					ICON_STYLES[accent],
-				)}
-			>
-				{icon}
-			</div>
-			<h3 className='mb-2 font-semibold text-foreground'>{title}</h3>
-			<p className='text-sm leading-relaxed text-muted-foreground'>{description}</p>
-		</div>
-	)
-}
-
-function ModelFactorCard({
-	icon,
-	accent,
-	title,
-	description,
-	weight,
-}: {
-	icon: React.ReactNode
-	accent: AccentColor
-	title: string
-	description: string
-	weight: string
-}) {
-	return (
-		<div
-			className={cn(
-				'rounded-lg border border-border border-l-4 bg-card p-5',
-				BORDER_STYLES[accent],
-			)}
-		>
-			<div className='mb-2 flex items-center justify-between gap-2 text-sm font-medium text-foreground'>
-				<div className='flex min-w-0 items-center gap-1.5'>
-					<span className={cn('inline-flex shrink-0 items-center', ICON_TEXT[accent])}>
-						{icon}
-					</span>
-					<span className='truncate'>{title}</span>
-				</div>
-				<span
-					className={cn(
-						'shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
-						BADGE_STYLES[accent],
-					)}
-				>
-					{weight}
-				</span>
-			</div>
-			<p className='text-sm leading-relaxed text-muted-foreground'>{description}</p>
-		</div>
-	)
-}
+export default LandingPage

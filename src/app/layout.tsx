@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 	},
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+const RootLayout = async ({ children }: { children: React.ReactNode }) => {
 	const [bootstrapData, fixtures] = (await Promise.all([
 		getBootstrapData(),
 		fetchFPLData<Fixtures>('fixtures', { revalidate: REVALIDATE_SECONDS }),
@@ -80,3 +80,5 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 		</html>
 	)
 }
+
+export default RootLayout

@@ -20,7 +20,7 @@ type FixtureGridRowProps = {
 	gameweekIds: number[]
 }
 
-export const FixtureGridRow = memo(function FixtureGridRow({
+export const FixtureGridRow = memo(({
 	row,
 	team,
 	teams,
@@ -28,7 +28,7 @@ export const FixtureGridRow = memo(function FixtureGridRow({
 	allFixtures,
 	numberOfGameweeks,
 	gameweekIds,
-}: FixtureGridRowProps) {
+}: FixtureGridRowProps) => {
 	return (
 		<TableRow
 			hoverHighlight={false}

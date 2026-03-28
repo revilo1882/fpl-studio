@@ -5,7 +5,7 @@ interface TeamHeaderProps {
 	team: Team
 }
 
-export function TeamHeader({ team }: TeamHeaderProps) {
+export const TeamHeader = ({ team }: TeamHeaderProps) => {
 	return (
 		<div className='mb-4 flex items-center gap-4'>
 			<TeamBadge code={team.code} name={team.name} size={80} className='object-contain' />

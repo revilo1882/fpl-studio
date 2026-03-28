@@ -5,7 +5,9 @@ import { SITE_NAME } from '@/lib/site'
 
 type Props = { children: React.ReactNode; params: Promise<{ slug: string }> }
 
-export async function generateMetadata({ params }: Pick<Props, 'params'>): Promise<Metadata> {
+export const generateMetadata = async ({
+	params,
+}: Pick<Props, 'params'>): Promise<Metadata> => {
 	const { slug } = await params
 	const normalized = slug.toLowerCase()
 	const bootstrap = await getBootstrapData()
@@ -19,6 +21,6 @@ export async function generateMetadata({ params }: Pick<Props, 'params'>): Promi
 	}
 }
 
-export default function TeamSlugLayout({ children }: { children: React.ReactNode }) {
-	return children
-}
+const TeamSlugLayout = ({ children }: { children: React.ReactNode }) => children
+
+export default TeamSlugLayout

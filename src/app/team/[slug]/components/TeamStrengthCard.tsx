@@ -6,7 +6,7 @@ interface TeamStrengthCardProps {
 	teamOverallFDR: EnhancedFDRResult
 }
 
-export function TeamStrengthCard({ teamName, teamOverallFDR }: TeamStrengthCardProps) {
+export const TeamStrengthCard = ({ teamName, teamOverallFDR }: TeamStrengthCardProps) => {
 	return (
 		<div className='overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm'>
 			<FDRConfidenceDisplay

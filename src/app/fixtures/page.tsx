@@ -10,8 +10,8 @@ interface FixturesPageProps {
 	fixtures: Fixtures
 }
 
-function FixturesPage({ bootstrapData, fixtures }: FixturesPageProps) {
-	return <FixtureDifficultyPage bootstrapData={bootstrapData} fixtures={fixtures} />
-}
+const FixturesPage = ({ bootstrapData, fixtures }: FixturesPageProps) => (
+	<FixtureDifficultyPage bootstrapData={bootstrapData} fixtures={fixtures} />
+)
 
 export default withFPLData(FixturesPage)

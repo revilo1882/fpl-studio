@@ -67,14 +67,12 @@ const clamp = (value: number, min: number, max: number) => Math.max(min, Math.mi
 // lightweight proxy for data freshness (changes on full reload = cache miss).
 const matrixCache = new Map<string, FixtureData>()
 
-function matrixCacheKey(
+const matrixCacheKey = (
 	difficultyType: DifficultyType,
 	firstGameweek: number,
 	numberOfGameweeks: number,
 	fixtureCount: number,
-): string {
-	return `${difficultyType}|${firstGameweek}|${numberOfGameweeks}|${fixtureCount}`
-}
+): string => `${difficultyType}|${firstGameweek}|${numberOfGameweeks}|${fixtureCount}`
 
 export const useFplTable = ({
 	bootstrapData,

@@ -17,8 +17,8 @@ const H_MID = 10 * SCALE
  * Apple touch icon: same geometry as Lucide BarChart2 / app/icon.svg
  * (short · tall · mid columns, round caps, light on dark).
  */
-export default function AppleIcon() {
-	return new ImageResponse(
+const AppleIcon = () =>
+	new ImageResponse(
 		(
 			<div
 				style={{
@@ -69,4 +69,5 @@ export default function AppleIcon() {
 		),
 		{ ...size },
 	)
-}
+
+export default AppleIcon

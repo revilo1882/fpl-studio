@@ -30,11 +30,11 @@ interface ITeamData {
 	pastFixtures: Fixture[]
 }
 
-export default function TeamPage({
+const TeamPage = ({
 	params: paramsPromise,
 }: {
 	params: Promise<{ slug: string }>
-}) {
+}) => {
 	const params = use(paramsPromise)
 	const { bootstrapData, fixtures } = useFPLServerContext()
 	const [loading, setLoading] = useState(true)
@@ -52,7 +52,7 @@ export default function TeamPage({
 	useEffect(() => {
 		if (!team || !bootstrapData || !fixtures) return
 
-		async function loadTeamData() {
+		const loadTeamData = async () => {
 			setLoading(true)
 			try {
 				const leagueAverage = buildLeagueAverageOpponent(bootstrapData!.teams)
@@ -163,3 +163,5 @@ export default function TeamPage({
 		</main>
 	)
 }
+
+export default TeamPage
