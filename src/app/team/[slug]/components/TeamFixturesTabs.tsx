@@ -6,9 +6,9 @@ import Link from 'next/link'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { FixtureChip } from '@/components/FixtureChip'
-import { TeamBadge } from '@/components/TeamBadge'
-import type { SingleFixture } from '@/lib/generateFixtureMatrix'
+import { FixtureChip } from '@/components/fixtures/FixtureChip'
+import { TeamBadge } from '@/components/team/TeamBadge'
+import type { SingleFixture } from '@/lib/fixtures/generateFixtureMatrix'
 import type { Fixtures, Team } from '@/types/fpl'
 import { cn } from '@/lib/utils'
 

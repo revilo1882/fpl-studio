@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { FixturePageHeader } from '@/components/FixturePageHeader'
+import { FixturePageHeader } from '@/components/fixtures/FixturePageHeader'
 import { getBootstrapData } from '@/lib/bootstrapServer'
 import type { Team } from '@/types/fpl'
 

@@ -1,5 +1,5 @@
 import type { Team } from '@/types/fpl'
-import { TeamBadge } from '@/components/TeamBadge'
+import { TeamBadge } from '@/components/team/TeamBadge'
 
 interface TeamHeaderProps {
 	team: Team

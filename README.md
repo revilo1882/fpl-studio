@@ -53,15 +53,19 @@ src/
     strengths/               # Raw strengths table
     team/[slug]/             # Team detail + tabbed matches
     layout.tsx               # Theme + FPL provider + header
-  components/                # Feature UI (grid, controls, charts, etc.)
-    charts/
+  components/
+    fixtures/                # Fixture grid, chart, controls, FPL view toggles
+    fdr/                     # FDR confidence UI
+    layout/                  # App shell (header, nav, theme, data-unavailable)
+    providers/               # withFPLData HOC
+    team/                    # TeamBadge, form badges
     ui/                      # shadcn components
   contexts/                  # FPL server / client data context
   hooks/                     # Table state, URL sync
   lib/
     fdr/                     # FDR algorithms
     fpl/                     # API helpers, badge URLs
-    generateFixtureMatrix.ts # Matrix + memoised difficulty cells
+    fixtures/                # Matrix, attractiveness, grid utils
   tests/                     # Vitest setup
   types/                     # FPL / bootstrap types
 ```

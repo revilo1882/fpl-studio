@@ -17,11 +17,11 @@ import {
 import { Line } from 'react-chartjs-2'
 
 import type { Team } from '@/types/fpl'
-import type { DifficultyType, FixtureCell, SingleFixture } from '@/lib/generateFixtureMatrix'
-import { ChartPanel } from '@/components/charts/ChartPanel'
-import { useChartPalette } from '@/components/charts/useChartPalette'
-import { useChartOptions } from '@/components/charts/useChartOptions'
-import { BuildLineDatasets } from '@/components/charts/BuildLineDatasets'
+import type { DifficultyType, FixtureCell, SingleFixture } from '@/lib/fixtures/generateFixtureMatrix'
+import { ChartPanel } from '@/components/fixtures/charts/ChartPanel'
+import { useChartPalette } from '@/components/fixtures/charts/useChartPalette'
+import { useChartOptions } from '@/components/fixtures/charts/useChartOptions'
+import { BuildLineDatasets } from '@/components/fixtures/charts/BuildLineDatasets'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 

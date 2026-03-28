@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { mockTeams, mockFixtures, mockBootstrapData } from '../lib/test-mocks'
+import { mockTeams, mockFixtures, mockBootstrapData } from '../test-mocks'
 
 import { generateFixtureMatrix, generateTeamFixtureRow } from './generateFixtureMatrix'
 

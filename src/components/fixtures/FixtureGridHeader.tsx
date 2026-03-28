@@ -7,8 +7,8 @@ import type { Gameweek } from '@/types/fpl'
 import { type FixtureGridSortConfig, type FixtureGridSortKey } from '@/hooks/useFplTable'
 
 import { SortIndicator } from './SortIndicator'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 type FixtureGridHeaderProps = {
 	events: Gameweek[]

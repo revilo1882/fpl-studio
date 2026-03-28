@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 
 import type { ChartOptions, TooltipItem } from 'chart.js'
 
-import type { FixtureCell } from '@/lib/generateFixtureMatrix'
+import type { FixtureCell } from '@/lib/fixtures/generateFixtureMatrix'
 
 import type { LineDataset } from './BuildLineDatasets'
 

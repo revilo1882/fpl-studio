@@ -15,7 +15,7 @@ import {
 	SheetTrigger,
 	SheetFooter,
 } from '@/components/ui/sheet'
-import type { DifficultyType } from '@/lib/generateFixtureMatrix'
+import type { DifficultyType } from '@/lib/fixtures/generateFixtureMatrix'
 import type { Team } from '@/types/fpl'
 
 import { type View, ViewToggle } from './ViewToggle'

@@ -5,7 +5,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
 import type { BootstrapData, Fixtures } from '@/types/fpl'
-import type { DifficultyType, FixtureCell } from '@/lib/generateFixtureMatrix'
+import type { DifficultyType, FixtureCell } from '@/lib/fixtures/generateFixtureMatrix'
 import { useFplTable } from '@/hooks/useFplTable'
 import { useQuerySync } from '@/hooks/useQuerySync'
 

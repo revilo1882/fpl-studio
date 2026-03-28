@@ -14,14 +14,14 @@ import {
 	type SeasonPerformance,
 } from '@/lib/fdr'
 import { calculateDynamicFDR } from '@/lib/fdr/dynamicFDR'
-import { generateTeamFixtureRow, type SingleFixture } from '@/lib/generateFixtureMatrix'
+import { generateTeamFixtureRow, type SingleFixture } from '@/lib/fixtures/generateFixtureMatrix'
 import type { Fixture, Team as FPLTeam } from '@/types/fpl'
 import { TeamHeader } from '@/app/team/[slug]/components/TeamHeader'
 import { TeamPerformanceCard } from '@/app/team/[slug]/components/TeamPerformanceCard'
 import { TeamStrengthCard } from '@/app/team/[slug]/components/TeamStrengthCard'
 import { TeamFixturesTabs } from '@/app/team/[slug]/components/TeamFixturesTabs'
 import { useFPLServerContext } from '@/contexts/FPLServerContext'
-import DataUnavailable from '@/components/DataUnavailable'
+import DataUnavailable from '@/components/layout/DataUnavailable'
 
 interface ITeamData {
 	teamPerformance: SeasonPerformance

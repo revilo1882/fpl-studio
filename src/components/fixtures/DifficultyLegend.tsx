@@ -1,5 +1,5 @@
-import { getDifficultyUI } from '@/lib/fixtureGridUtils'
-import type { DifficultyType } from '@/lib/generateFixtureMatrix'
+import { getDifficultyUI } from '@/lib/fixtures/fixtureGridUtils'
+import type { DifficultyType } from '@/lib/fixtures/generateFixtureMatrix'
 import { cn } from '@/lib/utils'
 
 // Midpoints of each colour band in getDifficultyUI

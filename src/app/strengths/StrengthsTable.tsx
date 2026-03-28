@@ -12,7 +12,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
-import { SortIndicator } from '@/components/SortIndicator'
+import { SortIndicator } from '@/components/fixtures/SortIndicator'
 import type { Team } from '@/types/fpl'
 
 type SortKey = keyof Pick<

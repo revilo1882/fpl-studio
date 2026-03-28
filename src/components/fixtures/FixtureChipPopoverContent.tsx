@@ -1,9 +1,9 @@
 'use client'
 
 import type { Fixtures, Team } from '@/types/fpl'
-import type { DifficultyType, SingleFixture } from '@/lib/generateFixtureMatrix'
-import { TeamBadge } from '@/components/TeamBadge'
-import { FormBadges } from '@/components/FormBadges'
+import type { DifficultyType, SingleFixture } from '@/lib/fixtures/generateFixtureMatrix'
+import { TeamBadge } from '@/components/team/TeamBadge'
+import { FormBadges } from '@/components/team/FormBadges'
 
 type FixtureChipPopoverContentProps = {
 	fixture: SingleFixture

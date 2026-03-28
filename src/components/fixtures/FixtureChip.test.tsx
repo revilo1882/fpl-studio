@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 
-import { mockFixtures, mockTeams } from '@/lib//test-mocks'
-import * as fixtureUtils from '@/lib/fixtureGridUtils'
-import { type SingleFixture } from '@/lib/generateFixtureMatrix'
+import { mockFixtures, mockTeams } from '@/lib/test-mocks'
+import * as fixtureUtils from '@/lib/fixtures/fixtureGridUtils'
+import { type SingleFixture } from '@/lib/fixtures/generateFixtureMatrix'
 import { type Team } from '@/types/fpl'
 
 import { FixtureChip } from './FixtureChip'
@@ -16,8 +16,8 @@ vi.mock('next/image', () => ({
 	},
 }))
 
-vi.mock('@/lib/fixtureGridUtils', async () => {
-	const actual = await vi.importActual<typeof fixtureUtils>('@/lib/fixtureGridUtils')
+vi.mock('@/lib/fixtures/fixtureGridUtils', async () => {
+	const actual = await vi.importActual<typeof fixtureUtils>('@/lib/fixtures/fixtureGridUtils')
 	return {
 		...actual,
 		getFormSummary: vi.fn(() => '3.5 avg over last 5'),

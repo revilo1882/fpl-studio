@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 import { TableCell, TableRow } from '@/components/ui/table'
 import type { Team, Fixtures } from '@/types/fpl'
-import type { DifficultyType } from '@/lib/generateFixtureMatrix'
+import type { DifficultyType } from '@/lib/fixtures/generateFixtureMatrix'
 
 import { FixtureChip } from './FixtureChip'
 import { type RowData } from './FixtureGrid'

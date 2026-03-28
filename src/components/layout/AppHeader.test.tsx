@@ -9,7 +9,7 @@ vi.mock('next/navigation', () => ({
 	usePathname: vi.fn(),
 }))
 
-vi.mock('@/components/ThemeToggle', () => ({
+vi.mock('@/components/layout/ThemeToggle', () => ({
 	ThemeToggle: () => <span data-testid='theme-toggle-mock' />,
 }))
 

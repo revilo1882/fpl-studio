@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 
 import { Table, TableBody, TableHeader } from '@/components/ui/table'
 import type { Fixtures, Gameweek, Team } from '@/types/fpl'
-import type { DifficultyType, SingleFixture } from '@/lib/generateFixtureMatrix'
+import type { DifficultyType, SingleFixture } from '@/lib/fixtures/generateFixtureMatrix'
 import { type FixtureGridSortConfig, type FixtureGridSortKey } from '@/hooks/useFplTable'
 
 import { FixtureGridRow } from './FixtureGridRow'

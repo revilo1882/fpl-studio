@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { getDifficultyUI, getOpponentTeam } from './fixtureGridUtils'
-import { mockTeams } from './test-mocks'
+import { mockTeams } from '../test-mocks'
 
 describe('fixtureGridUtils', () => {
 	describe('getDifficultyUI', () => {

@@ -8,7 +8,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
-import type { DifficultyType } from '@/lib/generateFixtureMatrix'
+import type { DifficultyType } from '@/lib/fixtures/generateFixtureMatrix'
 
 interface DifficultySelectorProps {
 	difficultyType: DifficultyType

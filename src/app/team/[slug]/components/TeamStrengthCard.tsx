@@ -1,4 +1,4 @@
-import { FDRConfidenceDisplay } from '@/components/FDRConfidenceDisplay'
+import { FDRConfidenceDisplay } from '@/components/fdr/FDRConfidenceDisplay'
 import { type EnhancedFDRResult } from '@/lib/fdr'
 
 interface TeamStrengthCardProps {

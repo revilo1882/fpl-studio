@@ -9,9 +9,9 @@ import { fetchFPLData } from '@/lib/fplApi'
 import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/site'
 import type { BootstrapData } from '@/types/bootstrap'
 import type { Fixtures } from '@/types/fixtures'
-import DataUnavailable from '@/components/DataUnavailable'
+import DataUnavailable from '@/components/layout/DataUnavailable'
 import { FPLProvider } from '@/contexts/FPLServerContext'
-import { AppHeader } from '@/components/AppHeader'
+import { AppHeader } from '@/components/layout/AppHeader'
 
 const REVALIDATE_SECONDS = Number(process.env.NEXT_PUBLIC_REVALIDATE_SECONDS) || 900
 

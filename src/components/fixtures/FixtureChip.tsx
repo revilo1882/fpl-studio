@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { Fixtures, Team } from '@/types/fpl'
-import type { DifficultyType, SingleFixture } from '@/lib/generateFixtureMatrix'
-import { getDifficultyUI, getOpponentTeam, getFormSummary } from '@/lib/fixtureGridUtils'
+import type { DifficultyType, SingleFixture } from '@/lib/fixtures/generateFixtureMatrix'
+import { getDifficultyUI, getOpponentTeam, getFormSummary } from '@/lib/fixtures/fixtureGridUtils'
 import { cn } from '@/lib/utils'
 
 import { FixtureChipPopoverContent } from './FixtureChipPopoverContent'

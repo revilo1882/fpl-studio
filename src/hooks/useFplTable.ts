@@ -7,7 +7,7 @@ import {
 	generateFixtureMatrix,
 	type DifficultyType,
 	type FixtureCell,
-} from '@/lib/generateFixtureMatrix'
+} from '@/lib/fixtures/generateFixtureMatrix'
 
 export type FixtureGridSortKey = 'team' | 'score'
 export type SortDirection = 'ascending' | 'descending'

@@ -1,5 +1,5 @@
 import { useFPLServerContext } from '@/contexts/FPLServerContext'
-import DataUnavailable from '@/components/DataUnavailable'
+import DataUnavailable from '@/components/layout/DataUnavailable'
 import { type BootstrapData } from '@/types/bootstrap'
 import { type Fixtures } from '@/types/fixtures'
 

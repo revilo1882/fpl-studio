@@ -4,8 +4,8 @@ import { useEffect, useMemo } from 'react'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
-import type { DifficultyType } from '@/lib/generateFixtureMatrix'
-import { type View } from '@/components/ViewToggle'
+import type { DifficultyType } from '@/lib/fixtures/generateFixtureMatrix'
+import { type View } from '@/components/fixtures/ViewToggle'
 
 import { type FixtureGridSortConfig, type FixtureGridSortKey, type SortDirection } from './useFplTable'
 

@@ -1,7 +1,7 @@
 'use client'
 
-import FixtureDifficultyPage from '@/components/FixtureDifficultyPage'
-import { withFPLData } from '@/components/withFPLData'
+import FixtureDifficultyPage from '@/components/fixtures/FixtureDifficultyPage'
+import { withFPLData } from '@/components/providers/withFPLData'
 import { type BootstrapData } from '@/types/bootstrap'
 import { type Fixtures } from '@/types/fixtures'
 

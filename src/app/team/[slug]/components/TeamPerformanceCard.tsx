@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { type SeasonPerformance } from '@/lib/fdr'
-import { getFormSummary } from '@/lib/fixtureGridUtils'
-import { FormBadges } from '@/components/FormBadges'
+import { getFormSummary } from '@/lib/fixtures/fixtureGridUtils'
+import { FormBadges } from '@/components/team/FormBadges'
 import type { Fixtures } from '@/types/fpl'
 
 interface TeamPerformanceCardProps {
