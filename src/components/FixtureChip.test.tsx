@@ -64,6 +64,10 @@ describe('FixtureChip', () => {
 	})
 
 	it('shows kickoff time in popover', async () => {
+		// Use real-time-advancing fake timers so waitFor still retries while we
+		// bypass the 400 ms ghost-tap debounce on FixtureChip mount.
+		vi.useFakeTimers({ shouldAdvanceTime: true })
+
 		render(
 			<FixtureChip
 				fixture={mockFixture}
@@ -73,15 +77,19 @@ describe('FixtureChip', () => {
 			/>,
 		)
 
+		vi.advanceTimersByTime(500)
 		fireEvent.click(screen.getByText('GW3 (H)'))
 
 		await waitFor(() => {
 			expect(screen.getByText(/Kickoff:/)).toBeInTheDocument()
 			expect(screen.getByText(/Tue 12 Aug/)).toBeTruthy()
 		})
+
+		vi.useRealTimers()
 	})
 
 	it('falls back when no opponent team found', () => {
+		vi.useFakeTimers()
 		vi.spyOn(fixtureUtils, 'getOpponentTeam').mockReturnValueOnce(undefined)
 
 		render(
@@ -93,9 +101,12 @@ describe('FixtureChip', () => {
 			/>,
 		)
 
+		vi.advanceTimersByTime(500)
 		fireEvent.click(screen.getByText('GW3 (H)'))
 
 		expect(screen.getByText(/ZZZ United/)).toBeInTheDocument()
 		expect(screen.queryByText(/Form:/)).not.toBeInTheDocument()
+
+		vi.useRealTimers()
 	})
 })

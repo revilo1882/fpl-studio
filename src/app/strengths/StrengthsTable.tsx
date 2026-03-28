@@ -64,14 +64,20 @@ export function StrengthsTable({ teams }: { teams: Team[] }) {
 	const sortConfig = { key: sortKey as string, direction: sortDir }
 
 	return (
-		<div className='overflow-x-auto rounded-lg border'>
+		<div className='overflow-x-auto [overflow-y:clip] rounded-lg border sm:max-h-full sm:overflow-auto'>
 			<Table className='min-w-max text-sm'>
 				<TableHeader>
 					<TableRow>
 						{columns.map(({ key, label, align }) => (
 							<TableHead
 								key={key}
-								className={align === 'right' ? 'whitespace-nowrap text-right' : 'whitespace-nowrap'}
+								className={
+									key === 'name'
+										? 'sticky left-0 top-0 z-20 whitespace-nowrap bg-card shadow-sm'
+										: align === 'right'
+											? 'sticky top-0 z-10 whitespace-nowrap bg-card text-right shadow-sm'
+											: 'sticky top-0 z-10 whitespace-nowrap bg-card shadow-sm'
+								}
 							>
 								<button
 									onClick={() => handleSort(key)}
@@ -87,15 +93,15 @@ export function StrengthsTable({ teams }: { teams: Team[] }) {
 				<TableBody>
 					{sorted.map((team) => (
 						<TableRow key={team.id} className='hover:bg-muted/30'>
-						<TableCell className='font-medium'>
-							<Link
-								href={`/team/${team.short_name.toLowerCase()}`}
-								className='hover:underline'
-							>
-								{team.name}
-							</Link>{' '}
-							<span className='text-xs text-muted-foreground'>({team.short_name})</span>
-						</TableCell>
+							<TableCell className='sticky left-0 z-10 bg-card font-medium'>
+								<Link
+									href={`/team/${team.short_name.toLowerCase()}`}
+									className='hover:underline'
+								>
+									{team.name}
+								</Link>{' '}
+								<span className='text-xs text-muted-foreground'>({team.short_name})</span>
+							</TableCell>
 							<TableCell className='text-right tabular-nums'>{team.strength}</TableCell>
 							<TableCell className='text-right tabular-nums'>
 								{team.strength_overall_home}

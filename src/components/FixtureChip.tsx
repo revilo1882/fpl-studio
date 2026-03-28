@@ -24,6 +24,7 @@ export const FixtureChip = ({ fixture, teams, difficultyType, fixtures, compact 
 	const [formSummary, setFormSummary] = useState<string>('Loading...')
 	const [open, setOpen] = useState(false)
 	const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+	const mountedAt = useRef(Date.now())
 
 	useEffect(() => {
 		if (opponentTeam) setFormSummary(getFormSummary(opponentTeam.id, fixtures))
@@ -40,8 +41,14 @@ export const FixtureChip = ({ fixture, teams, difficultyType, fixtures, compact 
 		closeTimer.current = setTimeout(() => setOpen(false), 150)
 	}
 
+	const handleOpenChange = (isOpen: boolean) => {
+		// Ignore the ghost tap that fires when navigating to this page on touch devices
+		if (isOpen && Date.now() - mountedAt.current < 400) return
+		setOpen(isOpen)
+	}
+
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
+		<Popover open={open} onOpenChange={handleOpenChange}>
 			<PopoverTrigger asChild>
 				{compact ? (
 					/* Inline score pill — no opponent label, just the FDR number */

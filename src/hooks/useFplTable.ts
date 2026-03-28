@@ -62,6 +62,20 @@ export type UseFplTableResult = {
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
 
+// Module-level cache — persists across client-side navigations for the session.
+// Key encodes the parameters that determine the output; fixture count is a
+// lightweight proxy for data freshness (changes on full reload = cache miss).
+const matrixCache = new Map<string, FixtureData>()
+
+function matrixCacheKey(
+	difficultyType: DifficultyType,
+	firstGameweek: number,
+	numberOfGameweeks: number,
+	fixtureCount: number,
+): string {
+	return `${difficultyType}|${firstGameweek}|${numberOfGameweeks}|${fixtureCount}`
+}
+
 export const useFplTable = ({
 	bootstrapData,
 	fixtures,
@@ -85,8 +99,14 @@ export const useFplTable = ({
 		direction: 'ascending',
 	})
 
-	const [fixtureData, setFixtureData] = useState<FixtureData | null>(null)
-	const [isLoading, setIsLoading] = useState<boolean>(false)
+	const [fixtureData, setFixtureData] = useState<FixtureData | null>(() => {
+		const key = matrixCacheKey(initialDifficultyType, initialFirst, initialWindow, fixtures.length)
+		return matrixCache.get(key) ?? null
+	})
+	const [isLoading, setIsLoading] = useState<boolean>(() => {
+		const key = matrixCacheKey(initialDifficultyType, initialFirst, initialWindow, fixtures.length)
+		return !matrixCache.has(key)
+	})
 
 	const effectiveWindow = useMemo(() => {
 		const remaining = Math.max(0, maxGameweekId - firstGameweek + 1)
@@ -110,6 +130,14 @@ export const useFplTable = ({
 	}, [firstGameweek, maxGameweekId, effectiveWindow])
 
 	useEffect(() => {
+		const cacheKey = matrixCacheKey(difficultyType, firstGameweek, effectiveWindow, fixtures.length)
+		const cached = matrixCache.get(cacheKey)
+		if (cached) {
+			setFixtureData(cached)
+			setIsLoading(false)
+			return
+		}
+
 		let cancelled = false
 
 		const run = async () => {
@@ -123,7 +151,10 @@ export const useFplTable = ({
 					numberOfGameweeks: effectiveWindow,
 					difficultyType,
 				})
-				if (!cancelled) setFixtureData(result)
+				if (!cancelled) {
+					matrixCache.set(cacheKey, result)
+					setFixtureData(result)
+				}
 			} finally {
 				if (!cancelled) setIsLoading(false)
 			}

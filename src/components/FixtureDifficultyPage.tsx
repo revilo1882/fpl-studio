@@ -93,7 +93,7 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 	const canShowChart = isChart && !isChartEmpty && !isChartTooMany && !!fixtureData
 
 	return (
-		<section className='container mx-auto flex h-[calc(100dvh-3.5rem)] flex-col gap-4 px-4 py-4 sm:gap-6 sm:py-6'>
+		<section className='container mx-auto flex flex-col gap-4 px-4 py-4 sm:h-full sm:overflow-hidden sm:gap-6 sm:py-6'>
 			<div className='shrink-0'>
 				<FixturePageHeader
 					title='Fixture Difficulty'
@@ -102,34 +102,31 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 				/>
 			</div>
 
-		<div className='shrink-0'>
-			<FixtureControls
-				view={view}
-				onViewChange={setView}
-				teams={teams}
-				selectedTeams={selectedTeams}
-				onSelectionChange={setSelectedTeams}
-				maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
-				difficultyType={difficultyType}
-				onDifficultyTypeChange={setDifficultyType}
-				numberOfGameweeks={numberOfGameweeks}
-				onNumberOfGameweeksChange={setNumberOfGameweeks}
-				gameweekOptions={gameweekOptions}
-				rightSlot={
-					view === 'grid' ? (
-						<DifficultyLegend difficultyType={difficultyType} />
-					) : undefined
-				}
-			/>
-			{/* On mobile the legend sits below the filter sheet button */}
-			{view === 'grid' && (
-				<div className='mt-2 sm:hidden'>
-					<DifficultyLegend difficultyType={difficultyType} />
-				</div>
-			)}
-		</div>
+	<FixtureControls
+		view={view}
+		onViewChange={setView}
+		teams={teams}
+		selectedTeams={selectedTeams}
+		onSelectionChange={setSelectedTeams}
+		maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
+		difficultyType={difficultyType}
+		onDifficultyTypeChange={setDifficultyType}
+		numberOfGameweeks={numberOfGameweeks}
+		onNumberOfGameweeksChange={setNumberOfGameweeks}
+		gameweekOptions={gameweekOptions}
+		rightSlot={
+			view === 'grid' ? (
+				<DifficultyLegend difficultyType={difficultyType} />
+			) : undefined
+		}
+		mobileLegend={
+			view === 'grid' ? (
+				<DifficultyLegend difficultyType={difficultyType} />
+			) : undefined
+		}
+	/>
 
-		<div className='min-h-0 flex-1'>
+		<div className='-mx-4 sm:mx-0 sm:min-h-0 sm:flex-1'>
 			{view === 'grid' && (
 				<FixtureGrid
 						data={sortedData}

@@ -40,10 +40,10 @@ export const FixtureGridHeader = ({
 
 	return (
 		<TableRow className='border-b hover:bg-transparent'>
-			<TableHead
-				className='sticky left-0 top-0 z-40 w-0 whitespace-nowrap bg-background p-0 text-left font-semibold'
-				aria-sort={ariaSortTeam as 'ascending' | 'descending' | 'none'}
-			>
+		<TableHead
+			className='sticky left-0 top-0 z-40 w-0 whitespace-nowrap bg-background p-0 text-left font-semibold'
+			aria-sort={ariaSortTeam as 'ascending' | 'descending' | 'none'}
+		>
 				<button
 					onClick={() => onSort('team')}
 					className='flex h-full w-full items-center gap-2 px-2 py-3 text-left transition-colors duration-150 hover:bg-muted/50 active:bg-muted'
@@ -64,7 +64,7 @@ export const FixtureGridHeader = ({
 				</TableHead>
 			))}
 		<TableHead
-			className='sticky right-0 top-0 z-40 w-[90px] border-l border-border bg-background p-0 text-right font-semibold'
+		className='sticky right-0 top-0 z-40 w-[90px] border-l border-border bg-background p-0 text-right font-semibold'
 				aria-sort={ariaSortScore as 'ascending' | 'descending' | 'none'}
 			>
 				<div className='flex items-center justify-end gap-2 px-3 py-2'>

@@ -122,14 +122,14 @@ export default function TeamPage({
 
 	if (loading) {
 		return (
-			<main className='container mx-auto flex h-[calc(100dvh-3.5rem)] max-w-7xl items-center justify-center px-4'>
-				<div className='text-muted-foreground'>Loading team data...</div>
-			</main>
-		)
-	}
+		<main className='container mx-auto flex h-full max-w-7xl items-center justify-center px-4'>
+			<div className='text-muted-foreground'>Loading team data...</div>
+		</main>
+	)
+}
 
 	return (
-		<main className='container mx-auto flex h-[calc(100dvh-3.5rem)] max-w-7xl flex-col overflow-hidden px-4 py-6'>
+		<main className='container mx-auto flex h-full max-w-7xl flex-col overflow-hidden px-4 py-6'>
 			<Link
 				href='/fixtures'
 				className='mb-4 inline-flex shrink-0 items-center text-sm text-muted-foreground hover:underline'

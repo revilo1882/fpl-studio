@@ -1,10 +1,8 @@
 'use client'
 
-import Image from 'next/image'
-
 import type { Fixtures, Team } from '@/types/fpl'
 import type { DifficultyType, SingleFixture } from '@/lib/generateFixtureMatrix'
-import { getTeamBadgeUrl } from '@/lib/fpl/badges'
+import { TeamBadge } from '@/components/TeamBadge'
 import { FormBadges } from '@/components/FormBadges'
 
 type FixtureChipPopoverContentProps = {
@@ -29,20 +27,9 @@ export const FixtureChipPopoverContent = ({
 		<div className='space-y-3'>
 			<div className='flex items-center justify-between'>
 				<div className='flex items-center gap-2'>
-					{opponentTeam && (
-						<Image
-							src={getTeamBadgeUrl(opponentTeam.code) || '/placeholder.svg'}
-							alt={`${fixture.opponentName} badge`}
-							width={20}
-							height={20}
-							className='object-contain'
-							unoptimized
-							onError={(e) => {
-								const container = e.currentTarget.parentElement
-								if (container) container.style.display = 'none'
-							}}
-						/>
-					)}
+				{opponentTeam && (
+					<TeamBadge code={opponentTeam.code} name={fixture.opponentName} />
+				)}
 					<span className='font-semibold text-foreground'>{fixture.opponentName}</span>
 				</div>
 				{labelSuffix && (

@@ -21,8 +21,8 @@ const StrengthsPage = async () => {
 	}).format(new Date())
 
 	return (
-		<div className='container mx-auto space-y-4 px-4 py-8'>
-			<div className='flex items-end justify-between'>
+		<div className='container mx-auto flex flex-col gap-4 px-4 py-6 sm:h-full sm:overflow-hidden sm:py-8'>
+			<div className='shrink-0 flex items-end justify-between'>
 				<div>
 					<h1 className='text-2xl font-bold tracking-tight'>Team Strength Snapshot</h1>
 					<p className='mt-1 text-sm text-muted-foreground'>
@@ -33,9 +33,11 @@ const StrengthsPage = async () => {
 				<p className='shrink-0 text-sm text-muted-foreground'>As of {formattedNow}</p>
 			</div>
 
-			<StrengthsTable teams={teams} />
+			<div className='sm:min-h-0 sm:flex-1'>
+				<StrengthsTable teams={teams} />
+			</div>
 
-			<p className='text-xs text-muted-foreground'>
+			<p className='shrink-0 text-xs text-muted-foreground'>
 				Source: Official FPL API (
 				<code className='text-xs'>bootstrap-static</code>). Strength values are on a
 				1000–1400 scale; FPL Studio normalises these to a 1–5 rating for the FDR model.

@@ -22,7 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
 	return (
 		<html lang='en' suppressHydrationWarning>
-			<body>
+			<body className='flex flex-col'>
 				<ThemeProvider
 					attribute='class'
 					defaultTheme='system'
@@ -31,18 +31,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 				>
 					<AppHeader />
 
-					{!dataIsAvailable ? (
-						<DataUnavailable />
-					) : (
-						<FPLProvider
-							value={{
-								bootstrapData: bootstrapData!,
-								fixtures: fixtures!,
-							}}
-						>
-							{children}
-						</FPLProvider>
-					)}
+					<div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+						{!dataIsAvailable ? (
+							<DataUnavailable />
+						) : (
+							<FPLProvider
+								value={{
+									bootstrapData: bootstrapData!,
+									fixtures: fixtures!,
+								}}
+							>
+								{children}
+							</FPLProvider>
+						)}
+					</div>
 
 					<SpeedInsights />
 				</ThemeProvider>

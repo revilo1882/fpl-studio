@@ -51,10 +51,10 @@ export function FixtureGrid({
 	const teamByName = useMemo(() => new Map(teams.map((team) => [team.name, team])), [teams])
 
 	return (
-		<div className='flex max-h-full flex-col rounded-lg border border-border bg-card shadow-sm'>
-			<div className='min-h-0 flex-1 touch-pan-x touch-pan-y overflow-x-auto overflow-y-auto rounded-b-lg'>
+		<div className='flex flex-col border-y border-border bg-card sm:h-full sm:overflow-hidden sm:rounded-lg sm:border sm:shadow-sm'>
+			<div className='overflow-x-auto [overflow-y:clip] touch-pan-x touch-pan-y sm:min-h-0 sm:flex-1 sm:overflow-y-auto sm:rounded-b-lg'>
 				<Table className='min-w-max' style={{ position: 'relative' }}>
-					<TableHeader className='sticky top-0 z-30 border-b bg-card shadow-sm'>
+					<TableHeader className='border-b bg-card shadow-sm'>
 						<FixtureGridHeader
 							events={events}
 							firstGameweek={firstGameweek}

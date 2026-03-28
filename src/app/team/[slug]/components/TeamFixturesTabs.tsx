@@ -1,14 +1,15 @@
 'use client'
 
-import Image from 'next/image'
+import type { ReactNode } from 'react'
+
 import Link from 'next/link'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FixtureChip } from '@/components/FixtureChip'
+import { TeamBadge } from '@/components/TeamBadge'
 import type { SingleFixture } from '@/lib/generateFixtureMatrix'
 import type { Fixtures, Team } from '@/types/fpl'
-import { getTeamBadgeUrl } from '@/lib/fpl/badges'
 import { cn } from '@/lib/utils'
 
 type MatchResult = 'W' | 'D' | 'L'
@@ -27,6 +28,41 @@ function getResult(myScore: number, theirScore: number): MatchResult {
 
 function formatDate(dateStr: string) {
 	return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
+interface MatchCardProps {
+	gw: number | string | null
+	date: string
+	opponentCode: number
+	opponentName: string
+	opponentHref?: string
+	venue: string
+	children: ReactNode
+}
+
+function MatchCard({ gw, date, opponentCode, opponentName, opponentHref, venue, children }: MatchCardProps) {
+	return (
+		<div className='flex flex-col gap-2 rounded-lg border p-3'>
+			<div className='flex items-center justify-between'>
+				<span className='font-semibold text-foreground'>GW {gw ?? 'N/A'}</span>
+				<span className='text-sm text-muted-foreground'>{date}</span>
+			</div>
+			<div className='flex items-center justify-between'>
+				<div className='flex items-center gap-2'>
+					<TeamBadge code={opponentCode} name={opponentName} className='rounded-full' />
+					{opponentHref ? (
+						<Link href={opponentHref} className='font-medium hover:underline'>
+							{opponentName}
+						</Link>
+					) : (
+						<span className='font-medium'>{opponentName}</span>
+					)}
+					<span className='text-sm text-muted-foreground'>{venue}</span>
+				</div>
+				{children}
+			</div>
+		</div>
+	)
 }
 
 interface TeamFixturesTabsProps {
@@ -63,53 +99,21 @@ export function TeamFixturesTabs({
 						) : (
 							<div className='flex flex-col gap-3'>
 								{upcomingFixtures.map((fixture, index) => {
-									const opponentCode = fixture.opponentCode
-									const opponentTeam = allTeams.find(
-										(t) => t.code === opponentCode,
-									)
+									const opponentTeam = allTeams.find((t) => t.code === fixture.opponentCode)
 									return (
-										<div
+										<MatchCard
 											key={index}
-											className='flex flex-col gap-2 rounded-lg border p-3'
+											gw={fixture.gameweekId}
+											date={fixture.kickoffTime ? formatDate(fixture.kickoffTime) : 'TBD'}
+											opponentCode={fixture.opponentCode}
+											opponentName={fixture.opponentName}
+											opponentHref={
+												opponentTeam
+													? `/team/${opponentTeam.short_name.toLowerCase()}`
+													: undefined
+											}
+											venue={fixture.isHome ? '(H)' : '(A)'}
 										>
-											<div className='flex items-center justify-between'>
-												<span className='font-semibold text-foreground'>
-													GW {fixture.gameweekId}
-												</span>
-												<span className='text-sm text-muted-foreground'>
-													{fixture.kickoffTime
-														? formatDate(fixture.kickoffTime)
-														: 'TBD'}
-												</span>
-											</div>
-										<div className='flex items-center justify-between'>
-											<div className='flex items-center gap-2'>
-												{opponentCode !== 0 && (
-													<Image
-														src={getTeamBadgeUrl(opponentCode)}
-														alt={`${fixture.opponentName} badge`}
-														width={20}
-														height={20}
-														className='rounded-full'
-														unoptimized
-													/>
-												)}
-												{opponentTeam ? (
-													<Link
-														href={`/team/${opponentTeam.short_name.toLowerCase()}`}
-														className='font-medium hover:underline'
-													>
-														{fixture.opponentName}
-													</Link>
-												) : (
-													<span className='font-medium'>
-														{fixture.opponentName}
-													</span>
-												)}
-												<span className='text-sm text-muted-foreground'>
-													{fixture.isHome ? '(H)' : '(A)'}
-												</span>
-											</div>
 											<FixtureChip
 												fixture={fixture}
 												teams={allTeams}
@@ -117,8 +121,7 @@ export function TeamFixturesTabs({
 												fixtures={allFixtures}
 												compact
 											/>
-										</div>
-										</div>
+										</MatchCard>
 									)
 								})}
 							</div>
@@ -134,86 +137,48 @@ export function TeamFixturesTabs({
 								{pastFixtures.map((fixture, index) => {
 									const isHome = fixture.team_h === team.id
 									const opponent = allTeams.find(
-										(t) =>
-											t.id === (isHome ? fixture.team_a : fixture.team_h),
+										(t) => t.id === (isHome ? fixture.team_a : fixture.team_h),
 									)
-									const myScore = isHome
-										? fixture.team_h_score
-										: fixture.team_a_score
-									const theirScore = isHome
-										? fixture.team_a_score
-										: fixture.team_h_score
-									const hasScore =
-										myScore !== null && theirScore !== null
-									const result = hasScore
-										? getResult(myScore!, theirScore!)
-										: null
+									const myScore = isHome ? fixture.team_h_score : fixture.team_a_score
+									const theirScore = isHome ? fixture.team_a_score : fixture.team_h_score
+									const hasScore = myScore !== null && theirScore !== null
+									const result = hasScore ? getResult(myScore!, theirScore!) : null
 
 									return (
-									<div
-										key={index}
-										className='flex flex-col gap-2 rounded-lg border p-3'
-									>
-										<div className='flex items-center justify-between'>
-											<span className='font-semibold text-foreground'>
-												GW {fixture.event ?? 'N/A'}
-											</span>
-											<span className='text-sm text-muted-foreground'>
-												{fixture.kickoff_time
-													? formatDate(fixture.kickoff_time)
-													: 'N/A'}
-											</span>
-										</div>
-											<div className='flex items-center justify-between'>
-												<div className='flex items-center gap-2'>
-													{opponent && opponent.code !== 0 && (
-														<Image
-															src={getTeamBadgeUrl(opponent.code)}
-															alt={`${opponent.name} badge`}
-															width={20}
-															height={20}
-															className='rounded-full'
-															unoptimized
-														/>
-													)}
-													{opponent ? (
-														<Link
-															href={`/team/${opponent.short_name.toLowerCase()}`}
-															className='font-medium hover:underline'
-														>
-															{opponent.name}
-														</Link>
-													) : (
-														<span className='font-medium'>Unknown</span>
-													)}
-													<span className='text-sm text-muted-foreground'>
-														{isHome ? '(H)' : '(A)'}
-													</span>
-												</div>
-												<div className='flex items-center gap-2'>
-													{result && (
-														<span
-															className={cn(
-																'flex h-5 w-5 items-center justify-center rounded text-xs font-bold',
-																RESULT_STYLES[result],
-															)}
-														>
-															{result}
-														</span>
-													)}
+										<MatchCard
+											key={index}
+											gw={fixture.event}
+											date={fixture.kickoff_time ? formatDate(fixture.kickoff_time) : 'N/A'}
+											opponentCode={opponent?.code ?? 0}
+											opponentName={opponent?.name ?? 'Unknown'}
+											opponentHref={
+												opponent
+													? `/team/${opponent.short_name.toLowerCase()}`
+													: undefined
+											}
+											venue={isHome ? '(H)' : '(A)'}
+										>
+											<div className='flex items-center gap-2'>
+												{result && (
 													<span
 														className={cn(
-															'tabular-nums font-semibold',
-															!hasScore && 'text-muted-foreground',
+															'flex h-5 w-5 items-center justify-center rounded text-xs font-bold',
+															RESULT_STYLES[result],
 														)}
 													>
-														{hasScore
-															? `${myScore} – ${theirScore}`
-															: 'N/A'}
+														{result}
 													</span>
-												</div>
+												)}
+												<span
+													className={cn(
+														'tabular-nums font-semibold',
+														!hasScore && 'text-muted-foreground',
+													)}
+												>
+													{hasScore ? `${myScore} – ${theirScore}` : 'N/A'}
+												</span>
 											</div>
-										</div>
+										</MatchCard>
 									)
 								})}
 							</div>
