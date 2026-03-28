@@ -17,7 +17,7 @@ export function DifficultyLegend({ difficultyType }: DifficultyLegendProps) {
 		<div className='flex items-center gap-2 text-xs text-muted-foreground'>
 			<span className='shrink-0 font-medium'>Difficulty</span>
 			<span className='shrink-0'>1 · Easy</span>
-			<div className='flex overflow-hidden rounded-sm'>
+			<div data-testid='difficulty-swatch-strip' className='flex overflow-hidden rounded-sm'>
 				{swatches.map((score) => (
 					<span
 						key={score}

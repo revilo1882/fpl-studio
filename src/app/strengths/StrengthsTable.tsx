@@ -80,6 +80,7 @@ export function StrengthsTable({ teams }: { teams: Team[] }) {
 								}
 							>
 								<button
+									type='button'
 									onClick={() => handleSort(key)}
 									className='inline-flex items-center gap-1.5 transition-colors hover:text-foreground'
 								>

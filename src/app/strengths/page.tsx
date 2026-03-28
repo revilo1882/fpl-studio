@@ -20,7 +20,7 @@ const StrengthsPage = async () => {
 			<div className='shrink-0'>
 				<FixturePageHeader
 					title='Team Strength Snapshot'
-					subtitle='The raw FPL strength metrics used as base inputs to the FDR algorithm. Click any column header to sort.'
+					subtitle='The raw FPL strength metrics used as base inputs to the FDR algorithm'
 					className='mb-2 sm:mb-0'
 				/>
 			</div>
