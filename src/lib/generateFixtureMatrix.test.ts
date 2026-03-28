@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { mockTeams, mockFixtures, mockBootstrapData } from '../lib/test-mocks'
 
-import { generateFixtureMatrix } from './generateFixtureMatrix'
+import { generateFixtureMatrix, generateTeamFixtureRow } from './generateFixtureMatrix'
 
 const allDifficultyTypes = ['FPL', 'Overall', 'Attack', 'Defence'] as const
 
@@ -63,5 +63,51 @@ describe('generateFixtureMatrix', () => {
 				expect(placeholder.kickoffTime).toBeNull()
 			}
 		}
+	})
+})
+
+describe('generateTeamFixtureRow', () => {
+	it.each(allDifficultyTypes)(
+		'matches full matrix row for difficultyType = %s',
+		async (difficultyType) => {
+			const firstGameweek = 1
+			const numberOfGameweeks = 2
+			const teamId = mockTeams[0]!.id
+
+			const [full, single] = await Promise.all([
+				generateFixtureMatrix({
+					fixtures: mockFixtures,
+					teams: mockTeams,
+					bootstrapData: mockBootstrapData,
+					firstGameweek,
+					numberOfGameweeks,
+					difficultyType,
+				}),
+				generateTeamFixtureRow({
+					teamId,
+					fixtures: mockFixtures,
+					teams: mockTeams,
+					bootstrapData: mockBootstrapData,
+					firstGameweek,
+					numberOfGameweeks,
+					difficultyType,
+				}),
+			])
+
+			expect(single).toEqual(full.fixtureMatrix[0])
+		},
+	)
+
+	it('returns [] for unknown team id', async () => {
+		const row = await generateTeamFixtureRow({
+			teamId: 99999,
+			fixtures: mockFixtures,
+			teams: mockTeams,
+			bootstrapData: mockBootstrapData,
+			firstGameweek: 1,
+			numberOfGameweeks: 2,
+			difficultyType: 'FPL',
+		})
+		expect(row).toEqual([])
 	})
 })

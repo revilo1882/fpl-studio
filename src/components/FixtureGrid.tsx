@@ -52,7 +52,7 @@ export function FixtureGrid({
 
 	return (
 		<div className='flex flex-col border-y border-border bg-card sm:h-full sm:overflow-hidden sm:rounded-lg sm:border sm:shadow-sm'>
-			<div className='overflow-x-auto [overflow-y:clip] touch-pan-x touch-pan-y sm:min-h-0 sm:flex-1 sm:overflow-y-auto sm:rounded-b-lg'>
+			<div className='overflow-x-auto overflow-y-visible touch-pan-x touch-pan-y sm:min-h-0 sm:flex-1 sm:overflow-y-auto sm:rounded-b-lg'>
 				<Table className='min-w-max' style={{ position: 'relative' }}>
 					<TableHeader className='border-b bg-card shadow-sm'>
 						<FixtureGridHeader

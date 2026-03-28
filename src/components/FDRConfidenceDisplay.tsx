@@ -23,8 +23,9 @@ export function FDRConfidenceDisplay({
 	showInterpretation = false,
 	compact = false,
 }: FDRConfidenceDisplayProps) {
-	const [bestCase, worstCase] = confidenceInterval
-	const intervalRange = worstCase - bestCase
+	// Interval is [lower, upper] on the FDR scale (1 = easy … 5 = hard)
+	const [lowerFdr, upperFdr] = confidenceInterval
+	const intervalRange = upperFdr - lowerFdr
 	const [showTooltip, setShowTooltip] = useState(false)
 
 	const getVolatility = (range: number) => {
@@ -43,8 +44,8 @@ export function FDRConfidenceDisplay({
 	const volatility = getVolatility(intervalRange)
 	const confidenceMessage = getConfidenceMessage(confidenceScore, volatility)
 	const progressValue = ((fdrRating - 1) / 4) * 100
-	const intervalStart = ((bestCase - 1) / 4) * 100
-	const intervalEnd = ((worstCase - 1) / 4) * 100
+	const intervalStart = ((lowerFdr - 1) / 4) * 100
+	const intervalEnd = ((upperFdr - 1) / 4) * 100
 	const intervalWidth = intervalEnd - intervalStart
 
 	return (
@@ -133,9 +134,12 @@ export function FDRConfidenceDisplay({
 				</div>
 
 				<div className='mt-4 flex justify-between text-sm text-muted-foreground'>
-					<span>Best case: {bestCase.toFixed(1)}</span>
-					<span>Worst case: {worstCase.toFixed(1)}</span>
+					<span>Lower bound: {lowerFdr.toFixed(1)}</span>
+					<span>Upper bound: {upperFdr.toFixed(1)}</span>
 				</div>
+				<p className='text-xs text-muted-foreground'>
+					On the FDR scale, lower is an easier fixture run, higher is harder (same as the grid).
+				</p>
 
 				<div className='grid grid-cols-2 gap-4 text-sm'>
 					<div className='flex justify-between'>

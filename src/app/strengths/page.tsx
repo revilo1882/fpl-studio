@@ -1,19 +1,20 @@
-import type { Team } from '@/types/fpl'
+import type { Metadata } from 'next'
+
 import { FixturePageHeader } from '@/components/FixturePageHeader'
+import { getBootstrapData } from '@/lib/bootstrapServer'
+import type { Team } from '@/types/fpl'
 
 import { StrengthsTable } from './StrengthsTable'
 
-const fetchTeams = async (): Promise<Team[]> => {
-	const res = await fetch('https://fantasy.premierleague.com/api/bootstrap-static/', {
-		cache: 'no-store',
-	})
-	if (!res.ok) throw new Error('Failed to fetch FPL bootstrap')
-	const data = await res.json()
-	return data.teams as Team[]
+export const metadata: Metadata = {
+	title: 'Team strength snapshot',
+	description:
+		'Raw FPL attack and defence strength metrics (1000–1400 scale) used as inputs to the Studio FDR model.',
 }
 
 const StrengthsPage = async () => {
-	const teams = await fetchTeams()
+	const bootstrap = await getBootstrapData()
+	const teams: Team[] = bootstrap?.teams ?? []
 
 	return (
 		<div className='container mx-auto flex flex-col gap-4 px-4 py-4 sm:h-full sm:overflow-hidden sm:gap-6 sm:py-6'>

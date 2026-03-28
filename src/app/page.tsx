@@ -1,8 +1,17 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BarChart2, TrendingUp, LayoutGrid, ChevronRight, Shield, Activity, Gauge } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/site'
 import { cn } from '@/lib/utils'
+
+export const metadata: Metadata = {
+	title: {
+		absolute: `${SITE_NAME} — Dynamic fixture difficulty for Fantasy Premier League`,
+	},
+	description: SITE_DESCRIPTION,
+}
 
 type AccentColor = 'emerald' | 'blue' | 'orange' | 'amber' | 'slate'
 
@@ -108,7 +117,7 @@ export default function LandingPage() {
 
 			{/* ── How the model works ── */}
 			<section className='container mx-auto px-4 py-16'>
-				<div className='mx-auto max-w-3xl'>
+				<div className='mx-auto max-w-7xl'>
 					<h2 className='mb-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>
 						How the model works
 					</h2>
@@ -116,7 +125,7 @@ export default function LandingPage() {
 						Four factors, dynamically weighted by season stage.
 					</p>
 
-					<div className='grid gap-4 sm:grid-cols-2'>
+					<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
 						<ModelFactorCard
 							icon={<Gauge className='size-[1em]' />}
 							accent='amber'

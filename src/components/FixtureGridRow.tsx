@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 
 import { TableCell, TableRow } from '@/components/ui/table'
@@ -19,7 +20,7 @@ type FixtureGridRowProps = {
 	gameweekIds: number[]
 }
 
-export const FixtureGridRow = ({
+export const FixtureGridRow = memo(function FixtureGridRow({
 	row,
 	team,
 	teams,
@@ -27,7 +28,7 @@ export const FixtureGridRow = ({
 	allFixtures,
 	numberOfGameweeks,
 	gameweekIds,
-}: FixtureGridRowProps) => {
+}: FixtureGridRowProps) {
 	return (
 		<TableRow
 			hoverHighlight={false}
@@ -78,4 +79,4 @@ export const FixtureGridRow = ({
 			</TableCell>
 		</TableRow>
 	)
-}
+})

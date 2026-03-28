@@ -35,6 +35,250 @@ type GenerateFixtureMatrixProps = {
 	difficultyType: DifficultyType
 }
 
+type StudioFdrCache = Map<
+	string,
+	{ difficulty: number; confidenceInterval?: [number, number]; confidenceScore?: number }
+>
+
+async function fillStudioFdrCache(
+	teamMap: Map<number, Team>,
+	teams: Team[],
+	fixtures: Fixtures,
+	firstGameweek: number,
+	numberOfGameweeks: number,
+	difficultyType: DifficultyType,
+	onlyTeamId?: number,
+): Promise<StudioFdrCache> {
+	const studioFDRCache: StudioFdrCache = new Map()
+
+	if (difficultyType === 'FPL') {
+		return studioFDRCache
+	}
+
+	const fixturesForCalculation: Array<{
+		homeTeam: Team
+		awayTeam: Team
+		gameweek: number
+		fixtureId: number
+	}> = []
+
+	for (let gameweek = firstGameweek; gameweek < firstGameweek + numberOfGameweeks; gameweek++) {
+		const gameweekFixtures = fixtures.filter((fixture) => fixture.event === gameweek)
+
+		for (const fixture of gameweekFixtures) {
+			if (
+				onlyTeamId !== undefined &&
+				fixture.team_h !== onlyTeamId &&
+				fixture.team_a !== onlyTeamId
+			) {
+				continue
+			}
+
+			const homeTeam = teamMap.get(fixture.team_h)
+			const awayTeam = teamMap.get(fixture.team_a)
+
+			if (homeTeam && awayTeam) {
+				fixturesForCalculation.push({
+					homeTeam,
+					awayTeam,
+					gameweek,
+					fixtureId: fixture.id,
+				})
+			}
+		}
+	}
+
+	try {
+		const fdrResults = await Promise.all(
+			fixturesForCalculation.map(async ({ homeTeam, awayTeam, gameweek, fixtureId }) => {
+				const [homeFDR, awayFDR] = await Promise.all([
+					calculateDynamicFDR(homeTeam, awayTeam, fixtures, teams, true, gameweek),
+					calculateDynamicFDR(homeTeam, awayTeam, fixtures, teams, false, gameweek),
+				])
+
+				let homeDifficulty: number
+				let awayDifficulty: number
+
+				switch (difficultyType) {
+					case 'Attack':
+						homeDifficulty = homeFDR.attacking
+						awayDifficulty = awayFDR.attacking
+						break
+					case 'Defence':
+						homeDifficulty = homeFDR.defensive
+						awayDifficulty = awayFDR.defensive
+						break
+					case 'Overall':
+					default:
+						homeDifficulty = homeFDR.overall
+						awayDifficulty = awayFDR.overall
+						break
+				}
+
+				return {
+					homeKey: `${homeTeam.id}-${fixtureId}-${gameweek}`,
+					awayKey: `${awayTeam.id}-${fixtureId}-${gameweek}`,
+					homeDifficulty,
+					awayDifficulty,
+					homeConfidenceInterval: homeFDR.confidenceInterval.overall,
+					homeConfidenceScore: homeFDR.confidenceInterval.confidenceScore,
+					awayConfidenceInterval: awayFDR.confidenceInterval.overall,
+					awayConfidenceScore: awayFDR.confidenceInterval.confidenceScore,
+				}
+			}),
+		)
+
+		for (const {
+			homeKey,
+			awayKey,
+			homeDifficulty,
+			awayDifficulty,
+			homeConfidenceInterval,
+			homeConfidenceScore,
+			awayConfidenceInterval,
+			awayConfidenceScore,
+		} of fdrResults) {
+			studioFDRCache.set(homeKey, {
+				difficulty: homeDifficulty,
+				confidenceInterval: homeConfidenceInterval,
+				confidenceScore: homeConfidenceScore,
+			})
+			studioFDRCache.set(awayKey, {
+				difficulty: awayDifficulty,
+				confidenceInterval: awayConfidenceInterval,
+				confidenceScore: awayConfidenceScore,
+			})
+		}
+	} catch (error) {
+		console.error('Error calculating simplified FDR, falling back to FPL ratings:', error)
+	}
+
+	return studioFDRCache
+}
+
+function buildFixtureRowForTeam(
+	team: Team,
+	teamMap: Map<number, Team>,
+	fixtures: Fixtures,
+	firstGameweek: number,
+	numberOfGameweeks: number,
+	difficultyType: DifficultyType,
+	studioFDRCache: StudioFdrCache,
+): FixtureCell[] {
+	const row: FixtureCell[] = []
+
+	for (let gameweek = firstGameweek; gameweek < firstGameweek + numberOfGameweeks; gameweek++) {
+		const teamFixtures = fixtures
+			.filter(
+				(fixture) =>
+					fixture.event === gameweek &&
+					(fixture.team_h === team.id || fixture.team_a === team.id),
+			)
+			.sort(
+				(a, b) =>
+					new Date(a.kickoff_time ?? '').getTime() -
+					new Date(b.kickoff_time ?? '').getTime(),
+			)
+
+		if (teamFixtures.length === 0) {
+			row.push([
+				{
+					label: '-',
+					difficulty: 0,
+					opponentName: 'Blank',
+					opponentCode: 0,
+					isHome: true,
+					kickoffTime: null,
+					gameweekId: gameweek,
+				},
+			])
+			continue
+		}
+
+		const fixturesForWeek: FixtureCell = teamFixtures.map((fixture) => {
+			const isHome = fixture.team_h === team.id
+			const opponentId = isHome ? fixture.team_a : fixture.team_h
+			const opponent = teamMap.get(opponentId)
+			const opponentShort = opponent?.short_name ?? '?'
+			const label = `${opponentShort} (${isHome ? 'H' : 'A'})`
+
+			let difficulty: number
+			let calculatedConfidenceInterval: [number, number] | undefined
+			let calculatedConfidenceScore: number | undefined
+
+			if (!opponent) {
+				difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
+			} else {
+				if (difficultyType === 'FPL') {
+					difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
+				} else {
+					const teamSpecificKey = `${team.id}-${fixture.id}-${gameweek}`
+					const cachedData = studioFDRCache.get(teamSpecificKey)
+
+					if (cachedData !== undefined) {
+						difficulty = cachedData.difficulty
+						calculatedConfidenceInterval = cachedData.confidenceInterval
+						calculatedConfidenceScore = cachedData.confidenceScore
+					} else {
+						difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
+						console.warn(
+							`No calculated difficulty for ${teamSpecificKey}, using FPL rating`,
+						)
+					}
+				}
+			}
+
+			return {
+				label,
+				difficulty: Number(difficulty.toFixed(2)),
+				opponentName: opponent?.name ?? 'Unknown',
+				opponentCode: opponent?.code ?? 0,
+				isHome,
+				kickoffTime: fixture.kickoff_time,
+				gameweekId: gameweek,
+				confidenceInterval: calculatedConfidenceInterval,
+				confidenceScore: calculatedConfidenceScore,
+			}
+		})
+
+		row.push(fixturesForWeek)
+	}
+
+	return row
+}
+
+/** Full-season (or window) fixture row for one club — same cells as `generateFixtureMatrix` but ~20× fewer FDR evaluations. */
+export async function generateTeamFixtureRow(
+	params: GenerateFixtureMatrixProps & { teamId: number },
+): Promise<FixtureCell[]> {
+	const { teamId, teams, fixtures, firstGameweek, numberOfGameweeks, difficultyType } = params
+	const teamMap = new Map(teams.map((t) => [t.id, t]))
+	const team = teamMap.get(teamId)
+	if (!team) {
+		return []
+	}
+
+	const studioFDRCache = await fillStudioFdrCache(
+		teamMap,
+		teams,
+		fixtures,
+		firstGameweek,
+		numberOfGameweeks,
+		difficultyType,
+		teamId,
+	)
+
+	return buildFixtureRowForTeam(
+		team,
+		teamMap,
+		fixtures,
+		firstGameweek,
+		numberOfGameweeks,
+		difficultyType,
+		studioFDRCache,
+	)
+}
+
 export const generateFixtureMatrix = async ({
 	teams,
 	fixtures,
@@ -45,195 +289,26 @@ export const generateFixtureMatrix = async ({
 	const teamMap = new Map(teams.map((team) => [team.id, team]))
 	const teamNames = teams.map((team) => team.name)
 
-	const studioFDRCache: Map<
-		string,
-		{ difficulty: number; confidenceInterval?: [number, number]; confidenceScore?: number }
-	> = new Map()
+	const studioFDRCache = await fillStudioFdrCache(
+		teamMap,
+		teams,
+		fixtures,
+		firstGameweek,
+		numberOfGameweeks,
+		difficultyType,
+	)
 
-	if (difficultyType !== 'FPL') {
-		const fixturesForCalculation: Array<{
-			homeTeam: Team
-			awayTeam: Team
-			gameweek: number
-			fixtureId: number
-		}> = []
-
-		for (
-			let gameweek = firstGameweek;
-			gameweek < firstGameweek + numberOfGameweeks;
-			gameweek++
-		) {
-			const gameweekFixtures = fixtures.filter((fixture) => fixture.event === gameweek)
-
-			for (const fixture of gameweekFixtures) {
-				const homeTeam = teamMap.get(fixture.team_h)
-				const awayTeam = teamMap.get(fixture.team_a)
-
-				if (homeTeam && awayTeam) {
-					fixturesForCalculation.push({
-						homeTeam,
-						awayTeam,
-						gameweek,
-						fixtureId: fixture.id,
-					})
-				}
-			}
-		}
-
-		try {
-			const fdrResults = await Promise.all(
-				fixturesForCalculation.map(async ({ homeTeam, awayTeam, gameweek, fixtureId }) => {
-					const [homeFDR, awayFDR] = await Promise.all([
-						calculateDynamicFDR(homeTeam, awayTeam, fixtures, teams, true, gameweek),
-						calculateDynamicFDR(homeTeam, awayTeam, fixtures, teams, false, gameweek),
-					])
-
-					let homeDifficulty: number
-					let awayDifficulty: number
-
-					switch (difficultyType) {
-						case 'Attack':
-							homeDifficulty = homeFDR.attacking
-							awayDifficulty = awayFDR.attacking
-							break
-						case 'Defence':
-							homeDifficulty = homeFDR.defensive
-							awayDifficulty = awayFDR.defensive
-							break
-						case 'Overall':
-						default:
-							homeDifficulty = homeFDR.overall
-							awayDifficulty = awayFDR.overall
-							break
-					}
-
-					return {
-						homeKey: `${homeTeam.id}-${fixtureId}-${gameweek}`,
-						awayKey: `${awayTeam.id}-${fixtureId}-${gameweek}`,
-						homeDifficulty,
-						awayDifficulty,
-						homeConfidenceInterval: homeFDR.confidenceInterval.overall,
-						homeConfidenceScore: homeFDR.confidenceInterval.confidenceScore,
-						awayConfidenceInterval: awayFDR.confidenceInterval.overall,
-						awayConfidenceScore: awayFDR.confidenceInterval.confidenceScore,
-					}
-				}),
-			)
-
-			for (const {
-				homeKey,
-				awayKey,
-				homeDifficulty,
-				awayDifficulty,
-				homeConfidenceInterval,
-				homeConfidenceScore,
-				awayConfidenceInterval,
-				awayConfidenceScore,
-			} of fdrResults) {
-				studioFDRCache.set(homeKey, {
-					difficulty: homeDifficulty,
-					confidenceInterval: homeConfidenceInterval,
-					confidenceScore: homeConfidenceScore,
-				})
-				studioFDRCache.set(awayKey, {
-					difficulty: awayDifficulty,
-					confidenceInterval: awayConfidenceInterval,
-					confidenceScore: awayConfidenceScore,
-				})
-			}
-		} catch (error) {
-			console.error('Error calculating simplified FDR, falling back to FPL ratings:', error)
-		}
-	}
-
-	const fixtureMatrix: FixtureCell[][] = teams.map((team) => {
-		const row: FixtureCell[] = []
-
-		for (
-			let gameweek = firstGameweek;
-			gameweek < firstGameweek + numberOfGameweeks;
-			gameweek++
-		) {
-			const teamFixtures = fixtures
-				.filter(
-					(fixture) =>
-						fixture.event === gameweek &&
-						(fixture.team_h === team.id || fixture.team_a === team.id),
-				)
-				.sort(
-					(a, b) =>
-						new Date(a.kickoff_time ?? '').getTime() -
-						new Date(b.kickoff_time ?? '').getTime(),
-				)
-
-			if (teamFixtures.length === 0) {
-				row.push([
-					{
-						label: '-',
-						difficulty: 0,
-						opponentName: 'Blank',
-						opponentCode: 0,
-						isHome: true,
-						kickoffTime: null,
-						gameweekId: gameweek,
-					},
-				])
-				continue
-			}
-
-			const fixturesForWeek: FixtureCell = teamFixtures.map((fixture) => {
-				const isHome = fixture.team_h === team.id
-				const opponentId = isHome ? fixture.team_a : fixture.team_h
-				const opponent = teamMap.get(opponentId)
-				const opponentShort = opponent?.short_name ?? '?'
-				const label = `${opponentShort} (${isHome ? 'H' : 'A'})`
-
-				let difficulty: number
-				let calculatedConfidenceInterval: [number, number] | undefined
-				let calculatedConfidenceScore: number | undefined
-
-				if (!opponent) {
-					difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
-				} else {
-					if (difficultyType === 'FPL') {
-						difficulty = isHome ? fixture.team_h_difficulty : fixture.team_a_difficulty
-					} else {
-						const teamSpecificKey = `${team.id}-${fixture.id}-${gameweek}`
-						const cachedData = studioFDRCache.get(teamSpecificKey)
-
-						if (cachedData !== undefined) {
-							difficulty = cachedData.difficulty
-							calculatedConfidenceInterval = cachedData.confidenceInterval
-							calculatedConfidenceScore = cachedData.confidenceScore
-						} else {
-							difficulty = isHome
-								? fixture.team_h_difficulty
-								: fixture.team_a_difficulty
-							console.warn(
-								`No calculated difficulty for ${teamSpecificKey}, using FPL rating`,
-							)
-						}
-					}
-				}
-
-				return {
-					label,
-					difficulty: Number(difficulty.toFixed(2)),
-					opponentName: opponent?.name ?? 'Unknown',
-					opponentCode: opponent?.code ?? 0,
-					isHome,
-					kickoffTime: fixture.kickoff_time,
-					gameweekId: gameweek,
-					confidenceInterval: calculatedConfidenceInterval,
-					confidenceScore: calculatedConfidenceScore,
-				}
-			})
-
-			row.push(fixturesForWeek)
-		}
-
-		return row
-	})
+	const fixtureMatrix: FixtureCell[][] = teams.map((team) =>
+		buildFixtureRowForTeam(
+			team,
+			teamMap,
+			fixtures,
+			firstGameweek,
+			numberOfGameweeks,
+			difficultyType,
+			studioFDRCache,
+		),
+	)
 
 	const gameweekAttractivenessMatrix: number[][] = fixtureMatrix.map((teamRow) => {
 		return teamRow.map((gameweekFixtures) => {

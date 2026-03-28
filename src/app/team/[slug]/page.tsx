@@ -8,12 +8,13 @@ import { notFound } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 
 import {
+	buildLeagueAverageOpponent,
 	calculateSeasonPerformance,
 	type EnhancedFDRResult,
 	type SeasonPerformance,
 } from '@/lib/fdr'
 import { calculateDynamicFDR } from '@/lib/fdr/dynamicFDR'
-import { generateFixtureMatrix, type SingleFixture } from '@/lib/generateFixtureMatrix'
+import { generateTeamFixtureRow, type SingleFixture } from '@/lib/generateFixtureMatrix'
 import type { Fixture, Team as FPLTeam } from '@/types/fpl'
 import { TeamHeader } from '@/app/team/[slug]/components/TeamHeader'
 import { TeamPerformanceCard } from '@/app/team/[slug]/components/TeamPerformanceCard'
@@ -54,31 +55,20 @@ export default function TeamPage({
 		async function loadTeamData() {
 			setLoading(true)
 			try {
-				const [teamPerformance, teamOverallFDR, { fixtureMatrix }] = await Promise.all([
+				const leagueAverage = buildLeagueAverageOpponent(bootstrapData!.teams)
+				// Opponent must be the viewed team so base FDR uses their strength_* fields (not the same for every club).
+				const [teamPerformance, teamOverallFDR, teamFixtureRow] = await Promise.all([
 					calculateSeasonPerformance(team!.id, fixtures!, currentGameweek),
 					calculateDynamicFDR(
+						leagueAverage,
 						team!,
-						{
-							id: 999,
-							name: 'Average Opponent',
-							short_name: 'AVG',
-							strength_overall_home: 1200,
-							strength_overall_away: 1200,
-							strength_attack_home: 1100,
-							strength_attack_away: 1100,
-							strength_defence_home: 1100,
-							strength_defence_away: 1100,
-							strength: 0,
-							pulse_id: 0,
-							code: 0,
-							form: '',
-						},
 						fixtures!,
 						bootstrapData!.teams,
 						true,
 						currentGameweek,
 					),
-					generateFixtureMatrix({
+					generateTeamFixtureRow({
+						teamId: team!.id,
 						teams: bootstrapData!.teams,
 						fixtures: fixtures!,
 						bootstrapData: bootstrapData!,
@@ -88,9 +78,7 @@ export default function TeamPage({
 					}),
 				])
 
-				const teamIndex = bootstrapData!.teams.findIndex((t) => t.id === team!.id)
-				const currentTeamProcessedFixtures: SingleFixture[] =
-					teamIndex !== -1 ? fixtureMatrix[teamIndex].flat() : []
+				const currentTeamProcessedFixtures: SingleFixture[] = teamFixtureRow.flat()
 
 				const now = new Date()
 				const upcomingFixtures = currentTeamProcessedFixtures.filter(
@@ -129,7 +117,7 @@ export default function TeamPage({
 }
 
 	return (
-		<main className='container mx-auto flex h-full max-w-7xl flex-col overflow-hidden px-4 py-6'>
+		<main className='container mx-auto flex max-w-7xl flex-col px-4 py-6 md:h-full md:min-h-0 md:overflow-hidden'>
 			<Link
 				href='/fixtures'
 				className='mb-4 inline-flex shrink-0 items-center text-sm text-muted-foreground hover:underline'
@@ -143,7 +131,7 @@ export default function TeamPage({
 			</div>
 
 			{/* Two-column grid that fills all remaining height */}
-			<div className='grid min-h-0 flex-1 grid-cols-1 gap-6 overflow-hidden md:grid-cols-2'>
+			<div className='grid grid-cols-1 gap-6 md:min-h-0 md:flex-1 md:grid-cols-2 md:overflow-hidden'>
 				{/* Stats column — content-height cards, scrolls within column if needed */}
 				<div className='flex flex-col gap-6 overflow-y-auto pb-4'>
 					{teamData?.teamPerformance && (

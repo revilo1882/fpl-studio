@@ -14,7 +14,7 @@ export function TeamStrengthCard({ teamName, teamOverallFDR }: TeamStrengthCardP
 				confidenceInterval={teamOverallFDR.confidenceInterval.overall}
 				confidenceScore={teamOverallFDR.confidenceInterval.confidenceScore}
 				title={`${teamName} Overall Strength`}
-				subtitle='vs average opponent — lower rating = stronger team'
+				subtitle='How hard this team is to play against (FPL strength + form), benchmarked vs a league-average side — higher = tougher opponent'
 				showInterpretation={true}
 				compact={true}
 			/>

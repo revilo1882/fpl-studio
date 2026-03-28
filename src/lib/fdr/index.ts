@@ -3,6 +3,7 @@ export { calculateConfidenceInterval, calculateConfidence } from './confidence'
 export { calculateDynamicWeights } from './weights'
 export { calculateSeasonPerformance, calculateAllTeamsPerformance } from './seasonPerformance'
 export { calculateFormAdjustment } from './formAnalysis'
+export { buildLeagueAverageOpponent } from './leagueAverageOpponent'
 
 export type {
 	EnhancedFDRResult,
