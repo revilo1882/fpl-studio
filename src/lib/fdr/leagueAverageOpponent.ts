@@ -28,21 +28,23 @@ export const buildLeagueAverageOpponent = (teams: Team[]): Team => {
 		return fallbackAverageOpponent()
 	}
 
-	const n = teams.length
-	const sum = (pick: (t: Team) => number) => teams.reduce((s, t) => s + pick(t), 0)
-	const roundAvg = (pick: (t: Team) => number) => Math.round(sum(pick) / n)
+	const teamCount = teams.length
+	const sumField = (getValue: (team: Team) => number) =>
+		teams.reduce((acc, team) => acc + getValue(team), 0)
+	const roundAvg = (getValue: (team: Team) => number) =>
+		Math.round(sumField(getValue) / teamCount)
 
 	return {
 		id: SYNTHETIC_ID,
 		name: 'League average',
 		short_name: 'AVG',
-		strength: roundAvg((t) => t.strength),
-		strength_overall_home: roundAvg((t) => t.strength_overall_home),
-		strength_overall_away: roundAvg((t) => t.strength_overall_away),
-		strength_attack_home: roundAvg((t) => t.strength_attack_home),
-		strength_attack_away: roundAvg((t) => t.strength_attack_away),
-		strength_defence_home: roundAvg((t) => t.strength_defence_home),
-		strength_defence_away: roundAvg((t) => t.strength_defence_away),
+		strength: roundAvg((team) => team.strength),
+		strength_overall_home: roundAvg((team) => team.strength_overall_home),
+		strength_overall_away: roundAvg((team) => team.strength_overall_away),
+		strength_attack_home: roundAvg((team) => team.strength_attack_home),
+		strength_attack_away: roundAvg((team) => team.strength_attack_away),
+		strength_defence_home: roundAvg((team) => team.strength_defence_home),
+		strength_defence_away: roundAvg((team) => team.strength_defence_away),
 		pulse_id: 0,
 		code: 0,
 		form: '',

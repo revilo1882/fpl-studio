@@ -30,13 +30,15 @@ export const BuildLineDatasets = ({
 		const values = (gameweekAttractivenessMatrix[teamIndex] ?? []).slice(0, numberOfGameweeks)
 		const averageFromGrid = teamAverageByName[teamName]
 		const localAverage =
-			values.length > 0 ? values.reduce((sum, v) => sum + (v ?? 0), 0) / numberOfGameweeks : 0
+			values.length > 0
+				? values.reduce((sum, score) => sum + (score ?? 0), 0) / numberOfGameweeks
+				: 0
 		const average = averageFromGrid ?? localAverage
 		const color = colorByTeam[teamName]
 
 		datasets.push({
 			label: `${teamName} • avg ${average.toFixed(2)}`,
-			data: values.map((v) => v ?? 0),
+			data: values.map((score) => score ?? 0),
 			borderColor: color,
 			pointBackgroundColor: color,
 			pointBorderColor: color,

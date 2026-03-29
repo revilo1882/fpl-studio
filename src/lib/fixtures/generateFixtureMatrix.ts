@@ -2,7 +2,7 @@ import type { Fixtures, Team, BootstrapData } from '@/types/fpl'
 
 import { calculateDynamicFDR } from '../fdr/dynamicFDR'
 
-import { calculateAttractivenessScore } from './attractivenessScore'
+import { calculateAttractivenessScore, calculateMultiFixtureBonus } from './attractivenessScore'
 
 export type SingleFixture = {
 	label: string
@@ -41,26 +41,8 @@ type StudioFdrCache = Map<
 	{ difficulty: number; confidenceInterval?: [number, number]; confidenceScore?: number }
 >
 
-const calculateMultiFixtureBonus = (numFixtures: number, avgDifficulty: number): number => {
-	if (numFixtures <= 1) return 0
 
-	let bonus = 0
-
-	if (numFixtures === 2) {
-		if (avgDifficulty <= 2.5) bonus = 3.0
-		else if (avgDifficulty <= 3.5) bonus = 2.0
-		else if (avgDifficulty <= 4.0) bonus = 1.0
-		else bonus = 0.5
-	} else if (numFixtures >= 3) {
-		if (avgDifficulty <= 3.0) bonus = 5.0
-		else if (avgDifficulty <= 4.0) bonus = 3.5
-		else bonus = 2.0
-	}
-
-	return bonus
-}
-
-const fillStudioFdrCache = async (
+const fillStudioFdrCache = (
 	teamMap: Map<number, Team>,
 	teams: Team[],
 	fixtures: Fixtures,
@@ -68,53 +50,51 @@ const fillStudioFdrCache = async (
 	numberOfGameweeks: number,
 	difficultyType: DifficultyType,
 	onlyTeamId?: number,
-): Promise<StudioFdrCache> => {
+): StudioFdrCache => {
 	const studioFDRCache: StudioFdrCache = new Map()
 
 	if (difficultyType === 'FPL') {
 		return studioFDRCache
 	}
 
-	const fixturesForCalculation: Array<{
-		homeTeam: Team
-		awayTeam: Team
-		gameweek: number
-		fixtureId: number
-	}> = []
+	try {
+		for (
+			let gameweek = firstGameweek;
+			gameweek < firstGameweek + numberOfGameweeks;
+			gameweek++
+		) {
+			const gameweekFixtures = fixtures.filter((fixture) => fixture.event === gameweek)
 
-	for (let gameweek = firstGameweek; gameweek < firstGameweek + numberOfGameweeks; gameweek++) {
-		const gameweekFixtures = fixtures.filter((fixture) => fixture.event === gameweek)
+			for (const fixture of gameweekFixtures) {
+				if (
+					onlyTeamId !== undefined &&
+					fixture.team_h !== onlyTeamId &&
+					fixture.team_a !== onlyTeamId
+				) {
+					continue
+				}
 
-		for (const fixture of gameweekFixtures) {
-			if (
-				onlyTeamId !== undefined &&
-				fixture.team_h !== onlyTeamId &&
-				fixture.team_a !== onlyTeamId
-			) {
-				continue
-			}
+				const homeTeam = teamMap.get(fixture.team_h)
+				const awayTeam = teamMap.get(fixture.team_a)
 
-			const homeTeam = teamMap.get(fixture.team_h)
-			const awayTeam = teamMap.get(fixture.team_a)
+				if (!homeTeam || !awayTeam) continue
 
-			if (homeTeam && awayTeam) {
-				fixturesForCalculation.push({
+				const homeFDR = calculateDynamicFDR(
 					homeTeam,
 					awayTeam,
+					fixtures,
+					teams,
+					true,
 					gameweek,
-					fixtureId: fixture.id,
-				})
-			}
-		}
-	}
-
-	try {
-		const fdrResults = await Promise.all(
-			fixturesForCalculation.map(async ({ homeTeam, awayTeam, gameweek, fixtureId }) => {
-				const [homeFDR, awayFDR] = await Promise.all([
-					calculateDynamicFDR(homeTeam, awayTeam, fixtures, teams, true, gameweek),
-					calculateDynamicFDR(homeTeam, awayTeam, fixtures, teams, false, gameweek),
-				])
+				)
+				const awayFDR = calculateDynamicFDR(
+					homeTeam,
+					awayTeam,
+					fixtures,
+					teams,
+					false,
+					gameweek,
+				)
 
 				let homeDifficulty: number
 				let awayDifficulty: number
@@ -135,39 +115,20 @@ const fillStudioFdrCache = async (
 						break
 				}
 
-				return {
-					homeKey: `${homeTeam.id}-${fixtureId}-${gameweek}`,
-					awayKey: `${awayTeam.id}-${fixtureId}-${gameweek}`,
-					homeDifficulty,
-					awayDifficulty,
-					homeConfidenceInterval: homeFDR.confidenceInterval.overall,
-					homeConfidenceScore: homeFDR.confidenceInterval.confidenceScore,
-					awayConfidenceInterval: awayFDR.confidenceInterval.overall,
-					awayConfidenceScore: awayFDR.confidenceInterval.confidenceScore,
-				}
-			}),
-		)
+				const homeKey = `${homeTeam.id}-${fixture.id}-${gameweek}`
+				const awayKey = `${awayTeam.id}-${fixture.id}-${gameweek}`
 
-		for (const {
-			homeKey,
-			awayKey,
-			homeDifficulty,
-			awayDifficulty,
-			homeConfidenceInterval,
-			homeConfidenceScore,
-			awayConfidenceInterval,
-			awayConfidenceScore,
-		} of fdrResults) {
-			studioFDRCache.set(homeKey, {
-				difficulty: homeDifficulty,
-				confidenceInterval: homeConfidenceInterval,
-				confidenceScore: homeConfidenceScore,
-			})
-			studioFDRCache.set(awayKey, {
-				difficulty: awayDifficulty,
-				confidenceInterval: awayConfidenceInterval,
-				confidenceScore: awayConfidenceScore,
-			})
+				studioFDRCache.set(homeKey, {
+					difficulty: homeDifficulty,
+					confidenceInterval: homeFDR.confidenceInterval.overall,
+					confidenceScore: homeFDR.confidenceInterval.confidenceScore,
+				})
+				studioFDRCache.set(awayKey, {
+					difficulty: awayDifficulty,
+					confidenceInterval: awayFDR.confidenceInterval.overall,
+					confidenceScore: awayFDR.confidenceInterval.confidenceScore,
+				})
+			}
 		}
 	} catch (error) {
 		console.error('Error calculating simplified FDR, falling back to FPL ratings:', error)
@@ -268,9 +229,9 @@ const buildFixtureRowForTeam = (
 }
 
 /** Full-season (or window) fixture row for one club — same cells as `generateFixtureMatrix` but ~20× fewer FDR evaluations. */
-export const generateTeamFixtureRow = async (
+export const generateTeamFixtureRow = (
 	params: GenerateFixtureMatrixProps & { teamId: number },
-): Promise<FixtureCell[]> => {
+): FixtureCell[] => {
 	const { teamId, teams, fixtures, firstGameweek, numberOfGameweeks, difficultyType } = params
 	const teamMap = new Map(teams.map((t) => [t.id, t]))
 	const team = teamMap.get(teamId)
@@ -278,7 +239,7 @@ export const generateTeamFixtureRow = async (
 		return []
 	}
 
-	const studioFDRCache = await fillStudioFdrCache(
+	const studioFDRCache = fillStudioFdrCache(
 		teamMap,
 		teams,
 		fixtures,
@@ -299,17 +260,17 @@ export const generateTeamFixtureRow = async (
 	)
 }
 
-export const generateFixtureMatrix = async ({
+export const generateFixtureMatrix = ({
 	teams,
 	fixtures,
 	firstGameweek,
 	numberOfGameweeks,
 	difficultyType,
-}: GenerateFixtureMatrixProps): Promise<IGenerateFixtureMatrix> => {
+}: GenerateFixtureMatrixProps): IGenerateFixtureMatrix => {
 	const teamMap = new Map(teams.map((team) => [team.id, team]))
 	const teamNames = teams.map((team) => team.name)
 
-	const studioFDRCache = await fillStudioFdrCache(
+	const studioFDRCache = fillStudioFdrCache(
 		teamMap,
 		teams,
 		fixtures,

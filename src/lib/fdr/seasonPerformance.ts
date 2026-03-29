@@ -2,11 +2,11 @@ import type { Team, Fixtures } from '@/types/fpl'
 
 import type { SeasonPerformance, TeamPerformanceData } from './types'
 
-export const calculateSeasonPerformance = async (
+export const calculateSeasonPerformance = (
 	teamId: number,
 	fixtures: Fixtures,
 	currentGameweek: number,
-): Promise<SeasonPerformance> => {
+): SeasonPerformance => {
 	const teamFixtures = fixtures
 		.filter(
 			(fixture) =>
@@ -71,13 +71,13 @@ export const calculateSeasonPerformance = async (
 	}
 }
 
-export const calculateAllTeamsPerformance = async (
+export const calculateAllTeamsPerformance = (
 	teams: Team[],
 	fixtures: Fixtures,
 	currentGameweek: number,
-): Promise<TeamPerformanceData[]> => {
-	const performancePromises = teams.map(async (team) => {
-		const performance = await calculateSeasonPerformance(team.id, fixtures, currentGameweek)
+): TeamPerformanceData[] => {
+	return teams.map((team) => {
+		const performance = calculateSeasonPerformance(team.id, fixtures, currentGameweek)
 
 		return {
 			teamId: team.id,
@@ -115,8 +115,6 @@ export const calculateAllTeamsPerformance = async (
 			},
 		}
 	})
-
-	return Promise.all(performancePromises)
 }
 
 const calculateExpectedPPG = (team: Team, allTeams: Team[]): number => {

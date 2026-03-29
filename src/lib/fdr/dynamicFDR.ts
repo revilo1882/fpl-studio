@@ -31,19 +31,17 @@ const calculateDefensiveDifficulty = (opponent: Team, isHome: boolean): number =
 	return normalizeStrengthToDifficulty(opponentAttStrength)
 }
 
-export const calculateDynamicFDR = async (
+export const calculateDynamicFDR = (
 	homeTeam: Team,
 	awayTeam: Team,
 	fixtures: Fixtures,
 	teams: Team[],
 	isHome: boolean = false,
 	currentGameweek: number = 1,
-): Promise<EnhancedFDRResult> => {
+): EnhancedFDRResult => {
 	const opponent = isHome ? awayTeam : homeTeam
-	const [opponentPerformance, allTeamsPerformance] = await Promise.all([
-		calculateSeasonPerformance(opponent.id, fixtures, currentGameweek),
-		calculateAllTeamsPerformance(teams, fixtures, currentGameweek),
-	])
+	const opponentPerformance = calculateSeasonPerformance(opponent.id, fixtures, currentGameweek)
+	const allTeamsPerformance = calculateAllTeamsPerformance(teams, fixtures, currentGameweek)
 	const weights = calculateDynamicWeights(currentGameweek, opponentPerformance.gamesPlayed)
 	const attackingBase = calculateAttackingDifficulty(opponent, isHome)
 	const defensiveBase = calculateDefensiveDifficulty(opponent, isHome)
@@ -56,7 +54,7 @@ export const calculateDynamicFDR = async (
 		currentGameweek,
 		isHome,
 	)
-	const formAdjustment = await calculateFormAdjustment(opponent.id, fixtures, teams)
+	const formAdjustment = calculateFormAdjustment(opponent.id, fixtures, teams)
 	const homeAdvantage = isHome ? -0.15 : 0.15
 	const rawAttacking =
 		attackingBase +

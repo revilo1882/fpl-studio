@@ -32,7 +32,7 @@ const calculateDifficultyScore = (avgDifficulty: number): number => 6 - avgDiffi
  * Calculate bonus for multiple fixtures - this is the key insight!
  * Even mediocre DGWs are often better than good SGWs
  */
-const calculateMultiFixtureBonus = (numFixtures: number, avgDifficulty: number): number => {
+export const calculateMultiFixtureBonus = (numFixtures: number, avgDifficulty: number): number => {
 	if (numFixtures <= 1) return 0
 
 	let bonus = 0

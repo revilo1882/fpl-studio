@@ -7,9 +7,9 @@ import { useTheme } from 'next-themes'
 // Golden angle (≈137.5°) distributes hues maximally apart for any number of teams
 const teamColor = (index: number, isDark: boolean): string => {
 	const hue = Math.round((index * 137.508) % 360)
-	const s = isDark ? 75 : 68
-	const l = isDark ? 62 : 42
-	return `hsl(${hue}, ${s}%, ${l}%)`
+	const saturation = isDark ? 75 : 68
+	const lightness = isDark ? 62 : 42
+	return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
 export const useChartPalette = (teamNames: string[]) => {

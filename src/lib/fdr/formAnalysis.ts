@@ -54,11 +54,11 @@ const calculateWeightedFormScore = (performances: MatchPerformance[]): number =>
 	return Math.max(-0.5, Math.min(0.5, (averageScore - 1.5) / 3))
 }
 
-export const calculateFormAdjustment = async (
+export const calculateFormAdjustment = (
 	teamId: number,
 	fixtures: Fixtures,
 	teams: Team[],
-): Promise<number> => {
+): number => {
 	const recentFixtures = fixtures
 		.filter(
 			(fixture) =>
