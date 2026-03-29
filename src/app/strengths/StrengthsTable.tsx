@@ -73,10 +73,10 @@ export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 								key={key}
 								className={
 									key === 'name'
-										? 'sticky left-0 top-0 z-40 h-auto min-h-0 whitespace-nowrap bg-card shadow-sm'
+										? 'sticky left-0 top-0 z-40 h-auto min-h-12 whitespace-nowrap bg-card px-2 py-3 align-middle shadow-sm'
 										: numeric
-											? 'sticky top-0 z-30 h-auto min-h-0 whitespace-nowrap bg-card text-center shadow-sm'
-											: 'sticky top-0 z-30 h-auto min-h-0 whitespace-nowrap bg-card shadow-sm'
+											? 'sticky top-0 z-30 h-auto min-h-12 whitespace-nowrap bg-card px-2 py-3 text-center align-middle shadow-sm'
+											: 'sticky top-0 z-30 h-auto min-h-12 whitespace-nowrap bg-card px-2 py-3 align-middle shadow-sm'
 								}
 							>
 								<button
@@ -84,8 +84,8 @@ export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 									onClick={() => handleSort(key)}
 									className={
 										numeric
-											? 'inline-flex w-full items-center justify-center gap-1.5 transition-colors hover:text-foreground'
-											: 'inline-flex items-center gap-1.5 transition-colors hover:text-foreground'
+											? 'inline-flex min-h-10 w-full items-center justify-center gap-1.5 transition-colors hover:text-foreground'
+											: 'inline-flex min-h-10 items-center gap-1.5 transition-colors hover:text-foreground'
 									}
 								>
 									{label}
