@@ -100,7 +100,7 @@ export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 						<TableRow key={team.id} hoverHighlight={false}>
 							<TableCell className='sticky left-0 z-10 bg-card font-medium'>
 								<Link
-									href={`/team/${team.short_name.toLowerCase()}`}
+									href={`/team/${team.short_name.toLowerCase()}?from=strengths`}
 									className='hover:underline'
 								>
 									{team.name}

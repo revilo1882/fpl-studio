@@ -37,7 +37,7 @@ export const FixtureGridRow = memo(({
 		>
 			<TableCell className='sticky left-0 z-20 w-0 whitespace-nowrap bg-card p-0 text-left'>
 				<Link
-					href={`/team/${team.short_name.toLowerCase()}`}
+					href={`/team/${team.short_name.toLowerCase()}?from=fixtures`}
 					className='inline-flex items-center px-2 py-2 transition-colors duration-150 hover:underline'
 				>
 					<span className='text-sm font-semibold text-foreground sm:hidden'>

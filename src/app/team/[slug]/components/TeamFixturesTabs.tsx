@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 
 import Link from 'next/link'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FixtureChip } from '@/components/fixtures/FixtureChip'
 import { TeamBadge } from '@/components/team/TeamBadge'
@@ -80,19 +80,25 @@ export const TeamFixturesTabs = ({
 	allFixtures,
 }: TeamFixturesTabsProps) => {
 	return (
-		<Card className='flex h-full flex-col overflow-hidden border'>
-			<CardHeader className='border-b pb-3 pt-4'>
+		<Card className='flex flex-col overflow-hidden border lg:h-full'>
+			<CardHeader className='shrink-0 border-b pb-3 pt-4'>
 				<CardTitle>Matches</CardTitle>
 			</CardHeader>
-			<CardContent className='min-h-0 flex-1 overflow-y-auto p-4'>
-				<Tabs defaultValue='upcoming' className='w-full'>
+
+			{/* Tabs: selector row always visible; only the list scrolls on desktop */}
+			<Tabs defaultValue='upcoming' className='flex min-h-0 flex-1 flex-col'>
+				{/* Fixed tab selector */}
+				<div className='shrink-0 border-b px-4 py-3'>
 					<TabsList className='grid w-full grid-cols-2'>
 						<TabsTrigger value='upcoming'>Fixtures</TabsTrigger>
 						<TabsTrigger value='results'>Results</TabsTrigger>
 					</TabsList>
+				</div>
 
+				{/* Match list — natural height on mobile; bounded scroll on desktop */}
+				<div className='p-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto'>
 					{/* ── Upcoming fixtures ── */}
-					<TabsContent value='upcoming' className='mt-4'>
+					<TabsContent value='upcoming' className='mt-0'>
 						{upcomingFixtures.length === 0 ? (
 							<p className='text-muted-foreground'>No upcoming fixtures.</p>
 						) : (
@@ -128,7 +134,7 @@ export const TeamFixturesTabs = ({
 					</TabsContent>
 
 					{/* ── Past results ── */}
-					<TabsContent value='results' className='mt-4'>
+					<TabsContent value='results' className='mt-0'>
 						{pastFixtures.length === 0 ? (
 							<p className='text-muted-foreground'>No results yet.</p>
 						) : (
@@ -183,8 +189,8 @@ export const TeamFixturesTabs = ({
 							</div>
 						)}
 					</TabsContent>
-				</Tabs>
-			</CardContent>
+				</div>
+			</Tabs>
 		</Card>
 	)
 }

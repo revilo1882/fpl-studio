@@ -16,7 +16,7 @@ import {
 import { calculateDynamicFDR } from '@/lib/fdr/dynamicFDR'
 import { generateTeamFixtureRow, type SingleFixture } from '@/lib/fixtures/generateFixtureMatrix'
 import type { Fixture, Team as FPLTeam } from '@/types/fpl'
-import { TeamHeader } from '@/app/team/[slug]/components/TeamHeader'
+import { TeamBadge } from '@/components/team/TeamBadge'
 import { TeamPerformanceCard } from '@/app/team/[slug]/components/TeamPerformanceCard'
 import { TeamStrengthCard } from '@/app/team/[slug]/components/TeamStrengthCard'
 import { TeamFixturesTabs } from '@/app/team/[slug]/components/TeamFixturesTabs'
@@ -32,10 +32,13 @@ interface ITeamData {
 
 const TeamPage = ({
 	params: paramsPromise,
+	searchParams: searchParamsPromise,
 }: {
 	params: Promise<{ slug: string }>
+	searchParams: Promise<{ from?: string }>
 }) => {
 	const params = use(paramsPromise)
+	const { from } = use(searchParamsPromise)
 	const { bootstrapData, fixtures } = useFPLServerContext()
 	const [loading, setLoading] = useState(true)
 	const [teamData, setTeamData] = useState<ITeamData | undefined>()
@@ -110,47 +113,61 @@ const TeamPage = ({
 
 	if (loading) {
 		return (
-		<main className='container mx-auto flex h-full max-w-7xl items-center justify-center px-4'>
-			<div className='text-muted-foreground'>Loading team data...</div>
-		</main>
+	<main className='container mx-auto flex max-w-7xl items-center justify-center px-4'>
+		<div className='text-muted-foreground'>Loading team data...</div>
+	</main>
 	)
 }
 
-	return (
-		<main className='container mx-auto flex max-w-7xl flex-col px-4 py-6 lg:h-full lg:min-h-0 lg:overflow-hidden'>
-			<Link
-				href='/fixtures'
-				className='mb-4 inline-flex shrink-0 items-center text-sm text-muted-foreground hover:underline'
-			>
-				<ChevronLeft className='mr-1 h-4 w-4' />
-				Back to Fixture Grid
-			</Link>
+	const backHref = from === 'strengths' ? '/strengths' : '/fixtures'
+	const backLabel = from === 'strengths' ? 'Back to Strengths Table' : 'Back to Fixture Grid'
 
-			<div className='shrink-0'>
-				<TeamHeader team={team} />
+	return (
+		<main className='container mx-auto flex max-w-7xl flex-col px-4 lg:h-full lg:min-h-0'>
+			{/* Page header */}
+			<div className='shrink-0 pb-3 pt-4'>
+				<Link
+					href={backHref}
+					className='mb-2 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground'
+				>
+					<ChevronLeft className='h-3.5 w-3.5' />
+					{backLabel}
+				</Link>
+				<div className='flex min-w-0 items-center gap-3'>
+					<TeamBadge code={team.code} name={team.name} size={36} className='shrink-0 object-contain' />
+					<div className='min-w-0'>
+						<h1 className='truncate text-2xl font-bold tracking-tight text-foreground sm:text-3xl'>
+							{team.name}
+						</h1>
+						<p className='text-sm text-muted-foreground'>{team.short_name}</p>
+					</div>
+				</div>
 			</div>
 
-			{/* Two-column grid that fills all remaining height */}
-			<div className='grid grid-cols-1 gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-2 lg:overflow-hidden'>
-				{/* Stats column — content-height cards, scrolls within column if needed */}
-				<div className='flex flex-col gap-6 overflow-y-auto pb-4'>
-					{teamData?.teamPerformance && (
-						<TeamPerformanceCard
-							teamPerformance={teamData.teamPerformance}
-							teamId={team.id}
-							allFixtures={fixtures}
-						/>
-					)}
-					{teamData?.teamOverallFDR && (
-						<TeamStrengthCard
-							teamName={team.name}
-							teamOverallFDR={teamData.teamOverallFDR}
-						/>
-					)}
+			{/* Two-column layout: stacked on mobile, bounded side-by-side on desktop */}
+			<div className='flex min-h-0 flex-1 flex-col gap-6 overflow-hidden py-4 lg:flex-row'>
+				{/* Stats column — outer div is the bounded scroll container;
+				    inner div is unconstrained so cards are never flex-shrunk */}
+				<div className='lg:min-h-0 lg:flex-1 lg:overflow-y-auto'>
+					<div className='flex flex-col gap-6 lg:pb-4'>
+						{teamData?.teamPerformance && (
+							<TeamPerformanceCard
+								teamPerformance={teamData.teamPerformance}
+								teamId={team.id}
+								allFixtures={fixtures}
+							/>
+						)}
+						{teamData?.teamOverallFDR && (
+							<TeamStrengthCard
+								teamName={team.name}
+								teamOverallFDR={teamData.teamOverallFDR}
+							/>
+						)}
+					</div>
 				</div>
 
-				{/* Fixtures column — fills remaining height, scrolls internally */}
-				<div className='flex min-h-0 flex-col overflow-hidden'>
+				{/* Matches column — fills height on desktop, internal scroll */}
+				<div className='lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-hidden'>
 					<TeamFixturesTabs
 						team={team as FPLTeam}
 						upcomingFixtures={teamData?.upcomingFixtures || []}
