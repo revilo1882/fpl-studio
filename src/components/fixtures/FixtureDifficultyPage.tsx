@@ -127,7 +127,7 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 
 			<div
 				ref={stickyFiltersRef}
-				className='sticky top-0 z-50 -mx-4 shrink-0 border-b border-border/60 bg-background/95 px-4 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:mx-0 sm:px-0 sm:py-2'
+				className='sticky left-0 top-0 z-50 -mx-4 shrink-0 border-b border-border/60 bg-background/95 px-4 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:mx-0 sm:px-0 sm:py-2'
 			>
 				<FixtureControls
 					view={view}
@@ -144,8 +144,8 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 				/>
 			</div>
 
-			<div className='flex min-h-0 min-w-0 flex-1 flex-col'>
-				<div className='-mx-4 min-h-0 min-w-0 flex-1 lg:mx-0 lg:min-h-0'>
+			<div className='flex min-h-0 min-w-0 flex-col lg:flex-1'>
+				<div className='-mx-4 min-h-0 min-w-0 lg:mx-0 lg:min-h-0 lg:flex-1'>
 					{view === 'grid' && (
 						<FixtureGrid
 							data={sortedData}

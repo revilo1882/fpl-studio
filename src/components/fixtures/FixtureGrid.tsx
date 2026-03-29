@@ -51,7 +51,7 @@ export const FixtureGrid = ({
 	const teamByName = useMemo(() => new Map(teams.map((team) => [team.name, team])), [teams])
 
 	return (
-		<div className='flex min-w-0 flex-col border-y border-border bg-card sm:rounded-lg sm:border sm:shadow-sm lg:h-full lg:overflow-hidden'>
+		<div className='flex min-w-0 flex-col border-y border-border bg-card sm:rounded-lg sm:border sm:shadow-sm lg:max-h-full lg:overflow-hidden'>
 			{/* Below lg: no overflow here — the root layout scrollport scrolls X+Y so thead sticky works. lg+: pane scroll. */}
 			<div className='min-w-0 sm:rounded-b-lg lg:min-h-0 lg:flex-1 lg:overflow-auto'>
 				<Table

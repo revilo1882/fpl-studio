@@ -23,6 +23,7 @@ export const FixtureChip = ({ fixture, teams, difficultyType, fixtures, compact 
 	const opponentTeam = getOpponentTeam(fixture.opponentName, teams)
 	const [formSummary, setFormSummary] = useState<string>('Loading...')
 	const [open, setOpen] = useState(false)
+	const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const mountedAt = useRef(Date.now())
 
@@ -31,13 +32,17 @@ export const FixtureChip = ({ fixture, teams, difficultyType, fixtures, compact 
 		else setFormSummary('N/A')
 	}, [opponentTeam, fixtures])
 
-	useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current) }, [])
+	useEffect(() => () => {
+		if (openTimer.current) clearTimeout(openTimer.current)
+		if (closeTimer.current) clearTimeout(closeTimer.current)
+	}, [])
 
 	const openPopover = () => {
 		if (closeTimer.current) clearTimeout(closeTimer.current)
-		setOpen(true)
+		openTimer.current = setTimeout(() => setOpen(true), 300)
 	}
 	const scheduleClose = () => {
+		if (openTimer.current) clearTimeout(openTimer.current)
 		closeTimer.current = setTimeout(() => setOpen(false), 150)
 	}
 

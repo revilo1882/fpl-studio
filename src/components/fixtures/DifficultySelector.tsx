@@ -29,9 +29,12 @@ export const DifficultySelector = ({
 				compact ? 'flex shrink-0 items-center gap-2' : 'flex flex-col gap-2'
 			}
 		>
-			<Label htmlFor='difficulty-select' className={compact ? 'sr-only' : undefined}>
-				Difficulty View
-			</Label>
+		<Label
+			htmlFor='difficulty-select'
+			className={compact ? 'text-xs text-muted-foreground' : undefined}
+		>
+			{compact ? 'Rating' : 'Difficulty View'}
+		</Label>
 			<Select
 				value={difficultyType}
 				onValueChange={(value: DifficultyType) => {

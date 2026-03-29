@@ -28,9 +28,12 @@ export const GameweekSelector = ({
 				compact ? 'flex shrink-0 items-center gap-2' : 'flex flex-col gap-2'
 			}
 		>
-			<Label htmlFor='gameweek-select' className={compact ? 'sr-only' : undefined}>
-				Gameweeks
-			</Label>
+		<Label
+			htmlFor='gameweek-select'
+			className={compact ? 'text-xs text-muted-foreground' : undefined}
+		>
+			{compact ? 'GWs' : 'Gameweeks'}
+		</Label>
 			<Select
 				value={String(numberOfGameweeks)}
 				onValueChange={(value) => setNumberOfGameweeks(Number(value))}
