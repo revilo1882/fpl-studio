@@ -17,19 +17,17 @@ const normalizeStrengthToDifficulty = (strength: number): number => {
 	return 1 + (4 * (clampedStrength - minStrength)) / (maxStrength - minStrength)
 }
 
-// When the subject team is at home (isHome=true), the opponent is playing away —
-// so we use the opponent's away strength. Vice versa when the subject is away.
 const calculateAttackingDifficulty = (opponent: Team, isHome: boolean): number => {
 	const opponentDefStrength = isHome
-		? opponent.strength_defence_away
-		: opponent.strength_defence_home
+		? opponent.strength_defence_home
+		: opponent.strength_defence_away
 	return normalizeStrengthToDifficulty(opponentDefStrength)
 }
 
 const calculateDefensiveDifficulty = (opponent: Team, isHome: boolean): number => {
 	const opponentAttStrength = isHome
-		? opponent.strength_attack_away
-		: opponent.strength_attack_home
+		? opponent.strength_attack_home
+		: opponent.strength_attack_away
 	return normalizeStrengthToDifficulty(opponentAttStrength)
 }
 

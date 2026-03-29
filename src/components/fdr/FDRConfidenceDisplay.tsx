@@ -35,10 +35,10 @@ export const FDRConfidenceDisplay = ({
 	}
 
 	const getConfidenceMessage = (score: number, volatility: string) => {
-		if (score >= 0.8) return 'High confidence, trust this rating.'
+		if (score >= 0.8) return 'Plenty of data and consistent performance — trust this rating.'
 		if (score >= 0.5)
-			return `Moderate confidence, watch for changes. Volatility: ${volatility}.`
-		return `Low confidence, high uncertainty. Volatility: ${volatility}.`
+			return `Limited data or inconsistent form — watch for changes. Volatility: ${volatility}.`
+		return `Very limited data or erratic form — treat with caution. Volatility: ${volatility}.`
 	}
 
 	const volatility = getVolatility(intervalRange)
@@ -65,35 +65,27 @@ export const FDRConfidenceDisplay = ({
 							{showTooltip && (
 								<div className='absolute -top-2 left-6 z-50 w-64 transform rounded-md border bg-popover p-3 text-sm text-popover-foreground shadow-md'>
 									<div className='space-y-3'>
-										<div className='space-y-2'>
-											<div className='border-b pb-2'>
-												<h4 className='text-sm font-semibold'>
-													High Confidence (80%+)
-												</h4>
-												<p className='text-xs text-muted-foreground'>
-													Plenty of data, consistent performance. Trust
-													this rating.
-												</p>
-											</div>
-											<div className='border-b pb-2'>
-												<h4 className='text-sm font-semibold'>
-													High Volatility (±0.5+ range)
-												</h4>
-												<p className='text-xs text-muted-foreground'>
-													Rating could swing ±0.5+ points. Risky but
-													potential upside.
-												</p>
-											</div>
-											<div>
-												<h4 className='text-sm font-semibold'>
-													Wide Interval (±1.0+ range)
-												</h4>
-												<p className='text-xs text-muted-foreground'>
-													High uncertainty. Could be great or terrible
-													fixture.
-												</p>
-											</div>
+							<div className='space-y-2'>
+										<div className='border-b pb-2'>
+											<h4 className='text-sm font-semibold'>
+												Confidence (0–100%)
+											</h4>
+											<p className='text-xs text-muted-foreground'>
+												How much we trust the rating. Higher means
+												more games played and consistent form.
+											</p>
 										</div>
+										<div>
+											<h4 className='text-sm font-semibold'>
+												Volatility
+											</h4>
+											<p className='text-xs text-muted-foreground'>
+												How wide the uncertainty range is. High
+												volatility means the rating could shift
+												significantly.
+											</p>
+										</div>
+									</div>
 									</div>
 								</div>
 							)}

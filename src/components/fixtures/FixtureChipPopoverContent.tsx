@@ -72,32 +72,23 @@ export const FixtureChipPopoverContent = ({
 				)}
 			</div>
 
-			{fixture.confidenceInterval && typeof fixture.confidenceScore === 'number' && (
-				<div className='space-y-1 border-t pt-2'>
-					<div className='flex items-center justify-between text-xs'>
-						<span className='text-muted-foreground'>Confidence:</span>
-						<span className='font-semibold'>
-							{(fixture.confidenceScore * 100).toFixed(0)}%
-						</span>
-					</div>
-					<div className='flex items-center justify-between text-xs'>
-						<span className='text-muted-foreground'>Range:</span>
-						<span className='font-semibold'>
-							{fixture.confidenceInterval[0].toFixed(1)} –{' '}
-							{fixture.confidenceInterval[1].toFixed(1)}
-						</span>
-					</div>
-					<div className='text-xs text-muted-foreground'>
-						<div className=''>
-							{fixture.confidenceScore >= 0.8
-								? 'High confidence - trust this rating'
-								: fixture.confidenceScore >= 0.5
-									? 'Moderate confidence - watch for changes'
-									: 'Low confidence - high uncertainty'}
-						</div>
-					</div>
+		{fixture.confidenceInterval && typeof fixture.confidenceScore === 'number' && (
+			<div className='space-y-1 border-t pt-2'>
+				<div className='flex items-center justify-between text-xs'>
+					<span className='text-muted-foreground'>Confidence:</span>
+					<span className='font-semibold'>
+						{(fixture.confidenceScore * 100).toFixed(0)}%
+					</span>
 				</div>
-			)}
+				<div className='flex items-center justify-between text-xs'>
+					<span className='text-muted-foreground'>Range:</span>
+					<span className='font-semibold'>
+						{fixture.confidenceInterval[0].toFixed(1)} –{' '}
+						{fixture.confidenceInterval[1].toFixed(1)}
+					</span>
+				</div>
+			</div>
+		)}
 		</div>
 	)
 }
