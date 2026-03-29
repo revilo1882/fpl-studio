@@ -138,9 +138,9 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 					maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
 					difficultyType={difficultyType}
 					onDifficultyTypeChange={setDifficultyType}
-					numberOfGameweeks={numberOfGameweeks}
-					onNumberOfGameweeksChange={setNumberOfGameweeks}
-					gameweekOptions={gameweekOptions}
+				numberOfGameweeks={numberOfGameweeks}
+				onNumberOfGameweeksChange={setNumberOfGameweeks}
+				gameweekOptions={gameweekOptions}
 				/>
 			</div>
 

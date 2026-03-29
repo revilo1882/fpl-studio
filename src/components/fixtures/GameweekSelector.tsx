@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import {
 	Select,
@@ -38,10 +39,13 @@ export const GameweekSelector = ({
 				value={String(numberOfGameweeks)}
 				onValueChange={(value) => setNumberOfGameweeks(Number(value))}
 			>
-				<SelectTrigger
-					id='gameweek-select'
-					className={compact ? 'h-9 w-[4.25rem]' : 'w-[100px]'}
-				>
+			<SelectTrigger
+				id='gameweek-select'
+				className={cn(
+					compact ? 'h-9 w-[4.25rem]' : 'w-[100px]',
+					'focus:ring-0 data-[state=open]:border-primary/70 data-[state=open]:text-primary',
+				)}
+			>
 					<SelectValue placeholder='Select GWs' />
 				</SelectTrigger>
 				<SelectContent>

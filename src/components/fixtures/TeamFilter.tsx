@@ -81,12 +81,13 @@ export const TeamFilter = ({
 				<Button
 					id='team-filter'
 					variant='outline'
-					className={cn(
-						compact
-							? 'h-9 w-[min(11rem,42vw)] justify-between px-2.5 sm:w-44'
-							: 'w-[200px] justify-between',
-						selectedTeams.length > 0 && 'border-primary/70 text-primary',
-					)}
+			className={cn(
+					compact
+						? 'h-9 w-[min(11rem,42vw)] justify-between px-2.5 sm:w-44'
+						: 'w-[200px] justify-between',
+					'data-[state=open]:border-primary/70 data-[state=open]:text-primary',
+					selectedTeams.length > 0 && 'border-primary/70 text-primary',
+				)}
 				>
 						{getButtonText()}
 						<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />

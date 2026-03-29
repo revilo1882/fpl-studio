@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import {
 	Select,
@@ -41,10 +42,13 @@ export const DifficultySelector = ({
 					setDifficultyType(value)
 				}}
 			>
-				<SelectTrigger
-					id='difficulty-select'
-					className={compact ? 'h-9 w-[min(7.5rem,32vw)] sm:w-32' : 'w-[180px]'}
-				>
+			<SelectTrigger
+				id='difficulty-select'
+				className={cn(
+					compact ? 'h-9 w-[min(7.5rem,32vw)] sm:w-32' : 'w-[180px]',
+					'focus:ring-0 data-[state=open]:border-primary/70 data-[state=open]:text-primary',
+				)}
+			>
 					<SelectValue placeholder='Select difficulty' />
 				</SelectTrigger>
 				<SelectContent>

@@ -62,12 +62,12 @@ export const FixtureControls = ({
 					difficultyType={difficultyType}
 					setDifficultyType={onDifficultyTypeChange}
 				/>
-				<GameweekSelector
-					compact
-					numberOfGameweeks={numberOfGameweeks}
-					setNumberOfGameweeks={onNumberOfGameweeksChange}
-					gameweekOptions={gameweekOptions}
-				/>
+			<GameweekSelector
+				compact
+				numberOfGameweeks={numberOfGameweeks}
+				setNumberOfGameweeks={onNumberOfGameweeksChange}
+				gameweekOptions={gameweekOptions}
+			/>
 			</div>
 		</div>
 	)
