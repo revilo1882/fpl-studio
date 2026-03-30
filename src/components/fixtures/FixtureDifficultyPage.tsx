@@ -10,6 +10,7 @@ import { useFplTable } from '@/hooks/useFplTable'
 import { useQuerySync } from '@/hooks/useQuerySync'
 
 import { FixtureGrid } from './FixtureGrid'
+import { FixtureGridSkeleton } from './FixtureGridSkeleton'
 import { FixturePageHeader } from './FixturePageHeader'
 import { FixtureControls } from './FixtureControls'
 import { DifficultyLegend } from './DifficultyLegend'
@@ -131,7 +132,11 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 					/>
 				</div>
 
-				{view === 'grid' && (
+				{view === 'grid' && isLoading && (
+					<FixtureGridSkeleton numberOfGameweeks={numberOfGameweeks} />
+				)}
+
+				{view === 'grid' && !isLoading && (
 					<FixtureGrid
 						data={sortedData}
 						events={events}
