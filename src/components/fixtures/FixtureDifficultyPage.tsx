@@ -132,23 +132,30 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 					/>
 				</div>
 
-				{view === 'grid' && isLoading && (
-					<FixtureGridSkeleton numberOfGameweeks={numberOfGameweeks} />
-				)}
+			{view === 'grid' && isLoading && (
+				<FixtureGridSkeleton numberOfGameweeks={numberOfGameweeks} />
+			)}
 
-				{view === 'grid' && !isLoading && (
-					<FixtureGrid
-						data={sortedData}
-						events={events}
-						teams={teams}
-						firstGameweek={firstGameweek}
-						numberOfGameweeks={numberOfGameweeks}
-						onSort={handleSort}
-						sortConfig={sortConfig}
-						difficultyType={difficultyType}
-						allFixtures={fixtures}
-					/>
-				)}
+			{view === 'grid' && !isLoading && (
+				<FixtureGrid
+					data={sortedData}
+					events={events}
+					teams={teams}
+					firstGameweek={firstGameweek}
+					numberOfGameweeks={numberOfGameweeks}
+					onSort={handleSort}
+					sortConfig={sortConfig}
+					difficultyType={difficultyType}
+					allFixtures={fixtures}
+				/>
+			)}
+
+			{/* Sticky bottom border: hugs the table when content is short,
+			    sticks to the viewport edge when the table overflows and is scrolled.
+			    z-30 sits above the sticky left/right table cells (z-20). */}
+			{view === 'grid' && (
+				<div className='sticky bottom-0 z-30 -mt-px h-px w-full shrink-0 bg-border' />
+			)}
 
 				{canShowChart && (
 					<div className='flex-1 px-4 pb-4 sm:px-0'>
