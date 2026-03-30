@@ -138,27 +138,21 @@ export const useFplTable = ({
 
 		let cancelled = false
 
-		const run = async () => {
-			setIsLoading(true)
-			try {
-				const result = await generateFixtureMatrix({
-					teams: bootstrapData.teams ?? [],
-					fixtures,
-					bootstrapData,
-					firstGameweek,
-					numberOfGameweeks: effectiveWindow,
-					difficultyType,
-				})
-				if (!cancelled) {
-					matrixCache.set(cacheKey, result)
-					setFixtureData(result)
-				}
-			} finally {
-				if (!cancelled) setIsLoading(false)
-			}
+		setIsLoading(true)
+		const result = generateFixtureMatrix({
+			teams: bootstrapData.teams ?? [],
+			fixtures,
+			bootstrapData,
+			firstGameweek,
+			numberOfGameweeks: effectiveWindow,
+			difficultyType,
+		})
+		if (!cancelled) {
+			matrixCache.set(cacheKey, result)
+			setFixtureData(result)
+			setIsLoading(false)
 		}
 
-		run()
 		return () => {
 			cancelled = true
 		}

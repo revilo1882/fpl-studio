@@ -31,6 +31,8 @@ const calculateDefensiveDifficulty = (opponent: Team, isHome: boolean): number =
 	return normalizeStrengthToDifficulty(opponentAttStrength)
 }
 
+const HOME_ADVANTAGE = 0.15
+
 export const calculateDynamicFDR = (
 	homeTeam: Team,
 	awayTeam: Team,
@@ -55,7 +57,7 @@ export const calculateDynamicFDR = (
 		isHome,
 	)
 	const formAdjustment = calculateFormAdjustment(opponent.id, fixtures, teams)
-	const homeAdvantage = isHome ? -0.15 : 0.15
+	const homeAdvantage = isHome ? -HOME_ADVANTAGE : HOME_ADVANTAGE
 	const rawAttacking =
 		attackingBase +
 		seasonAdjustment * weights.season +

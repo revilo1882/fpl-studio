@@ -19,7 +19,8 @@ describe('useFplTable', () => {
 
 		expect(result.current.state.difficultyType).toBe('Overall')
 		expect(result.current.state.selectedTeams).toEqual([])
-		expect(result.current.data.isLoading).toBe(true)
+		// generateFixtureMatrix is synchronous so isLoading resolves to false immediately
+		expect(result.current.data.isLoading).toBe(false)
 		expect(typeof result.current.state.numberOfGameweeks).toBe('number')
 	})
 

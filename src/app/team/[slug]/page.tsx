@@ -55,47 +55,45 @@ const TeamPage = ({
 	useEffect(() => {
 		if (!team || !bootstrapData || !fixtures) return
 
-		const loadTeamData = async () => {
+		const loadTeamData = () => {
 			setLoading(true)
 			try {
 				const leagueAverage = buildLeagueAverageOpponent(bootstrapData!.teams)
 				// Opponent must be the viewed team so base FDR uses their strength_* fields (not the same for every club).
-				const [teamPerformance, teamOverallFDR, teamFixtureRow] = await Promise.all([
-					calculateSeasonPerformance(team!.id, fixtures!, currentGameweek),
-					calculateDynamicFDR(
-						leagueAverage,
-						team!,
-						fixtures!,
-						bootstrapData!.teams,
-						true,
-						currentGameweek,
-					),
-					generateTeamFixtureRow({
-						teamId: team!.id,
-						teams: bootstrapData!.teams,
-						fixtures: fixtures!,
-						bootstrapData: bootstrapData!,
-						firstGameweek: 1,
-						numberOfGameweeks: 38,
-						difficultyType: 'Overall',
-					}),
-				])
+				const teamPerformance = calculateSeasonPerformance(team!.id, fixtures!, currentGameweek)
+				const teamOverallFDR = calculateDynamicFDR(
+					leagueAverage,
+					team!,
+					fixtures!,
+					bootstrapData!.teams,
+					true,
+					currentGameweek,
+				)
+				const teamFixtureRow = generateTeamFixtureRow({
+					teamId: team!.id,
+					teams: bootstrapData!.teams,
+					fixtures: fixtures!,
+					bootstrapData: bootstrapData!,
+					firstGameweek: 1,
+					numberOfGameweeks: 38,
+					difficultyType: 'Overall',
+				})
 
 				const currentTeamProcessedFixtures: SingleFixture[] = teamFixtureRow.flat()
 
-				const now = new Date()
-				const upcomingFixtures = currentTeamProcessedFixtures.filter(
-					(f) =>
-						f.gameweekId >= currentGameweek &&
-						f.label !== '-' &&
-						(!f.kickoffTime || new Date(f.kickoffTime) > now),
-				)
+			const now = new Date()
+			const upcomingFixtures = currentTeamProcessedFixtures.filter(
+				(fixture) =>
+					fixture.gameweekId >= currentGameweek &&
+					fixture.label !== '-' &&
+					(!fixture.kickoffTime || new Date(fixture.kickoffTime) > now),
+			)
 
 			const pastFixtures = fixtures!
 				.filter(
-					(f) =>
-						(f.team_h === team!.id || f.team_a === team!.id) &&
-						f.finished,
+					(fixture) =>
+						(fixture.team_h === team!.id || fixture.team_a === team!.id) &&
+						fixture.finished,
 				)
 				.sort((a, b) => (b.event ?? 0) - (a.event ?? 0))
 
