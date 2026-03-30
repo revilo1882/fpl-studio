@@ -1,6 +1,6 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { useState } from 'react'
 
 import dynamic from 'next/dynamic'
 
@@ -68,23 +68,6 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 
 	const [view, setView] = useState<ViewMode>('grid')
 
-	const stickyFiltersRef = useRef<HTMLDivElement>(null)
-	const [stickyFiltersHeight, setStickyFiltersHeight] = useState(48)
-
-	useLayoutEffect(() => {
-		const el = stickyFiltersRef.current
-		if (!el) return
-
-		const measure = () => {
-			setStickyFiltersHeight(el.getBoundingClientRect().height)
-		}
-
-		measure()
-		const ro = new ResizeObserver(measure)
-		ro.observe(el)
-		return () => ro.disconnect()
-	}, [view])
-
 	useQuerySync({
 		view,
 		selectedTeams,
@@ -108,16 +91,10 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 	const isChartTooMany = isChart && selectionCount > MAX_CHART_TEAMS
 	const canShowChart = isChart && !isChartEmpty && !isChartTooMany && !!fixtureData
 
-	const sectionStyle = {
-		'--fixture-sticky-top': `${stickyFiltersHeight}px`,
-	} as CSSProperties
-
 	return (
-		<section
-			className='container mx-auto flex min-w-0 flex-col gap-3 px-4 py-4 sm:gap-4 sm:py-6 lg:h-full lg:overflow-hidden'
-			style={sectionStyle}
-		>
-			<div className='shrink-0'>
+		<section className='container mx-auto flex h-full min-w-0 flex-col px-4 sm:px-4'>
+			{/* Desktop: title sits above filter bar */}
+			<div className='hidden shrink-0 pb-1 pt-3 lg:block'>
 				<FixturePageHeader
 					title='Fixture Difficulty'
 					subtitle='Analyse upcoming fixtures with Studio FDR ratings'
@@ -125,10 +102,8 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 				/>
 			</div>
 
-			<div
-				ref={stickyFiltersRef}
-				className='sticky left-0 top-0 z-50 -mx-4 shrink-0 border-b border-border/60 bg-background/95 px-4 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:mx-0 sm:px-0 sm:py-2'
-			>
+			{/* Filter bar — always visible, never scrolls */}
+			<div className='sticky left-0 top-0 z-50 -mx-4 shrink-0 border-b border-border/60 bg-background/95 px-4 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:mx-0 sm:px-0 sm:py-2'>
 				<FixtureControls
 					view={view}
 					onViewChange={setView}
@@ -138,66 +113,76 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 					maxTeams={isChart ? MAX_CHART_TEAMS : undefined}
 					difficultyType={difficultyType}
 					onDifficultyTypeChange={setDifficultyType}
-				numberOfGameweeks={numberOfGameweeks}
-				onNumberOfGameweeksChange={setNumberOfGameweeks}
-				gameweekOptions={gameweekOptions}
+					numberOfGameweeks={numberOfGameweeks}
+					onNumberOfGameweeksChange={setNumberOfGameweeks}
+					gameweekOptions={gameweekOptions}
 				/>
 			</div>
 
-			<div className='flex min-h-0 min-w-0 flex-col lg:flex-1'>
-				<div className='-mx-4 min-h-0 min-w-0 lg:mx-0 lg:min-h-0 lg:flex-1'>
-					{view === 'grid' && (
-						<FixtureGrid
-							data={sortedData}
-							events={events}
-							teams={teams}
-							firstGameweek={firstGameweek}
-							numberOfGameweeks={numberOfGameweeks}
-							onSort={handleSort}
-							sortConfig={sortConfig}
-							difficultyType={difficultyType}
-							allFixtures={fixtures}
-						/>
-					)}
-
-					{canShowChart && (
-						<div className='h-full'>
-							<FixtureAttractivenessChart
-								gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
-								fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
-								teamNames={fixtureData!.teamNames}
-								selectedTeams={selectedTeams}
-								firstGameweek={firstGameweek}
-								numberOfGameweeks={numberOfGameweeks}
-								difficultyType={difficultyType}
-								teams={teams}
-								sortedTeams={sortedTeams}
-								teamAverageByName={teamAverageByName}
-							/>
-						</div>
-					)}
-
-					{isChartEmpty && <ChartEmptyState />}
-
-					{isChartTooMany && (
-						<ChartTooManyTeams
-							selectedCount={selectionCount}
-							maxTeams={MAX_CHART_TEAMS}
-							onClearTeams={() => setSelectedTeams([])}
-						/>
-					)}
-
-					{isLoading && isChart && !fixtureData && (
-						<div className='h-96 w-full animate-pulse rounded-md bg-muted' />
-					)}
+			{/* Single scroll container — handles both X and Y.
+			    On mobile the title lives inside so it can scroll away; on desktop it's above. */}
+			<div className='-mx-4 flex min-h-0 flex-1 flex-col overflow-auto sm:mx-0'>
+				{/* Mobile-only title — scrolls away vertically, anchored left via sticky */}
+				<div className='sticky left-0 z-10 shrink-0 bg-background px-4 pb-1 pt-3 sm:px-0 lg:hidden'>
+					<FixturePageHeader
+						title='Fixture Difficulty'
+						subtitle='Analyse upcoming fixtures with Studio FDR ratings'
+						className='mb-1 sm:mb-0'
+					/>
 				</div>
 
 				{view === 'grid' && (
-					<div className='shrink-0 border-t border-border/50 pt-2'>
-						<DifficultyLegend difficultyType={difficultyType} />
+					<FixtureGrid
+						data={sortedData}
+						events={events}
+						teams={teams}
+						firstGameweek={firstGameweek}
+						numberOfGameweeks={numberOfGameweeks}
+						onSort={handleSort}
+						sortConfig={sortConfig}
+						difficultyType={difficultyType}
+						allFixtures={fixtures}
+					/>
+				)}
+
+				{canShowChart && (
+					<div className='flex-1 px-4 pb-4 sm:px-0'>
+						<FixtureAttractivenessChart
+							gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}
+							fixtureMatrix={fixtureData!.fixtureMatrix as FixtureCell[][]}
+							teamNames={fixtureData!.teamNames}
+							selectedTeams={selectedTeams}
+							firstGameweek={firstGameweek}
+							numberOfGameweeks={numberOfGameweeks}
+							difficultyType={difficultyType}
+							teams={teams}
+							sortedTeams={sortedTeams}
+							teamAverageByName={teamAverageByName}
+						/>
 					</div>
 				)}
+
+				{isChartEmpty && <ChartEmptyState />}
+
+				{isChartTooMany && (
+					<ChartTooManyTeams
+						selectedCount={selectionCount}
+						maxTeams={MAX_CHART_TEAMS}
+						onClearTeams={() => setSelectedTeams([])}
+					/>
+				)}
+
+			{isLoading && isChart && !fixtureData && (
+				<div className='h-96 w-full animate-pulse rounded-md bg-muted' />
+			)}
 			</div>
+
+			{/* Legend outside scroll container — content can never scroll over it */}
+			{view === 'grid' && (
+				<div className='-mx-4 shrink-0 bg-background px-4 pb-3 pt-2 sm:mx-0 sm:px-0'>
+					<DifficultyLegend difficultyType={difficultyType} />
+				</div>
+			)}
 		</section>
 	)
 }

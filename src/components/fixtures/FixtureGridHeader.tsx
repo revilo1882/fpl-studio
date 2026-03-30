@@ -41,7 +41,7 @@ export const FixtureGridHeader = ({
 	return (
 		<TableRow className='border-b hover:bg-transparent'>
 		<TableHead
-			className='sticky left-0 top-[var(--fixture-sticky-top,0px)] z-40 h-auto min-h-0 w-0 whitespace-nowrap bg-background p-0 text-left align-top font-semibold lg:top-0'
+			className='sticky left-0 top-0 z-40 h-auto min-h-0 w-0 whitespace-nowrap bg-background p-0 text-left align-top font-semibold'
 			aria-sort={ariaSortTeam as 'ascending' | 'descending' | 'none'}
 		>
 				<button
@@ -56,7 +56,7 @@ export const FixtureGridHeader = ({
 			{events.slice(firstGameweek - 1, firstGameweek - 1 + numberOfGameweeks).map((gw) => (
 				<TableHead
 					key={gw.id}
-					className='sticky top-[var(--fixture-sticky-top,0px)] z-30 min-w-[68px] bg-background text-center font-semibold sm:min-w-[92px] md:w-auto md:min-w-0 lg:top-0'
+					className='sticky top-0 z-30 min-w-[68px] bg-background text-center font-semibold sm:min-w-[92px] md:w-auto md:min-w-0'
 				>
 					<div className='px-2 py-3'>
 						<span className='text-sm font-semibold text-foreground'>GW {gw.id}</span>
@@ -64,7 +64,7 @@ export const FixtureGridHeader = ({
 				</TableHead>
 			))}
 		<TableHead
-		className='sticky right-0 top-[var(--fixture-sticky-top,0px)] z-40 h-auto min-h-0 w-[90px] border-l border-border bg-background p-0 text-right align-top font-semibold lg:top-0'
+		className='sticky right-0 top-0 z-40 h-auto min-h-0 w-[90px] border-l border-border bg-background p-0 text-right align-top font-semibold'
 				aria-sort={ariaSortScore as 'ascending' | 'descending' | 'none'}
 			>
 				<div className='flex items-center justify-end gap-2 px-3 py-2'>

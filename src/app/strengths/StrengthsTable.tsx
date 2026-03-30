@@ -64,29 +64,29 @@ export const StrengthsTable = ({ teams }: { teams: Team[] }) => {
 	const sortConfig = { key: sortKey as string, direction: sortDir }
 
 	return (
-		<div className='min-w-0 rounded-lg border lg:max-h-full lg:min-h-0 lg:overflow-auto'>
+		<div className='max-h-full min-h-0 min-w-0 overflow-auto rounded-lg border'>
 			<Table className='min-w-max border-separate border-spacing-0 text-sm'>
 				<TableHeader>
 					<TableRow hoverHighlight={false} className='border-b'>
 						{columns.map(({ key, label, numeric }) => (
 							<TableHead
 								key={key}
-								className={
-									key === 'name'
-										? 'sticky left-0 top-0 z-40 h-auto min-h-12 whitespace-nowrap bg-card px-2 py-3 align-middle shadow-sm'
-										: numeric
-											? 'sticky top-0 z-30 h-auto min-h-12 whitespace-nowrap bg-card px-2 py-3 text-center align-middle shadow-sm'
-											: 'sticky top-0 z-30 h-auto min-h-12 whitespace-nowrap bg-card px-2 py-3 align-middle shadow-sm'
-								}
+							className={
+								key === 'name'
+									? 'sticky left-0 top-0 z-40 h-auto whitespace-nowrap bg-card px-2 py-2 align-middle shadow-sm'
+									: numeric
+										? 'sticky top-0 z-30 h-auto whitespace-nowrap bg-card px-2 py-2 text-center align-middle shadow-sm'
+										: 'sticky top-0 z-30 h-auto whitespace-nowrap bg-card px-2 py-2 align-middle shadow-sm'
+							}
 							>
 								<button
 									type='button'
 									onClick={() => handleSort(key)}
-									className={
-										numeric
-											? 'inline-flex min-h-10 w-full items-center justify-center gap-1.5 transition-colors hover:text-foreground'
-											: 'inline-flex min-h-10 items-center gap-1.5 transition-colors hover:text-foreground'
-									}
+								className={
+									numeric
+										? 'inline-flex w-full items-center justify-center gap-1.5 transition-colors hover:text-foreground'
+										: 'inline-flex items-center gap-1.5 transition-colors hover:text-foreground'
+								}
 								>
 									{label}
 									<SortIndicator columnKey={key} sortConfig={sortConfig} />
