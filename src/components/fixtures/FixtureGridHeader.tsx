@@ -86,28 +86,31 @@ export const FixtureGridHeader = ({
 						</button>
 					</PopoverTrigger>
 					<PopoverContent
-						side='bottom'
-						align='end'
-						className='w-64 p-3 text-sm leading-snug'
-					>
-						Average of shown gameweeks using your selected difficulty model. Higher
-						= better fixtures. DGWs included; blanks count as 0.
-					</PopoverContent>
+					side='bottom'
+					align='end'
+					className='w-64 p-3 text-sm leading-snug'
+				>
+					Attractiveness score — not a difficulty rating. Higher means better
+					upcoming fixtures. DGWs score higher than single gameweeks; blanks
+					count as 0.
+				</PopoverContent>
 				</Popover>
 
-				<TooltipProvider>
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<span className='hidden cursor-help align-middle sm:inline-flex sm:pr-2'>
-								<HelpCircle className='h-4 w-4' />
-							</span>
-						</TooltipTrigger>
-						<TooltipContent side='bottom' align='end' className='max-w-xs'>
-							Average of shown gameweeks using your selected difficulty model.
-							Higher = better fixtures. DGWs included; blanks count as 0.
-						</TooltipContent>
-					</Tooltip>
-				</TooltipProvider>
+		<TooltipProvider delayDuration={300}>
+			<Tooltip>
+				<TooltipTrigger
+					className='hidden items-center rounded p-1 hover:bg-accent sm:inline-flex sm:pr-1'
+					aria-label='About the Score column'
+				>
+					<HelpCircle className='h-4 w-4' />
+				</TooltipTrigger>
+				<TooltipContent side='bottom' align='center' className='max-w-xs'>
+					Attractiveness score — not a difficulty rating. Higher means better
+					upcoming fixtures. DGWs score higher than single gameweeks; blanks
+					count as 0.
+				</TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
 			</div>
 			</TableHead>
 		</TableRow>

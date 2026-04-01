@@ -132,11 +132,11 @@ const LandingPage = () => {
 						<span className='text-primary'>recalculated.</span>
 					</h1>
 
-					<p className='mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl'>
-						The official FPL ratings are static. FPL Studio builds a dynamic model from
-						team strength, live form, and season performance — then weights them based on
-						how far into the season you are.
-					</p>
+				<p className='mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl'>
+					The official FPL FDR is a black box — one number, no explanation. FPL Studio
+					separates attack and defence, shows a confidence interval alongside every
+					rating, and shifts model weights as the season progresses.
+				</p>
 
 					<div className='flex flex-wrap justify-center gap-3'>
 						<Button asChild size='lg'>
@@ -155,9 +155,9 @@ const LandingPage = () => {
 			{/* ── Feature cards ── */}
 			<section className='border-t border-border bg-muted/30'>
 				<div className='container mx-auto px-4 py-16'>
-					<h2 className='mb-10 text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>
-						Everything the official site doesn&apos;t show you
-					</h2>
+				<h2 className='mb-10 text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>
+					What the official site doesn&apos;t break down for you
+				</h2>
 
 					<div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
 						<FeatureCard
