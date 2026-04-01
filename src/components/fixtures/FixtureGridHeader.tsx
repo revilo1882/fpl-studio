@@ -67,42 +67,48 @@ export const FixtureGridHeader = ({
 		className='sticky right-0 top-0 z-40 h-auto min-h-0 w-[90px] border-l border-border bg-background p-0 text-right align-top font-semibold'
 				aria-sort={ariaSortScore as 'ascending' | 'descending' | 'none'}
 			>
-				<div className='flex items-center justify-end gap-2 px-3 py-2'>
+			<div className='flex items-center justify-end'>
+				<button
+					onClick={() => onSort('score')}
+					className='flex h-full items-center gap-1.5 px-2 py-3 transition-colors duration-150 hover:bg-muted/50 active:bg-muted'
+				>
 					<span className='text-sm font-semibold'>Score</span>
+					<SortIndicator columnKey='score' sortConfig={sortConfig} />
+				</button>
 
-					<Popover>
-						<PopoverTrigger asChild>
-							<button
-								className='flex rounded p-1 hover:bg-accent sm:hidden'
-								aria-label='What is the Score metric?'
-							>
-								<HelpCircle className='h-4 w-4' />
-							</button>
-						</PopoverTrigger>
-						<PopoverContent
-							side='bottom'
-							align='end'
-							className='w-64 p-3 text-sm leading-snug'
+				<Popover>
+					<PopoverTrigger asChild>
+						<button
+							className='flex rounded p-1 hover:bg-accent sm:hidden'
+							aria-label='What is the Score metric?'
 						>
-							Average of shown gameweeks using your selected difficulty model. Higher
-							= better fixtures. DGWs included; blanks count as 0.
-						</PopoverContent>
-					</Popover>
+							<HelpCircle className='h-4 w-4' />
+						</button>
+					</PopoverTrigger>
+					<PopoverContent
+						side='bottom'
+						align='end'
+						className='w-64 p-3 text-sm leading-snug'
+					>
+						Average of shown gameweeks using your selected difficulty model. Higher
+						= better fixtures. DGWs included; blanks count as 0.
+					</PopoverContent>
+				</Popover>
 
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<span className='hidden cursor-help align-middle sm:inline-flex'>
-									<HelpCircle className='h-4 w-4' />
-								</span>
-							</TooltipTrigger>
-							<TooltipContent side='bottom' align='end' className='max-w-xs'>
-								Average of shown gameweeks using your selected difficulty model.
-								Higher = better fixtures. DGWs included; blanks count as 0.
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
-				</div>
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<span className='hidden cursor-help align-middle sm:inline-flex sm:pr-2'>
+								<HelpCircle className='h-4 w-4' />
+							</span>
+						</TooltipTrigger>
+						<TooltipContent side='bottom' align='end' className='max-w-xs'>
+							Average of shown gameweeks using your selected difficulty model.
+							Higher = better fixtures. DGWs included; blanks count as 0.
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+			</div>
 			</TableHead>
 		</TableRow>
 	)
