@@ -113,10 +113,16 @@ export const FixtureAttractivenessChart: React.FC<FixtureAttractivenessChartProp
 	const panelTitle = isDarkTheme ? '#111827' : '#FFFFFF'
 	const panelBorder = isDarkTheme ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.2)'
 
+	const yMax = useMemo(() => {
+		const allValues = datasets.flatMap((d) => d.data.filter((v): v is number => v !== null))
+		const max = allValues.length > 0 ? Math.max(...allValues) : 5
+		return Math.max(5, Math.ceil(max))
+	}, [datasets])
+
 	const options = useChartOptions({
 		title: `Fixture Attractiveness (${difficultyType.charAt(0).toUpperCase() + difficultyType.slice(1)})`,
 		yMin: 0,
-		yMax: 5,
+		yMax,
 		gridColor,
 		tickColor,
 		panelBg,
@@ -134,8 +140,7 @@ export const FixtureAttractivenessChart: React.FC<FixtureAttractivenessChartProp
 			header={<h3 className='text-sm font-semibold'>Fixture Attractiveness</h3>}
 			footer={
 				<p className='text-xs text-muted-foreground'>
-					Scores are 1–5 per fixture (higher is better). DGWs included for that GW; blanks
-					= 0.
+					Scores are 1–5 per fixture (higher is better); DGWs can exceed 5. Blanks = 0.
 					{teamsToShow.length > 0 &&
 						` Showing ${teamsToShow.length} selected team${teamsToShow.length > 1 ? 's' : ''}.`}
 				</p>
