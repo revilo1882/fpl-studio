@@ -123,7 +123,7 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 	{/* Single scroll container — handles both X and Y.
 	    Side borders live on the container so they stay viewport-fixed when scrolling horizontally.
 	    Bottom border is a sticky h-px div inside so it hugs the content. */}
-	<div className='-mx-4 flex min-h-0 flex-1 flex-col overflow-auto sm:mx-0 sm:border-x sm:border-border'>
+	<div className='-mx-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-auto sm:mx-0 sm:border-x sm:border-border'>
 				{/* Mobile-only title — scrolls away vertically, anchored left via sticky */}
 				<div className='sticky left-0 z-10 shrink-0 bg-background px-4 pb-1 pt-3 sm:px-0 lg:hidden'>
 					<FixturePageHeader
@@ -157,8 +157,7 @@ const FixtureDifficultyPage = ({ bootstrapData, fixtures }: FixtureDifficultyPag
 		<div className='sticky bottom-0 z-30 -mt-px h-px w-full shrink-0 bg-border' />
 	)}
 
-
-				{canShowChart && (
+			{canShowChart && (
 					<div className='flex-1 px-4 pb-4 sm:px-0'>
 						<FixtureAttractivenessChart
 							gameweekAttractivenessMatrix={fixtureData!.gameweekAttractivenessMatrix}

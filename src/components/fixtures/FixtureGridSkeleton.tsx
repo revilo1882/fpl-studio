@@ -3,7 +3,7 @@ const TEAM_COUNT = 20
 type Props = { numberOfGameweeks: number }
 
 export const FixtureGridSkeleton = ({ numberOfGameweeks }: Props) => (
-	<div className='w-full shrink-0 border-t border-border bg-card sm:border-t sm:shadow-sm'>
+	<div className='w-full shrink-0 bg-card sm:shadow-sm'>
 		{/* Header row */}
 		<div className='flex items-center border-b border-border bg-card px-2 py-3 shadow-sm'>
 			<div className='w-28 shrink-0'>
