@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 
 import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
@@ -6,6 +6,10 @@ import { mockBootstrapData, mockFixtures } from '@/lib/test-mocks'
 import { useFplTable } from './useFplTable'
 
 describe('useFplTable', () => {
+	beforeEach(() => {
+		localStorage.clear()
+	})
+
 	const defaultParams = {
 		bootstrapData: mockBootstrapData,
 		fixtures: mockFixtures,
@@ -48,10 +52,10 @@ describe('useFplTable', () => {
 		const { result } = renderHook(() => useFplTable(defaultParams))
 
 		act(() => {
-			result.current.actions.setSelectedTeams(['MCI', 'CHE'])
+			result.current.actions.setSelectedTeams(['Man City', 'Chelsea'])
 		})
 
-		expect(result.current.state.selectedTeams).toEqual(['MCI', 'CHE'])
+		expect(result.current.state.selectedTeams).toEqual(['Man City', 'Chelsea'])
 	})
 
 	it('sets isLoading to false eventually (after fixture generation)', async () => {

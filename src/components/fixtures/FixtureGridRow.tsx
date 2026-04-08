@@ -56,7 +56,7 @@ export const FixtureGridRow = memo(({
 						key={`${row.team}_${gameweekId}`}
 						className='relative p-0 text-center md:w-auto'
 					>
-						<div className='relative z-10 flex h-full items-center justify-center p-1 sm:p-2'>
+						<div className='relative z-10 flex h-full items-center justify-center gap-1 p-1 sm:p-2'>
 							{fixtures.map((fixture, chipIndex) => (
 								<FixtureChip
 									key={chipIndex}
@@ -64,6 +64,7 @@ export const FixtureGridRow = memo(({
 									teams={teams}
 									difficultyType={difficultyType}
 									fixtures={allFixtures}
+									compact={fixtures.length > 1}
 								/>
 							))}
 						</div>

@@ -55,25 +55,30 @@ export const FixtureChip = ({ fixture, teams, difficultyType, fixtures, compact 
 	return (
 		<Popover open={open} onOpenChange={handleOpenChange}>
 			<PopoverTrigger asChild>
-				{compact ? (
-					/* Inline score pill — no opponent label, just the FDR number */
-					<div
-						role='button'
-						aria-label='Show fixture details'
-						onPointerEnter={(e) => { if (e.pointerType === 'mouse') openPopover() }}
-						onPointerLeave={(e) => { if (e.pointerType === 'mouse') scheduleClose() }}
-						className={cn(
-							'inline-flex cursor-pointer items-center rounded px-2 py-0.5',
-							'text-sm font-semibold tabular-nums text-black dark:text-white',
-							'transition-all duration-200 hover:scale-105 hover:shadow-sm',
-							'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-							getDifficultyUI(fixture.difficulty, difficultyType).bg,
-						)}
-					>
+			{compact ? (
+				/* Compact pill — opponent label + score stacked, narrower than full chip */
+				<div
+					role='button'
+					aria-label='Show fixture details'
+					onPointerEnter={(e) => { if (e.pointerType === 'mouse') openPopover() }}
+					onPointerLeave={(e) => { if (e.pointerType === 'mouse') scheduleClose() }}
+					className={cn(
+						'flex flex-1 cursor-pointer flex-col items-center justify-center rounded-md',
+						'px-1 sm:px-2',
+						'transition-all duration-200 hover:scale-[1.02] hover:shadow-md hover:shadow-black/10',
+						'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+						getDifficultyUI(fixture.difficulty, difficultyType).bg,
+					)}
+				>
+					<span className='whitespace-nowrap text-xs font-medium leading-tight text-black dark:text-white'>
+						{fixture.label}
+					</span>
+					<span className='font-mono text-[10px] tabular-nums text-black/60 dark:text-white/60'>
 						{difficultyType === 'FPL'
 							? fixture.difficulty
 							: fixture.difficulty.toFixed(2)}
-					</div>
+					</span>
+				</div>
 				) : (
 					/* Full chip — opponent label + score */
 					<div

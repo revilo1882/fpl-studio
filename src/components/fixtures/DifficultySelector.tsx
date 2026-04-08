@@ -32,7 +32,7 @@ export const DifficultySelector = ({
 		>
 		<Label
 			htmlFor='difficulty-select'
-			className={compact ? 'text-xs text-muted-foreground' : undefined}
+			className={compact ? 'shrink-0 whitespace-nowrap text-xs text-muted-foreground' : undefined}
 		>
 			{compact ? 'Rating' : 'Difficulty View'}
 		</Label>

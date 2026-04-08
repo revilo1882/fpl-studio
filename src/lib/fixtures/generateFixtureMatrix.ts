@@ -1,6 +1,6 @@
 import type { Fixtures, Team, BootstrapData } from '@/types/fpl'
 
-import { calculateDynamicFDR } from '../fdr/dynamicFDR'
+import { calculateDynamicFDR, pickDifficultyFromFDR } from '../fdr'
 
 import { calculateAttractivenessScore, calculateMultiFixtureBonus } from './attractivenessScore'
 
@@ -96,24 +96,8 @@ const fillStudioFdrCache = (
 					gameweek,
 				)
 
-				let homeDifficulty: number
-				let awayDifficulty: number
-
-				switch (difficultyType) {
-					case 'Attack':
-						homeDifficulty = homeFDR.attacking
-						awayDifficulty = awayFDR.attacking
-						break
-					case 'Defence':
-						homeDifficulty = homeFDR.defensive
-						awayDifficulty = awayFDR.defensive
-						break
-					case 'Overall':
-					default:
-						homeDifficulty = homeFDR.overall
-						awayDifficulty = awayFDR.overall
-						break
-				}
+			const homeDifficulty = pickDifficultyFromFDR(homeFDR, difficultyType)
+			const awayDifficulty = pickDifficultyFromFDR(awayFDR, difficultyType)
 
 				const homeKey = `${homeTeam.id}-${fixture.id}-${gameweek}`
 				const awayKey = `${awayTeam.id}-${fixture.id}-${gameweek}`

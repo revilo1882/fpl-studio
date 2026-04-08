@@ -1,17 +1,17 @@
 'use client'
 
-import FixtureDifficultyPage from '@/components/fixtures/FixtureDifficultyPage'
+import FixturesPage from '@/components/fixtures/FixturesPage'
 import { withFPLData } from '@/components/providers/withFPLData'
 import { type BootstrapData } from '@/types/bootstrap'
 import { type Fixtures } from '@/types/fixtures'
 
-interface FixturesPageProps {
+interface FixturesRouteProps {
 	bootstrapData: BootstrapData
 	fixtures: Fixtures
 }
 
-const FixturesPage = ({ bootstrapData, fixtures }: FixturesPageProps) => (
-	<FixtureDifficultyPage bootstrapData={bootstrapData} fixtures={fixtures} />
+const FixturesRoute = ({ bootstrapData, fixtures }: FixturesRouteProps) => (
+	<FixturesPage bootstrapData={bootstrapData} fixtures={fixtures} />
 )
 
-export default withFPLData(FixturesPage)
+export default withFPLData(FixturesRoute)

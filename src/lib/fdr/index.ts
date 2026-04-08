@@ -12,3 +12,18 @@ export type {
 	TeamPerformanceData,
 	MatchPerformance,
 } from './types'
+
+import type { EnhancedFDRResult } from './types'
+import type { DifficultyType } from '@/lib/fixtures/generateFixtureMatrix'
+
+/** Pick the scalar difficulty value from an FDR result based on the active difficulty mode. */
+export function pickDifficultyFromFDR(fdr: EnhancedFDRResult, difficultyType: DifficultyType): number {
+	switch (difficultyType) {
+		case 'Attack':
+			return fdr.attacking
+		case 'Defence':
+			return fdr.defensive
+		default:
+			return fdr.overall
+	}
+}
